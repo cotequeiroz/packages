@@ -38,6 +38,8 @@ define Package/zsh/description
         command completion, shell functions (with autoloading), a history
         mechanism, and a host of other features.
 endef
+CONFIGURE_VARS+= \
+	ac_cv_lib_cap_cap_get_proc=no
 
 define Build/Configure
 	$(call Build/Configure/Default, \
