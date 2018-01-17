@@ -24,6 +24,8 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
 
+TARGET_CFLAGS:=-I$(STAGING_DIR)/usr/include/tirpc $(TARGET_CFLAGS)
+
 include $(INCLUDE_DIR)/package.mk
 
 define Package/snort
