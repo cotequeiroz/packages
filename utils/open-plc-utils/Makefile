@@ -82,8 +82,8 @@ define Build/Compile
 		LDFLAGS="$(TARGET_CFLAGS) $(TARGET_LDFLAGS)" \
 		CROSS="$(TARGET_CROSS)" \
 		ROOTFS="$(PKG_INSTALL_DIR)" \
-		OWNER="$(shell id -u $(shell whoami))" \
-		GROUP="$(shell id -g $(shell whoami))" \
+		OWNER="$(shell id -u)" \
+		GROUP="$(shell id -g)" \
 		all install
 endef
 
