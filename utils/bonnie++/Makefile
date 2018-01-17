@@ -35,6 +35,8 @@ define Package/bonniexx/description
   tests of hard drive and file system performance.
 endef
 
+TARGET_CPPFLAGS+= -DHAVE_MIN_MAX=1
+
 define Build/Compile
 	$(MAKE) -C $(PKG_BUILD_DIR) \
 		TARGET_CXX="$(TARGET_CXX)" \
