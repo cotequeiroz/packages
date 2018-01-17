@@ -23,6 +23,7 @@ PKG_LICENSE_FILES:=00README
 include $(INCLUDE_DIR)/package.mk
 
 TARGET_LDFLAGS += $(LIBRPC)
+TARGET_CFLAGS += $(LIBRPC_CFLAGS)
 
 define Package/lsof
   SECTION:=utils
