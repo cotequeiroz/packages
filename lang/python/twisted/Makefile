@@ -17,11 +17,13 @@ PKG_SOURCE_URL:=https://pypi.python.org/packages/6b/23/8dbe86fc83215015e221fbd86
 PKG_HASH:=1d8d73f006c990744effb35588359fd44d43608649ac0b6b7edc71176e88e816
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/Twisted-$(PKG_VERSION)
-PKG_BUILD_DEPENDS:=USE_MUSL:librpc
+PKG_BUILD_DEPENDS:=USE_MUSL:libtirpc
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
+
+TARGET_CFLAGS:=-I$(STAGING_DIR)/usr/include/tirpc $(TARGET_CFLAGS)
 
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
