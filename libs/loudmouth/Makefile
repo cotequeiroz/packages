@@ -40,6 +40,9 @@ define Package/loudmouth/description
   Lightweight and easy-to-use C library for programming with the Jabber protocol
 endef
 
+CONFIGURE_VARS += \
+	ac_cv_path_KRB5CONFIG="no"
+
 CONFIGURE_ARGS += \
 	--with-ssl=openssl \
 	--with-idn=no
