@@ -54,7 +54,7 @@ define Package/libmicrohttpd/description/Default
 endef
 
 define Package/libmicrohttpd-no-ssl/description
-$(call Package/libmicrohttp/description/Default)
+$(call Package/libmicrohttpd/description/Default)
 endef
 
 CONFIGURE_ARGS+= \
