@@ -1,0 +1,2261 @@
+--- a/sources/applications/applestreamingclient/src/playlist.cpp
++++ b/sources/applications/applestreamingclient/src/playlist.cpp
+@@ -223,7 +223,7 @@ uint32_t Playlist::GetIndex(uint32_t &se
+ 	//2. We don't have it, and is a 0 value, that means it was never initialized
+ 	if (sequence == 0) {
+ 		FINEST("sequence is 0");
+-		FINEST("_itemMediaSequences.size(): %"PRIz"u", _itemMediaSequences.size());
++		FINEST("_itemMediaSequences.size(): %" PRIz "u", _itemMediaSequences.size());
+ 		if (_itemMediaSequences.size() != 0) {
+ 			//3. We have stuff. Init and return
+ 			FINEST("Return the first entry");
+--- a/sources/applications/applestreamingclient/src/protocols/key/inboundkeyprotocol.cpp
++++ b/sources/applications/applestreamingclient/src/protocols/key/inboundkeyprotocol.cpp
+@@ -74,7 +74,7 @@ bool InboundKeyProtocol::SignalInputData
+ 	//6. Unbase64 the encrypted key
+ 	string encryptedKey = unb64(temp);
+ 	if (encryptedKey.size() != 16) {
+-		FATAL("Invalid key length: %"PRIz"u", encryptedKey.size());
++		FATAL("Invalid key length: %" PRIz "u", encryptedKey.size());
+ 		return false;
+ 	}
+ 
+--- a/sources/common/src/platform/android/androidplatform.cpp
++++ b/sources/common/src/platform/android/androidplatform.cpp
+@@ -163,7 +163,7 @@ bool setFdTTL(SOCKET fd, uint8_t ttl) {
+ 	int temp = ttl;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_TTL, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_TTL: %"PRIu8"; error was (%d) %s", ttl, err, strerror(err));
++		WARN("Unable to set IP_TTL: %" PRIu8 "; error was (%d) %s", ttl, err, strerror(err));
+ 	}
+ 	return true;
+ }
+@@ -172,7 +172,7 @@ bool setFdMulticastTTL(SOCKET fd, uint8_
+ 	int temp = ttl;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_MULTICAST_TTL, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_MULTICAST_TTL: %"PRIu8"; error was (%d) %s", ttl, err, strerror(err));
++		WARN("Unable to set IP_MULTICAST_TTL: %" PRIu8 "; error was (%d) %s", ttl, err, strerror(err));
+ 	}
+ 	return true;
+ }
+@@ -181,7 +181,7 @@ bool setFdTOS(SOCKET fd, uint8_t tos) {
+ 	int temp = tos;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_TOS, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_TOS: %"PRIu8"; error was (%d) %s", tos, err, strerror(err));
++		WARN("Unable to set IP_TOS: %" PRIu8 "; error was (%d) %s", tos, err, strerror(err));
+ 	}
+ 	return true;
+ }
+--- a/sources/common/src/platform/dfreebsd/dfreebsdplatform.cpp
++++ b/sources/common/src/platform/dfreebsd/dfreebsdplatform.cpp
+@@ -164,7 +164,7 @@ bool setFdTTL(SOCKET fd, uint8_t ttl) {
+ 	int temp = ttl;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_TTL, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_TTL: %"PRIu8"; error was (%d) %s", ttl, err, strerror(err));
++		WARN("Unable to set IP_TTL: %" PRIu8 "; error was (%d) %s", ttl, err, strerror(err));
+ 	}
+ 	return true;
+ }
+@@ -173,7 +173,7 @@ bool setFdMulticastTTL(SOCKET fd, uint8_
+ 	int temp = ttl;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_MULTICAST_TTL, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_MULTICAST_TTL: %"PRIu8"; error was (%d) %s", ttl, err, strerror(err));
++		WARN("Unable to set IP_MULTICAST_TTL: %" PRIu8 "; error was (%d) %s", ttl, err, strerror(err));
+ 	}
+ 	return true;
+ }
+@@ -182,7 +182,7 @@ bool setFdTOS(SOCKET fd, uint8_t tos) {
+ 	int temp = tos;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_TOS, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_TOS: %"PRIu8"; error was (%d) %s", tos, err, strerror(err));
++		WARN("Unable to set IP_TOS: %" PRIu8 "; error was (%d) %s", tos, err, strerror(err));
+ 	}
+ 	return true;
+ }
+--- a/sources/common/src/platform/freebsd/freebsdplatform.cpp
++++ b/sources/common/src/platform/freebsd/freebsdplatform.cpp
+@@ -168,7 +168,7 @@ bool setFdTTL(SOCKET fd, uint8_t ttl) {
+ 	int temp = ttl;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_TTL, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_TTL: %"PRIu8"; error was (%d) %s", ttl, err, strerror(err));
++		WARN("Unable to set IP_TTL: %" PRIu8 "; error was (%d) %s", ttl, err, strerror(err));
+ 	}
+ 	return true;
+ }
+@@ -177,7 +177,7 @@ bool setFdMulticastTTL(SOCKET fd, uint8_
+ 	int temp = ttl;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_MULTICAST_TTL, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_MULTICAST_TTL: %"PRIu8"; error was (%d) %s", ttl, err, strerror(err));
++		WARN("Unable to set IP_MULTICAST_TTL: %" PRIu8 "; error was (%d) %s", ttl, err, strerror(err));
+ 	}
+ 	return true;
+ }
+@@ -186,7 +186,7 @@ bool setFdTOS(SOCKET fd, uint8_t tos) {
+ 	int temp = tos;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_TOS, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_TOS: %"PRIu8"; error was (%d) %s", tos, err, strerror(err));
++		WARN("Unable to set IP_TOS: %" PRIu8 "; error was (%d) %s", tos, err, strerror(err));
+ 	}
+ 	return true;
+ }
+--- a/sources/common/src/platform/linux/linuxplatform.cpp
++++ b/sources/common/src/platform/linux/linuxplatform.cpp
+@@ -168,7 +168,7 @@ bool setFdTTL(SOCKET fd, uint8_t ttl) {
+ 	int temp = ttl;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_TTL, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_TTL: %"PRIu8"; error was (%d) %s", ttl, err, strerror(err));
++		WARN("Unable to set IP_TTL: %" PRIu8 "; error was (%d) %s", ttl, err, strerror(err));
+ 	}
+ 	return true;
+ }
+@@ -177,7 +177,7 @@ bool setFdMulticastTTL(SOCKET fd, uint8_
+ 	int temp = ttl;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_MULTICAST_TTL, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_MULTICAST_TTL: %"PRIu8"; error was (%d) %s", ttl, err, strerror(err));
++		WARN("Unable to set IP_MULTICAST_TTL: %" PRIu8 "; error was (%d) %s", ttl, err, strerror(err));
+ 	}
+ 	return true;
+ }
+@@ -186,7 +186,7 @@ bool setFdTOS(SOCKET fd, uint8_t tos) {
+ 	int temp = tos;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_TOS, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_TOS: %"PRIu8"; error was (%d) %s", tos, err, strerror(err));
++		WARN("Unable to set IP_TOS: %" PRIu8 "; error was (%d) %s", tos, err, strerror(err));
+ 	}
+ 	return true;
+ }
+--- a/sources/common/src/platform/openbsd/openbsdplatform.cpp
++++ b/sources/common/src/platform/openbsd/openbsdplatform.cpp
+@@ -170,7 +170,7 @@ bool setFdTTL(SOCKET fd, uint8_t ttl) {
+ 	int temp = ttl;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_TTL, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_TTL: %"PRIu8"; error was (%d) %s", ttl, err, strerror(err));
++		WARN("Unable to set IP_TTL: %" PRIu8 "; error was (%d) %s", ttl, err, strerror(err));
+ 	}
+ 	return true;
+ }
+@@ -179,7 +179,7 @@ bool setFdMulticastTTL(SOCKET fd, uint8_
+ 	int temp = ttl;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_MULTICAST_TTL, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_MULTICAST_TTL: %"PRIu8"; error was (%d) %s", ttl, err, strerror(err));
++		WARN("Unable to set IP_MULTICAST_TTL: %" PRIu8 "; error was (%d) %s", ttl, err, strerror(err));
+ 	}
+ 	return true;
+ }
+@@ -188,7 +188,7 @@ bool setFdTOS(SOCKET fd, uint8_t tos) {
+ 	int temp = tos;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_TOS, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_TOS: %"PRIu8"; error was (%d) %s", tos, err, strerror(err));
++		WARN("Unable to set IP_TOS: %" PRIu8 "; error was (%d) %s", tos, err, strerror(err));
+ 	}
+ 	return true;
+ }
+--- a/sources/common/src/platform/osx/osxplatform.cpp
++++ b/sources/common/src/platform/osx/osxplatform.cpp
+@@ -169,7 +169,7 @@ bool setFdTTL(SOCKET fd, uint8_t ttl) {
+ 	int temp = ttl;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_TTL, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_TTL: %"PRIu8"; error was (%d) %s", ttl, err, strerror(err));
++		WARN("Unable to set IP_TTL: %" PRIu8 "; error was (%d) %s", ttl, err, strerror(err));
+ 	}
+ 	return true;
+ }
+@@ -178,7 +178,7 @@ bool setFdMulticastTTL(SOCKET fd, uint8_
+ 	int temp = ttl;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_MULTICAST_TTL, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_MULTICAST_TTL: %"PRIu8"; error was (%d) %s", ttl, err, strerror(err));
++		WARN("Unable to set IP_MULTICAST_TTL: %" PRIu8 "; error was (%d) %s", ttl, err, strerror(err));
+ 	}
+ 	return true;
+ }
+@@ -187,7 +187,7 @@ bool setFdTOS(SOCKET fd, uint8_t tos) {
+ 	int temp = tos;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_TOS, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_TOS: %"PRIu8"; error was (%d) %s", tos, err, strerror(err));
++		WARN("Unable to set IP_TOS: %" PRIu8 "; error was (%d) %s", tos, err, strerror(err));
+ 	}
+ 	return true;
+ }
+--- a/sources/common/src/platform/solaris/solarisplatform.cpp
++++ b/sources/common/src/platform/solaris/solarisplatform.cpp
+@@ -198,7 +198,7 @@ bool setFdTTL(SOCKET fd, uint8_t ttl) {
+ 	int temp = ttl;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_TTL, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_TTL: %"PRIu8"; error was (%d) %s", ttl, err, strerror(err));
++		WARN("Unable to set IP_TTL: %" PRIu8 "; error was (%d) %s", ttl, err, strerror(err));
+ 	}
+ 	return true;
+ }
+@@ -207,7 +207,7 @@ bool setFdMulticastTTL(SOCKET fd, uint8_
+ 	int temp = ttl;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_MULTICAST_TTL, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_MULTICAST_TTL: %"PRIu8"; error was (%d) %s", ttl, err, strerror(err));
++		WARN("Unable to set IP_MULTICAST_TTL: %" PRIu8 "; error was (%d) %s", ttl, err, strerror(err));
+ 	}
+ 	return true;
+ }
+@@ -216,7 +216,7 @@ bool setFdTOS(SOCKET fd, uint8_t tos) {
+ 	int temp = tos;
+ 	if (setsockopt(fd, IPPROTO_IP, IP_TOS, &temp, sizeof (temp)) != 0) {
+ 		int err = errno;
+-		WARN("Unable to set IP_TOS: %"PRIu8"; error was (%d) %s", tos, err, strerror(err));
++		WARN("Unable to set IP_TOS: %" PRIu8 "; error was (%d) %s", tos, err, strerror(err));
+ 	}
+ 	return true;
+ }
+--- a/sources/common/src/platform/windows/win32platform.cpp
++++ b/sources/common/src/platform/windows/win32platform.cpp
+@@ -271,7 +271,7 @@ bool setFdKeepAlive(SOCKET fd, bool isUd
+ 	int value = 1;
+ 	if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (char *) &value, sizeof (int)) != 0) {
+ 		DWORD err = WSAGetLastError();
+-		FATAL("setsockopt failed with error %"PRIu32, err);
++		FATAL("setsockopt failed with error %" PRIu32, err);
+ 		return false;
+ 	}
+ 	return true;
+@@ -283,7 +283,7 @@ bool setFdNoNagle(SOCKET fd, bool isUdp)
+ 	BOOL value = TRUE;
+ 	if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (char *) &value, sizeof (BOOL)) == SOCKET_ERROR) {
+ 		DWORD err = WSAGetLastError();
+-		FATAL("Unable to disable Nagle algorithm. Error was: %"PRIu32, err);
++		FATAL("Unable to disable Nagle algorithm. Error was: %" PRIu32, err);
+ 		return false;
+ 	}
+ 
+--- a/sources/common/src/utils/buffering/iobuffer.cpp
++++ b/sources/common/src/utils/buffering/iobuffer.cpp
+@@ -296,7 +296,7 @@ bool IOBuffer::WriteToTCPFd(int32_t fd,
+ 
+ 	if (sentAmount < 0) {
+ 		if (err != SOCKERROR_SEND_IN_PROGRESS) {
+-			FATAL("Unable to send %"PRIu32" bytes of data data. Size advertised by network layer was %"PRIu32". Permanent error: %d",
++			FATAL("Unable to send %" PRIu32 " bytes of data data. Size advertised by network layer was %" PRIu32 ". Permanent error: %d",
+ 					_published - _consumed, size, err);
+ 			result = false;
+ 		}
+@@ -320,7 +320,7 @@ bool IOBuffer::WriteToStdio(int32_t fd,
+ 	int err = errno;
+ 
+ 	if (sentAmount < 0) {
+-		FATAL("Unable to send %"PRIu32" bytes of data data. Size advertised by network layer was %"PRIu32". Permanent error: (%d) %s",
++		FATAL("Unable to send %" PRIu32 " bytes of data data. Size advertised by network layer was %" PRIu32 ". Permanent error: (%d) %s",
+ 				_published - _consumed, size, err, strerror(err));
+ 		result = false;
+ 	} else {
+--- a/sources/common/src/utils/logging/consoleloglocation.cpp
++++ b/sources/common/src/utils/logging/consoleloglocation.cpp
+@@ -69,11 +69,11 @@ void ConsoleLogLocation::Log(int32_t lev
+ #else
+ 	if (_allowColors) {
+ 		SET_CONSOLE_TEXT_COLOR(_colors[level]);
+-		fprintf(stdout, "%s:%"PRIu32" %s", STR(fileName), lineNumber, STR(message));
++		fprintf(stdout, "%s:%" PRIu32 " %s", STR(fileName), lineNumber, STR(message));
+ 		SET_CONSOLE_TEXT_COLOR(_colors[6]);
+ 		fprintf(stdout, "\n");
+ 	} else {
+-		fprintf(stdout, "%s:%"PRIu32" %s\n", STR(fileName), lineNumber, STR(message));
++		fprintf(stdout, "%s:%" PRIu32 " %s\n", STR(fileName), lineNumber, STR(message));
+ 	}
+ #endif /* ANDROID */
+ }
+--- a/sources/common/src/utils/logging/fileloglocation.cpp
++++ b/sources/common/src/utils/logging/fileloglocation.cpp
+@@ -88,7 +88,7 @@ void FileLogLocation::Log(int32_t level,
+ 		if (_fileIsClosed)
+ 			return;
+ 	}
+-	string logEntry = format("%"PRIu64":%d:%s:%u:%s:%s",
++	string logEntry = format("%" PRIu64 ":%d:%s:%u:%s:%s",
+ 			(uint64_t) time(NULL), level, STR(fileName), lineNumber, STR(functionName),
+ 			STR(message));
+ 	if (_singleLine) {
+@@ -119,12 +119,12 @@ bool FileLogLocation::OpenFile() {
+ 	double ts;
+ 	GETCLOCKS(ts);
+ 	ts = (ts / CLOCKS_PER_SECOND)*1000;
+-	string temp = format("%s.%"PRIu64".%"PRIu64, STR(_fileName), (uint64_t) getpid(), (uint64_t) ts);
++	string temp = format("%s.%" PRIu64 ".%" PRIu64, STR(_fileName), (uint64_t) getpid(), (uint64_t) ts);
+ 	_fileStream = new File();
+ 	if (!_fileStream->Initialize(temp, FILE_OPEN_MODE_TRUNCATE)) {
+ 		return false;
+ 	}
+-	temp = format("PID: %"PRIu64"; TIMESTAMP: %"PRIz"u%s",
++	temp = format("PID: %" PRIu64 "; TIMESTAMP: %" PRIz "u%s",
+ 			(uint64_t) getpid(),
+ 			time(NULL),
+ 			STR(_newLineCharacters));
+--- a/sources/common/src/utils/logging/syslogloglocation.cpp
++++ b/sources/common/src/utils/logging/syslogloglocation.cpp
+@@ -84,7 +84,7 @@ void SyslogLogLocation::Log(int32_t leve
+ 	int priority = (MAP_HAS1(_priorities, level) ? _priorities[level] : LOG_DEBUG) | LOG_USER;
+ 
+ 	if (_appendSourceFileLine) {
+-		syslog(priority, "%s %s:%"PRIu32":%s %s",
++		syslog(priority, "%s %s:%" PRIu32 ":%s %s",
+ 				STR(le["loggerName"]),
+ 				STR(fileName),
+ 				lineNumber,
+--- a/sources/common/src/utils/misc/file.cpp
++++ b/sources/common/src/utils/misc/file.cpp
+@@ -171,7 +171,7 @@ bool File::SeekAhead(int64_t count) {
+ 	}
+ 
+ 	if (fseek64(_pFile, (PIOFFT) count, SEEK_CUR) != 0) {
+-		FATAL("Unable to seek ahead %"PRId64" bytes", count);
++		FATAL("Unable to seek ahead %" PRId64 " bytes", count);
+ 		return false;
+ 	}
+ 
+@@ -195,7 +195,7 @@ bool File::SeekBehind(int64_t count) {
+ 	}
+ 
+ 	if (fseek64(_pFile, (PIOFFT) (-1 * count), SEEK_CUR) != 0) {
+-		FATAL("Unable to seek behind %"PRId64" bytes", count);
++		FATAL("Unable to seek behind %" PRId64 " bytes", count);
+ 		return false;
+ 	}
+ 
+@@ -214,7 +214,7 @@ bool File::SeekTo(uint64_t position) {
+ 	}
+ 
+ 	if (fseek64(_pFile, (PIOFFT) position, SEEK_SET) != 0) {
+-		FATAL("Unable to seek to position %"PRIu64, position);
++		FATAL("Unable to seek to position %" PRIu64, position);
+ 		return false;
+ 	}
+ 
+@@ -304,7 +304,7 @@ bool File::ReadBuffer(uint8_t *pBuffer,
+ 	}
+ 	if (fread(pBuffer, (uint32_t) count, 1, _pFile) != 1) {
+ 		int err = errno;
+-		FATAL("Unable to read %"PRIu64" bytes from the file. Cursor: %"PRIu64" (0x%"PRIx64"); (%d) %s",
++		FATAL("Unable to read %" PRIu64 " bytes from the file. Cursor: %" PRIu64 " (0x%" PRIx64 "); (%d) %s",
+ 				count, Cursor(), Cursor(), err, strerror(err));
+ 		return false;
+ 	}
+@@ -477,7 +477,7 @@ bool File::WriteBuffer(const uint8_t *pB
+ 		return false;
+ 	}
+ 	if (fwrite(pBuffer, (uint32_t) count, 1, _pFile) != 1) {
+-		FATAL("Unable to write %"PRIu64" bytes to file", count);
++		FATAL("Unable to write %" PRIu64 " bytes to file", count);
+ 		return false;
+ 	}
+ 
+--- a/sources/common/src/utils/misc/mmapfile.cpp
++++ b/sources/common/src/utils/misc/mmapfile.cpp
+@@ -48,7 +48,7 @@ bool MmapPointer::Allocate(int fd, uint6
+ 	Free();
+ 
+ 	if (size > windowSize) {
+-		FATAL("size is greater than window size: %"PRIu64" > %u", size, windowSize);
++		FATAL("size is greater than window size: %" PRIu64 " > %u", size, windowSize);
+ 		return false;
+ 	}
+ 
+@@ -59,12 +59,12 @@ bool MmapPointer::Allocate(int fd, uint6
+ 	//2. Compute the new size
+ 	_size = windowSize;
+ 	while (_cursor + _size < cursor + size) {
+-		LOG_MMAP("We need to go a little bit further; Wanted: %"PRIu64"; got: %"PRIu64,
++		LOG_MMAP("We need to go a little bit further; Wanted: %" PRIu64 "; got: %" PRIu64,
+ 				cursor + size, _cursor + _size);
+ 		_size += MmapFile::_pageSize;
+ 	}
+ 
+-	LOG_MMAP("Reading %"PRIu64" bytes from disk", _size);
++	LOG_MMAP("Reading %" PRIu64 " bytes from disk", _size);
+ 	_pData = (uint8_t *) mmap(NULL,
+ 			_size,
+ 			PROT_READ,
+@@ -127,7 +127,7 @@ bool MmapPointer::HasRange(uint64_t curs
+ MmapPointer::operator string() {
+ 	if (_size == 0)
+ 		return "[N - N](0)";
+-	return format("[%"PRIu64" - %"PRIu64"](%u)", _cursor, _cursor + _size - 1, _size);
++	return format("[%" PRIu64 " - %" PRIu64 "](%u)", _cursor, _cursor + _size - 1, _size);
+ }
+ 
+ MmapFile::MmapFile() {
+@@ -262,7 +262,7 @@ bool MmapFile::SeekTo(uint64_t position)
+ 		return false;
+ 	}
+ 	if (position > _size) {
+-		FATAL("Invalid position: %"PRIu64". Must be at most: %"PRIu64, position, _size - 1);
++		FATAL("Invalid position: %" PRIu64 ". Must be at most: %" PRIu64, position, _size - 1);
+ 		_failed = true;
+ 		return false;
+ 	}
+@@ -409,22 +409,22 @@ bool MmapFile::PeekUI64(uint64_t *pValue
+ bool MmapFile::PeekBuffer(uint8_t *pDestBuffer, uint64_t count) {
+ 	//1. Sanity checks
+ 	if (_failed) {
+-		DEBUG("_cursor: %"PRIu64"; count: %"PRIu64"; %s", _cursor, count, STR(_path));
++		DEBUG("_cursor: %" PRIu64 "; count: %" PRIu64 "; %s", _cursor, count, STR(_path));
+ 		FATAL("This mmap file is in inconsistent state");
+ 		return false;
+ 	}
+ 
+ 	if (_windowSize < count) {
+-		DEBUG("_cursor: %"PRIu64"; count: %"PRIu64"; %s", _cursor, count, STR(_path));
+-		FATAL("Invalid window size: _windowSize < count %u < %"PRIu64,
++		DEBUG("_cursor: %" PRIu64 "; count: %" PRIu64 "; %s", _cursor, count, STR(_path));
++		FATAL("Invalid window size: _windowSize < count %u < %" PRIu64,
+ 				_windowSize, count);
+ 		_failed = true;
+ 		return false;
+ 	}
+ 
+ 	if (_cursor + count > _size) {
+-		DEBUG("_cursor: %"PRIu64"; count: %"PRIu64"; %s", _cursor, count, STR(_path));
+-		FATAL("EOF will be reached: cursor: %"PRIu64"; count: %"PRIu64"; size: %"PRIu64,
++		DEBUG("_cursor: %" PRIu64 "; count: %" PRIu64 "; %s", _cursor, count, STR(_path));
++		FATAL("EOF will be reached: cursor: %" PRIu64 "; count: %" PRIu64 "; size: %" PRIu64,
+ 				_cursor, count, _size);
+ 		_failed = true;
+ 		return false;
+@@ -453,7 +453,7 @@ bool MmapFile::PeekBuffer(uint8_t *pDest
+ 
+ 	//3. Do the read
+ 	if (pPointer->Copy(pDestBuffer, _cursor, 0, count) != count) {
+-		FATAL("Unable to copy %"PRIu64" bytes", count);
++		FATAL("Unable to copy %" PRIu64 " bytes", count);
+ 		_failed = true;
+ 		return false;
+ 	}
+--- a/sources/common/src/utils/misc/uri.cpp
++++ b/sources/common/src/utils/misc/uri.cpp
+@@ -94,7 +94,7 @@ bool parseURI(string stringUri, URI &uri
+ 	//		FATAL("Scheme `%s` not supported", STR(scheme));
+ 	//		return false;
+ 	//	}
+-	LOG_URI("scheme: %s; default port: %"PRIu16, STR(scheme), port);
++	LOG_URI("scheme: %s; default port: %" PRIu16, STR(scheme), port);
+ 
+ 	//3. get the authentication portion. the search starts from
+ 	//where the scheme detection left and up to the first / character
+@@ -155,12 +155,12 @@ bool parseURI(string stringUri, URI &uri
+ 		portString = hostPort.substr(pos + 1);
+ 		portSpecified = true;
+ 		port = (uint16_t) atoi(STR(portString));
+-		if (format("%"PRIu16, port) != portString) {
++		if (format("%" PRIu16, port) != portString) {
+ 			FATAL("Invalid port number specified: `%s`", STR(portString));
+ 			return false;
+ 		}
+ 	}
+-	LOG_URI("host: %s; port: %"PRIu16"; portSpecified: %d", STR(host), port, portSpecified);
++	LOG_URI("host: %s; port: %" PRIu16 "; portSpecified: %d", STR(host), port, portSpecified);
+ 
+ 	//5. fullDocumentPathWithParameters
+ 	fullDocumentPath = "/";
+--- a/sources/common/src/utils/misc/variant.cpp
++++ b/sources/common/src/utils/misc/variant.cpp
+@@ -279,7 +279,7 @@ string Variant::ToString(string name, ui
+ 		}
+ 		case V_INT64:
+ 		{
+-			result += format("%s<INT64 name=\"%s\">%"PRId64"</INT64>",
++			result += format("%s<INT64 name=\"%s\">%" PRId64 "</INT64>",
+ 					STR(strIndent), STR(name), _value.i64);
+ 			break;
+ 		}
+@@ -303,7 +303,7 @@ string Variant::ToString(string name, ui
+ 		}
+ 		case V_UINT64:
+ 		{
+-			result += format("%s<UINT64 name=\"%s\">%"PRIu64"</UINT64>",
++			result += format("%s<UINT64 name=\"%s\">%" PRIu64 "</UINT64>",
+ 					STR(strIndent), STR(name), _value.ui64);
+ 			break;
+ 		}
+@@ -339,7 +339,7 @@ string Variant::ToString(string name, ui
+ 		}
+ 		case V_BYTEARRAY:
+ 		{
+-			result += format("%s<BYTEARRAY name=\"%s\">%"PRIz"u bytes</BYTEARRAY>",
++			result += format("%s<BYTEARRAY name=\"%s\">%" PRIz "u bytes</BYTEARRAY>",
+ 					STR(strIndent), STR(name), _value.s->length());
+ 			break;
+ 		}
+@@ -626,7 +626,7 @@ Variant::operator string() {
+ 		}
+ 		case V_INT64:
+ 		{
+-			return format("%"PRId64, this->operator int64_t());
++			return format("%" PRId64, this->operator int64_t());
+ 		}
+ 		case V_UINT8:
+ 		case V_UINT16:
+@@ -636,7 +636,7 @@ Variant::operator string() {
+ 		}
+ 		case V_UINT64:
+ 		{
+-			return format("%"PRIu64, this->operator uint64_t());
++			return format("%" PRIu64, this->operator uint64_t());
+ 		}
+ 		case V_DOUBLE:
+ 		{
+@@ -701,7 +701,7 @@ Variant& Variant::operator[](const char
+ 
+ Variant& Variant::operator[](const uint32_t &key) {
+ 	char temp[11];
+-	sprintf(temp, "0x%08"PRIx32, key);
++	sprintf(temp, "0x%08" PRIx32, key);
+ 	return operator[](temp);
+ }
+ 
+@@ -715,7 +715,7 @@ Variant& Variant::operator[](Variant &ke
+ 		case V_UINT32:
+ 		{
+ 			char temp[11];
+-			sprintf(temp, "0x%08"PRIx32, (uint32_t) key);
++			sprintf(temp, "0x%08" PRIx32, (uint32_t) key);
+ 			return operator[](temp);
+ 		}
+ 		case V_STRING:
+@@ -955,7 +955,7 @@ void Variant::RemoveAt(const uint32_t in
+ 		return;
+ 	}
+ 	char temp[11];
+-	sprintf(temp, "0x%08"PRIx32, index);
++	sprintf(temp, "0x%08" PRIx32, index);
+ 	_value.m->children.erase(temp);
+ }
+ 
+@@ -990,7 +990,7 @@ uint32_t Variant::MapDenseSize() {
+ 	uint32_t denseCount = 0;
+ 	for (denseCount = 0; denseCount < MapSize(); denseCount++) {
+ 		char temp[11];
+-		sprintf(temp, "0x%08"PRIx32, denseCount);
++		sprintf(temp, "0x%08" PRIx32, denseCount);
+ 		if (!MAP_HAS1(_value.m->children, temp))
+ 			break;
+ 	}
+@@ -1705,7 +1705,7 @@ bool Variant::SerializeToJSON(string &re
+ 		case V_INT64:
+ 		{
+ 			int64_t value = (int64_t) (*this);
+-			result += format("%"PRId64, value);
++			result += format("%" PRId64, value);
+ 			break;
+ 		}
+ 		case V_UINT8:
+@@ -1714,7 +1714,7 @@ bool Variant::SerializeToJSON(string &re
+ 		case V_UINT64:
+ 		{
+ 			uint64_t value = (uint64_t) (*this);
+-			result += format("%"PRIu64, value);
++			result += format("%" PRIu64, value);
+ 			break;
+ 		}
+ 		case V_DOUBLE:
+@@ -1834,7 +1834,7 @@ TiXmlElement *Variant::SerializeToXmlEle
+ 		case V_INT64:
+ 		{
+ 			pResult = new TiXmlElement("INT64");
+-			pResult->LinkEndChild(new TiXmlText(format("%"PRId64, _value.i64)));
++			pResult->LinkEndChild(new TiXmlText(format("%" PRId64, _value.i64)));
+ 			break;
+ 		}
+ 		case V_UINT8:
+@@ -1858,7 +1858,7 @@ TiXmlElement *Variant::SerializeToXmlEle
+ 		case V_UINT64:
+ 		{
+ 			pResult = new TiXmlElement("UINT64");
+-			pResult->LinkEndChild(new TiXmlText(format("%"PRIu64, _value.ui64)));
++			pResult->LinkEndChild(new TiXmlText(format("%" PRIu64, _value.ui64)));
+ 			break;
+ 		}
+ 		case V_DOUBLE:
+@@ -2149,56 +2149,56 @@ bool Variant::DeserializeFromXml(TiXmlEl
+ 		variant.Reset(true);
+ 		return true;
+ 	} else if (nodeName == "int8") {
+-		if (sscanf(STR(text), "%"PRId64, &val.i64) != 1) {
++		if (sscanf(STR(text), "%" PRId64, &val.i64) != 1) {
+ 			FATAL("Invalid number");
+ 			return false;
+ 		}
+ 		variant = (int8_t) val.i64;
+ 		return true;
+ 	} else if (nodeName == "int16") {
+-		if (sscanf(STR(text), "%"PRId64, &val.i64) != 1) {
++		if (sscanf(STR(text), "%" PRId64, &val.i64) != 1) {
+ 			FATAL("Invalid number");
+ 			return false;
+ 		}
+ 		variant = (int16_t) val.i64;
+ 		return true;
+ 	} else if (nodeName == "int32") {
+-		if (sscanf(STR(text), "%"PRId64, &val.i64) != 1) {
++		if (sscanf(STR(text), "%" PRId64, &val.i64) != 1) {
+ 			FATAL("Invalid number");
+ 			return false;
+ 		}
+ 		variant = (int32_t) val.i64;
+ 		return true;
+ 	} else if (nodeName == "int64") {
+-		if (sscanf(STR(text), "%"PRId64, &val.i64) != 1) {
++		if (sscanf(STR(text), "%" PRId64, &val.i64) != 1) {
+ 			FATAL("Invalid number");
+ 			return false;
+ 		}
+ 		variant = (int64_t) val.i64;
+ 		return true;
+ 	} else if (nodeName == "uint8") {
+-		if (sscanf(STR(text), "%"PRIu64, &val.ui64) != 1) {
++		if (sscanf(STR(text), "%" PRIu64, &val.ui64) != 1) {
+ 			FATAL("Invalid number");
+ 			return false;
+ 		}
+ 		variant = (uint8_t) val.ui64;
+ 		return true;
+ 	} else if (nodeName == "uint16") {
+-		if (sscanf(STR(text), "%"PRIu64, &val.ui64) != 1) {
++		if (sscanf(STR(text), "%" PRIu64, &val.ui64) != 1) {
+ 			FATAL("Invalid number");
+ 			return false;
+ 		}
+ 		variant = (uint16_t) val.ui64;
+ 		return true;
+ 	} else if (nodeName == "uint32") {
+-		if (sscanf(STR(text), "%"PRIu64, &val.ui64) != 1) {
++		if (sscanf(STR(text), "%" PRIu64, &val.ui64) != 1) {
+ 			FATAL("Invalid number");
+ 			return false;
+ 		}
+ 		variant = (uint32_t) val.ui64;
+ 		return true;
+ 	} else if (nodeName == "uint64") {
+-		if (sscanf(STR(text), "%"PRIu64, &val.ui64) != 1) {
++		if (sscanf(STR(text), "%" PRIu64, &val.ui64) != 1) {
+ 			FATAL("Invalid number");
+ 			return false;
+ 		}
+--- a/sources/crtmpserver/src/crtmpserver.cpp
++++ b/sources/crtmpserver/src/crtmpserver.cpp
+@@ -399,7 +399,7 @@ void WritePidFile(pid_t pid) {
+ 		return;
+ 	}
+ 
+-	string content = format("%"PRIz"d", pid);
++	string content = format("%" PRIz "d", pid);
+ 	if (!f.WriteString(content)) {
+ 		WARN("Unable to write PID to file %s", STR(pidFile));
+ 		return;
+--- a/sources/thelib/src/application/baseclientapplication.cpp
++++ b/sources/thelib/src/application/baseclientapplication.cpp
+@@ -241,7 +241,7 @@ void BaseClientApplication::UnRegisterPr
+ }
+ 
+ void BaseClientApplication::SignalStreamRegistered(BaseStream *pStream) {
+-	INFO("Stream %s(%"PRIu32") with name `%s` registered to application `%s` from protocol %s(%"PRIu32")",
++	INFO("Stream %s(%" PRIu32 ") with name `%s` registered to application `%s` from protocol %s(%" PRIu32 ")",
+ 			STR(tagToString(pStream->GetType())),
+ 			pStream->GetUniqueId(),
+ 			STR(pStream->GetName()),
+@@ -252,7 +252,7 @@ void BaseClientApplication::SignalStream
+ }
+ 
+ void BaseClientApplication::SignalStreamUnRegistered(BaseStream *pStream) {
+-	INFO("Stream %s(%"PRIu32") with name `%s` unregistered from application `%s` from protocol %s(%"PRIu32")",
++	INFO("Stream %s(%" PRIu32 ") with name `%s` unregistered from application `%s` from protocol %s(%" PRIu32 ")",
+ 			STR(tagToString(pStream->GetType())),
+ 			pStream->GetUniqueId(),
+ 			STR(pStream->GetName()),
+@@ -488,7 +488,7 @@ string BaseClientApplication::GetStreamN
+ 	}
+ 
+ 	if (_aliases.size() > 200) {
+-		WARN("Auto flush aliases: %"PRIu32, (uint32_t) _aliases.size());
++		WARN("Auto flush aliases: %" PRIu32, (uint32_t) _aliases.size());
+ 		_aliases.clear();
+ 	}
+ 
+--- a/sources/thelib/src/configuration/configfile.cpp
++++ b/sources/thelib/src/configuration/configfile.cpp
+@@ -541,7 +541,7 @@ bool ConfigFile::NormalizeApplicationAcc
+ 	if (node.HasKeyChain(_V_NUMERIC, false, 1, CONF_PORT))
+ 		port = (int32_t) node.GetValue(CONF_PORT, false);
+ 	if (port <= 0 || port >= 65536) {
+-		FATAL("Invalid port: %"PRId32, port);
++		FATAL("Invalid port: %" PRId32, port);
+ 		return false;
+ 	}
+ 	node[CONF_PORT] = (uint16_t) port;
+--- a/sources/thelib/src/mediaformats/basemediadocument.cpp
++++ b/sources/thelib/src/mediaformats/basemediadocument.cpp
+@@ -90,7 +90,7 @@ bool BaseMediaDocument::Process() {
+ 
+ 	GETCLOCKS(endTime);
+ 
+-	INFO("%"PRIz"u frames computed in %.2f seconds at a speed of %.2f FPS",
++	INFO("%" PRIz "u frames computed in %.2f seconds at a speed of %.2f FPS",
+ 			_frames.size(),
+ 			(endTime - startTime) / (double) CLOCKS_PER_SECOND,
+ 			(double) _frames.size() / ((endTime - startTime) / (double) CLOCKS_PER_SECOND));
+@@ -99,7 +99,7 @@ bool BaseMediaDocument::Process() {
+ 		uint32_t hours = totalSeconds / 3600;
+ 		uint32_t minutes = (totalSeconds - hours * 3600) / 60;
+ 		uint32_t seconds = (totalSeconds - hours * 3600 - minutes * 60);
+-		INFO("File size: %"PRIu64" bytes; Duration: %u:%u:%u (%u sec); Optimal bandwidth: %.2f kb/s",
++		INFO("File size: %" PRIu64 " bytes; Duration: %u:%u:%u (%u sec); Optimal bandwidth: %.2f kb/s",
+ 				_mediaFile.Size(),
+ 				hours, minutes, seconds,
+ 				totalSeconds,
+@@ -177,7 +177,7 @@ bool BaseMediaDocument::SaveSeekFile() {
+ 	FOR_VECTOR(_frames, i) {
+ 		MediaFrame &frame = _frames[i];
+ 		if (maxFrameSize < frame.length) {
+-			//WARN("maxFrameSize bumped up: %"PRIu64" -> %"PRIu64, maxFrameSize, frame.length);
++			//WARN("maxFrameSize bumped up: %" PRIu64 " -> %" PRIu64, maxFrameSize, frame.length);
+ 			maxFrameSize = frame.length;
+ 		}
+ 		hasVideo |= (frame.type == MEDIAFRAME_TYPE_VIDEO);
+--- a/sources/thelib/src/mediaformats/flv/flvdocument.cpp
++++ b/sources/thelib/src/mediaformats/flv/flvdocument.cpp
+@@ -82,7 +82,7 @@ bool FLVDocument::BuildFrames() {
+ 				frame.type = MEDIAFRAME_TYPE_DATA;
+ 				break;
+ 			default:
+-				WARN("Invalid tag type: %hhu at cursor %"PRIu64, tagType, _mediaFile.Cursor());
++				WARN("Invalid tag type: %hhu at cursor %" PRIu64, tagType, _mediaFile.Cursor());
+ 				mustBreak = true;
+ 				break;
+ 		}
+--- a/sources/thelib/src/mediaformats/mp3/mp3document.cpp
++++ b/sources/thelib/src/mediaformats/mp3/mp3document.cpp
+@@ -193,7 +193,7 @@ bool MP3Document::BuildFrames() {
+ 
+ 			//7. Seek to the next frame
+ 			if (!_mediaFile.SeekTo(frame.start + frame.length)) {
+-				WARN("Unable to seek to %"PRIx64, frame.start + frame.length);
++				WARN("Unable to seek to %" PRIx64, frame.start + frame.length);
+ 				break;
+ 			}
+ 
+--- a/sources/thelib/src/mediaformats/mp4/atomabst.cpp
++++ b/sources/thelib/src/mediaformats/mp4/atomabst.cpp
+@@ -66,7 +66,7 @@ bool AtomABST::ReadData() {
+ 		FATAL("Unable to read _bootstrapInfoVersion");
+ 		return false;
+ 	}
+-	//	FINEST("_bootstrapInfoVersion: %"PRIu32, _bootstrapInfoVersion);
++	//	FINEST("_bootstrapInfoVersion: %" PRIu32, _bootstrapInfoVersion);
+ 
+ 	uint8_t ui8;
+ 	if (!ReadUInt8(ui8)) {
+@@ -77,25 +77,25 @@ bool AtomABST::ReadData() {
+ 	_profile = (ui8 >> 6)&0x03;
+ 	_live = (ui8 >> 5)&0x01;
+ 	_update = (ui8 >> 4)&0x01;
+-	//	FINEST("_profile: %"PRIu8"; _live: %d; _update: %d", _profile, _live, _update);
++	//	FINEST("_profile: %" PRIu8 "; _live: %d; _update: %d", _profile, _live, _update);
+ 
+ 	if (!ReadUInt32(_timeScale)) {
+ 		FATAL("Unable to read _timeScale");
+ 		return false;
+ 	}
+-	//	FINEST("_timeScale: %"PRIu32, _timeScale);
++	//	FINEST("_timeScale: %" PRIu32, _timeScale);
+ 
+ 	if (!ReadUInt64(_currentMediaTime)) {
+ 		FATAL("Unable to read _currentMediaTime");
+ 		return false;
+ 	}
+-	//	FINEST("_currentMediaTime: %"PRIu64, _currentMediaTime);
++	//	FINEST("_currentMediaTime: %" PRIu64, _currentMediaTime);
+ 
+ 	if (!ReadUInt64(_smpteTimeCodeOffset)) {
+ 		FATAL("Unable to read _smpteTimeCodeOffset");
+ 		return false;
+ 	}
+-	//	FINEST("_smpteTimeCodeOffset: %"PRIu64, _smpteTimeCodeOffset);
++	//	FINEST("_smpteTimeCodeOffset: %" PRIu64, _smpteTimeCodeOffset);
+ 
+ 	if (!ReadNullTerminatedString(_movieIdentifier)) {
+ 		FATAL("Unable to read _movieIdentifier");
+@@ -107,7 +107,7 @@ bool AtomABST::ReadData() {
+ 		FATAL("Unable to read _serverEntryCount");
+ 		return false;
+ 	}
+-	//	FINEST("_serverEntryCount: %"PRIu8, _serverEntryCount);
++	//	FINEST("_serverEntryCount: %" PRIu8, _serverEntryCount);
+ 
+ 	for (uint8_t i = 0; i < _serverEntryCount; i++) {
+ 		string temp;
+@@ -115,7 +115,7 @@ bool AtomABST::ReadData() {
+ 			FATAL("Unable to read SERVERENTRY.serverBaseURL");
+ 			return false;
+ 		}
+-		//		FINEST("%"PRIu8"; SERVERENTRY.serverBaseURL: %s", i, STR(temp));
++		//		FINEST("%" PRIu8 "; SERVERENTRY.serverBaseURL: %s", i, STR(temp));
+ 		ADD_VECTOR_END(_serverEntryTable, temp);
+ 	}
+ 
+@@ -123,7 +123,7 @@ bool AtomABST::ReadData() {
+ 		FATAL("Unable to read _qualityEntryCount");
+ 		return false;
+ 	}
+-	//	FINEST("_qualityEntryCount: %"PRIu8, _qualityEntryCount);
++	//	FINEST("_qualityEntryCount: %" PRIu8, _qualityEntryCount);
+ 
+ 	for (uint8_t i = 0; i < _qualityEntryCount; i++) {
+ 		string temp;
+@@ -131,7 +131,7 @@ bool AtomABST::ReadData() {
+ 			FATAL("Unable to read QUALITYENTRY.qualitySegmentUrlModifier");
+ 			return false;
+ 		}
+-		//		FINEST("%"PRIu8"; QUALITYENTRY.qualitySegmentUrlModifier: %s", i, STR(temp));
++		//		FINEST("%" PRIu8 "; QUALITYENTRY.qualitySegmentUrlModifier: %s", i, STR(temp));
+ 		ADD_VECTOR_END(_qualityEntryTable, temp);
+ 	}
+ 
+@@ -151,7 +151,7 @@ bool AtomABST::ReadData() {
+ 		FATAL("Unable to read _segmentRunTableCount");
+ 		return false;
+ 	}
+-	//	FINEST("_segmentRunTableCount: %"PRIu8, _segmentRunTableCount);
++	//	FINEST("_segmentRunTableCount: %" PRIu8, _segmentRunTableCount);
+ 
+ 	for (uint8_t i = 0; i < _segmentRunTableCount; i++) {
+ 		BaseAtom *pAtom = GetDoc()->ReadAtom(this);
+@@ -159,7 +159,7 @@ bool AtomABST::ReadData() {
+ 			FATAL("Unable to read atoms");
+ 			return false;
+ 		}
+-		//		FINEST("%"PRIu8"; _segmentRunTableEntries: %p", i, pAtom);
++		//		FINEST("%" PRIu8 "; _segmentRunTableEntries: %p", i, pAtom);
+ 		ADD_VECTOR_END(_segmentRunTableEntries, pAtom);
+ 	}
+ 
+@@ -167,7 +167,7 @@ bool AtomABST::ReadData() {
+ 		FATAL("Unable to read _fragmentRunTableCount");
+ 		return false;
+ 	}
+-	//	FINEST("_fragmentRunTableCount: %"PRIu8, _fragmentRunTableCount);
++	//	FINEST("_fragmentRunTableCount: %" PRIu8, _fragmentRunTableCount);
+ 
+ 	for (uint8_t i = 0; i < _fragmentRunTableCount; i++) {
+ 		BaseAtom *pAtom = GetDoc()->ReadAtom(this);
+@@ -175,7 +175,7 @@ bool AtomABST::ReadData() {
+ 			FATAL("Unable to read atoms");
+ 			return false;
+ 		}
+-		//		FINEST("%"PRIu8"; _fragmentRunTableEntries: %p", i, pAtom);
++		//		FINEST("%" PRIu8 "; _fragmentRunTableEntries: %p", i, pAtom);
+ 		ADD_VECTOR_END(_fragmentRunTableEntries, pAtom);
+ 	}
+ 
+--- a/sources/thelib/src/mediaformats/mp4/atomafra.cpp
++++ b/sources/thelib/src/mediaformats/mp4/atomafra.cpp
+@@ -72,7 +72,7 @@ bool AtomAFRA::ReadData() {
+ 			}
+ 			temp.offset = ui32;
+ 		}
+-		//		FINEST("%"PRIu32": AFRAENTRY.Time: %"PRIu64"; AFRAENTRY.Offset: %"PRIu64, i, temp.time, temp.offset);
++		//		FINEST("%" PRIu32 ": AFRAENTRY.Time: %" PRIu64 "; AFRAENTRY.Offset: %" PRIu64, i, temp.time, temp.offset);
+ 		ADD_VECTOR_END(_localAccessEntries, temp);
+ 	}
+ 
+@@ -139,13 +139,13 @@ bool AtomAFRA::ReadData() {
+ 			}
+ 
+ 
+-			//			FINEST("%"PRIu32": GLOBALAFRAENTRY.Time: %"PRIu64"; GLOBALAFRAENTRY.Segment: %"PRIu32"; GLOBALAFRAENTRY.Fragment: %"PRIu32"; GLOBALAFRAENTRY.AfraOffset: %"PRIu64"; GLOBALAFRAENTRY.OffsetFromAfra: %"PRIu64,
++			//			FINEST("%" PRIu32 ": GLOBALAFRAENTRY.Time: %" PRIu64 "; GLOBALAFRAENTRY.Segment: %" PRIu32 "; GLOBALAFRAENTRY.Fragment: %" PRIu32 "; GLOBALAFRAENTRY.AfraOffset: %" PRIu64 "; GLOBALAFRAENTRY.OffsetFromAfra: %" PRIu64,
+ 			//					i, temp.time, temp.segment, temp.fragment, temp.afraOffset, temp.offsetFromAfra);
+ 			ADD_VECTOR_END(_globalAccessEntries, temp);
+ 		}
+ 	}
+ 
+-	//	FINEST("%02"PRIx8"; timeScale: %"PRIu32"; entryCount: %"PRIu32"; globalEntryCount: %"PRIu32,
++	//	FINEST("%02" PRIx8 "; timeScale: %" PRIu32 "; entryCount: %" PRIu32 "; globalEntryCount: %" PRIu32,
+ 	//			_flags, _timeScale, _entryCount, _globalEntryCount);
+ 
+ 	return true;
+--- a/sources/thelib/src/mediaformats/mp4/atomafrt.cpp
++++ b/sources/thelib/src/mediaformats/mp4/atomafrt.cpp
+@@ -37,13 +37,13 @@ bool AtomAFRT::ReadData() {
+ 		FATAL("Unable to read _timeScale");
+ 		return false;
+ 	}
+-	//	FINEST("_timeScale: %"PRIu32, _timeScale);
++	//	FINEST("_timeScale: %" PRIu32, _timeScale);
+ 
+ 	if (!ReadUInt8(_qualityEntryCount)) {
+ 		FATAL("Unable to read _qualityEntryCount");
+ 		return false;
+ 	}
+-	//	FINEST("_qualityEntryCount: %"PRIu8, _qualityEntryCount);
++	//	FINEST("_qualityEntryCount: %" PRIu8, _qualityEntryCount);
+ 
+ 	for (uint8_t i = 0; i < _qualityEntryCount; i++) {
+ 		string temp;
+@@ -51,7 +51,7 @@ bool AtomAFRT::ReadData() {
+ 			FATAL("Unable to read QualitySegmentUrlModifiers");
+ 			return false;
+ 		}
+-		//		FINEST("%"PRIu8": QualitySegmentUrlModifiers: %s", i, STR(temp));
++		//		FINEST("%" PRIu8 ": QualitySegmentUrlModifiers: %s", i, STR(temp));
+ 		ADD_VECTOR_END(_qualitySegmentUrlModifiers, temp);
+ 	}
+ 
+@@ -59,7 +59,7 @@ bool AtomAFRT::ReadData() {
+ 		FATAL("Unable to read _fragmentRunEntryCount");
+ 		return false;
+ 	}
+-	//	FINEST("_fragmentRunEntryCount: %"PRIu32, _fragmentRunEntryCount);
++	//	FINEST("_fragmentRunEntryCount: %" PRIu32, _fragmentRunEntryCount);
+ 
+ 	for (uint32_t i = 0; i < _fragmentRunEntryCount; i++) {
+ 		FRAGMENTRUNENTRY temp = {0, 0, 0, 0};
+@@ -81,7 +81,7 @@ bool AtomAFRT::ReadData() {
+ 				return false;
+ 			}
+ 		}
+-		//		FINEST("%"PRIu32": FRAGMENTRUNENTRY.FirstFragment: %"PRIu32"; FRAGMENTRUNENTRY.FirstFragmentTimestamp: %"PRIu64"; FRAGMENTRUNENTRY.FragmentDuration: %"PRIu32"; FRAGMENTRUNENTRY.DiscontinuityIndicator: %"PRIu8,
++		//		FINEST("%" PRIu32 ": FRAGMENTRUNENTRY.FirstFragment: %" PRIu32 "; FRAGMENTRUNENTRY.FirstFragmentTimestamp: %" PRIu64 "; FRAGMENTRUNENTRY.FragmentDuration: %" PRIu32 "; FRAGMENTRUNENTRY.DiscontinuityIndicator: %" PRIu8,
+ 		//				i, temp.firstFragment, temp.firstFragmentTimestamp, temp.fragmentDuration, temp.discontinuityIndicator);
+ 		ADD_VECTOR_END(_fragmentRunEntryTable, temp);
+ 	}
+--- a/sources/thelib/src/mediaformats/mp4/atomasrt.cpp
++++ b/sources/thelib/src/mediaformats/mp4/atomasrt.cpp
+@@ -36,7 +36,7 @@ bool AtomASRT::ReadData() {
+ 		FATAL("Unable to read _qualityEntryCount");
+ 		return false;
+ 	}
+-	//	FINEST("_qualityEntryCount: %"PRIu8, _qualityEntryCount);
++	//	FINEST("_qualityEntryCount: %" PRIu8, _qualityEntryCount);
+ 
+ 	for (uint8_t i = 0; i < _qualityEntryCount; i++) {
+ 		string temp;
+@@ -44,7 +44,7 @@ bool AtomASRT::ReadData() {
+ 			FATAL("Unable to read _qualitySegmentUrlModifiers");
+ 			return false;
+ 		}
+-		//		FINEST("%"PRIu8": _qualitySegmentUrlModifiers: %s", i, STR(temp));
++		//		FINEST("%" PRIu8 ": _qualitySegmentUrlModifiers: %s", i, STR(temp));
+ 		ADD_VECTOR_END(_qualitySegmentUrlModifiers, temp);
+ 	}
+ 
+@@ -52,7 +52,7 @@ bool AtomASRT::ReadData() {
+ 		FATAL("Unable to read _segmentRunEntryCount");
+ 		return false;
+ 	}
+-	//	FINEST("_segmentRunEntryCount: %"PRIu32, _segmentRunEntryCount);
++	//	FINEST("_segmentRunEntryCount: %" PRIu32, _segmentRunEntryCount);
+ 
+ 	for (uint32_t i = 0; i < _segmentRunEntryCount; i++) {
+ 		SEGMENTRUNENTRY temp;
+@@ -64,7 +64,7 @@ bool AtomASRT::ReadData() {
+ 			FATAL("Unable to read SEGMENTRUNENTRY.FragmentsPerSegment");
+ 			return false;
+ 		}
+-		//		FINEST("%"PRIu32": SEGMENTRUNENTRY.FirstSegment: %"PRIu32"; SEGMENTRUNENTRY.FragmentsPerSegment: %"PRIu32,
++		//		FINEST("%" PRIu32 ": SEGMENTRUNENTRY.FirstSegment: %" PRIu32 "; SEGMENTRUNENTRY.FragmentsPerSegment: %" PRIu32,
+ 		//				i, temp.firstSegment, temp.fragmentsPerSegment);
+ 		ADD_VECTOR_END(_segmentRunEntryTable, temp);
+ 	}
+--- a/sources/thelib/src/mediaformats/mp4/atomdata.cpp
++++ b/sources/thelib/src/mediaformats/mp4/atomdata.cpp
+@@ -68,7 +68,7 @@ Variant AtomDATA::GetVariant() {
+ 		}
+ 		default:
+ 		{
+-			FATAL("Type %"PRIu32" not yet implemented", _type);
++			FATAL("Type %" PRIu32 " not yet implemented", _type);
+ 			return false;
+ 		}
+ 	}
+--- a/sources/thelib/src/mediaformats/mp4/atomuuid.cpp
++++ b/sources/thelib/src/mediaformats/mp4/atomuuid.cpp
+@@ -33,7 +33,7 @@ bool AtomUUID::Read() {
+ 		FATAL("Unable to read UUID");
+ 		return false;
+ 	}
+-	_metadata["uuid"] = format("%02"PRIx8"%02"PRIx8"%02"PRIx8"%02"PRIx8"-%02"PRIx8"%02"PRIx8"-%02"PRIx8"%02"PRIx8"-%02"PRIx8"%02"PRIx8"-%02"PRIx8"%02"PRIx8"%02"PRIx8"%02"PRIx8"%02"PRIx8"%02"PRIx8,
++	_metadata["uuid"] = format("%02" PRIx8 "%02" PRIx8 "%02" PRIx8 "%02" PRIx8 "-%02" PRIx8 "%02" PRIx8 "-%02" PRIx8 "%02" PRIx8 "-%02" PRIx8 "%02" PRIx8 "-%02" PRIx8 "%02" PRIx8 "%02" PRIx8 "%02" PRIx8 "%02" PRIx8 "%02" PRIx8,
+ 			buffer[0],
+ 			buffer[1],
+ 			buffer[2],
+--- a/sources/thelib/src/mediaformats/mp4/baseatom.cpp
++++ b/sources/thelib/src/mediaformats/mp4/baseatom.cpp
+@@ -60,7 +60,7 @@ MP4Document * BaseAtom::GetDoc() {
+ }
+ 
+ BaseAtom::operator string() {
+-	return format("S: %"PRIu64"(0x%"PRIx64"); L: %"PRIu64"(0x%"PRIx64"); T: %u(%s)",
++	return format("S: %" PRIu64 "(0x%" PRIx64 "); L: %" PRIu64 "(0x%" PRIx64 "); T: %u(%s)",
+ 			_start, _start, _size, _size, GetTypeNumeric(), STR(GetTypeString()));
+ }
+ 
+@@ -83,7 +83,7 @@ void BaseAtom::SetParentAtom(BaseAtom *p
+ 
+ bool BaseAtom::SkipRead(bool issueWarn) {
+ 	if (issueWarn)
+-		WARN("Atom type %s skipped. Position 0x%"PRIx64"(%"PRIu64"); Size: 0x%"PRIx64"(%"PRIu64")",
++		WARN("Atom type %s skipped. Position 0x%" PRIx64 "(%" PRIu64 "); Size: 0x%" PRIx64 "(%" PRIu64 ")",
+ 			STR(GetTypeString()), _start, _start, _size, _size);
+ 	return _pDoc->GetMediaFile().SeekTo(_start + _size);
+ }
+@@ -94,7 +94,7 @@ uint64_t BaseAtom::CurrentPosition() {
+ 
+ bool BaseAtom::CheckBounds(uint64_t size) {
+ 	if (CurrentPosition() + size > _start + _size) {
+-		FATAL("Reached the end of the atom: Current pos: %"PRIu64"; Wanted size: %"PRIu64"; atom start: %"PRIu64"; atom size: %"PRIu64,
++		FATAL("Reached the end of the atom: Current pos: %" PRIu64 "; Wanted size: %" PRIu64 "; atom start: %" PRIu64 "; atom size: %" PRIu64,
+ 				CurrentPosition(), size, _start, _size);
+ 		return false;
+ 	}
+--- a/sources/thelib/src/mediaformats/mp4/boxatom.cpp
++++ b/sources/thelib/src/mediaformats/mp4/boxatom.cpp
+@@ -40,7 +40,7 @@ bool BoxAtom::Read() {
+ 		}
+ 		if (!pAtom->IsIgnored()) {
+ 			if (!AtomCreated(pAtom)) {
+-				FATAL("Unable to signal AtomCreated for atom %s (%"PRIx64")",
++				FATAL("Unable to signal AtomCreated for atom %s (%" PRIx64 ")",
+ 						STR(GetTypeString()), _start);
+ 				return false;
+ 			}
+--- a/sources/thelib/src/mediaformats/mp4/mp4document.cpp
++++ b/sources/thelib/src/mediaformats/mp4/mp4document.cpp
+@@ -355,11 +355,11 @@ BaseAtom * MP4Document::ReadAtom(BaseAto
+ 
+ 	if (currentPos + pAtom->GetSize() != _mediaFile.Cursor()) {
+ 		if (currentPos + pAtom->GetSize() < _mediaFile.Cursor()) {
+-			FATAL("atom overflow: atom start: %"PRIu64"; Atom size: %"PRIu64"; currentPos: %"PRIu64,
++			FATAL("atom overflow: atom start: %" PRIu64 "; Atom size: %" PRIu64 "; currentPos: %" PRIu64,
+ 					currentPos, pAtom->GetSize(), _mediaFile.Cursor());
+ 			return NULL;
+ 		} else {
+-			WARN("wasted space inside atom! atom start: %"PRIu64"; Atom size: %"PRIu64"; currentPos: %"PRIu64,
++			WARN("wasted space inside atom! atom start: %" PRIu64 "; Atom size: %" PRIu64 "; currentPos: %" PRIu64,
+ 					currentPos, pAtom->GetSize(), _mediaFile.Cursor());
+ 			if (!_mediaFile.SeekTo(pAtom->GetStart() + pAtom->GetSize())) {
+ 				FATAL("Unable to skip atom");
+@@ -497,7 +497,7 @@ bool MP4Document::BuildFrames() {
+ 			FATAL("Unable to initialize AAC codec");
+ 			return false;
+ 		}
+-		//		FINEST("Start: %"PRIu64" (%"PRIx64"); Length: %"PRIu64" (%"PRIx64");",
++		//		FINEST("Start: %" PRIu64 " (%" PRIx64 "); Length: %" PRIu64 " (%" PRIx64 ");",
+ 		//				audioHeader.start, audioHeader.start, audioHeader.length,
+ 		//				audioHeader.length);
+ 	} else {
+@@ -650,16 +650,16 @@ bool MP4Document::BuildMOOVFrames(bool a
+ 	if (pCTSS != NULL) {
+ 		compositionOffsets = pCTSS->GetEntries();
+ 		if (sampleSize.size() != compositionOffsets.size()) {
+-			WARN("composition offsets count != samples count; compositionOffsets: %"PRIz"u; sampleSize.size: %"PRIz"u",
++			WARN("composition offsets count != samples count; compositionOffsets: %" PRIz "u; sampleSize.size: %" PRIz "u",
+ 					compositionOffsets.size(),
+ 					sampleSize.size());
+ 			for (uint32_t i = (uint32_t) compositionOffsets.size(); i < (uint32_t) sampleSize.size(); i++)
+ 				ADD_VECTOR_END(compositionOffsets, 0);
+-			WARN("composition offsets padded with 0. Now size is %"PRIz"u",
++			WARN("composition offsets padded with 0. Now size is %" PRIz "u",
+ 					compositionOffsets.size());
+ 		}
+ 	}
+-	INFO("audio: %d; keyFrames: %"PRIz"u; frames: %"PRIz"u; compositionOffsets: %"PRIz"u",
++	INFO("audio: %d; keyFrames: %" PRIz "u; frames: %" PRIz "u; compositionOffsets: %" PRIz "u",
+ 			audio, keyFrames.size(), sampleSize.size(), compositionOffsets.size());
+ 
+ 	uint32_t timeScale = pMDHD->GetTimeScale();
+--- a/sources/thelib/src/mediaformats/nsv/nsvdocument.cpp
++++ b/sources/thelib/src/mediaformats/nsv/nsvdocument.cpp
+@@ -206,7 +206,7 @@ bool NSVDocument::ReadPayLoadData() {
+ 			//             06 - SEI NAL unit
+ 			if (NALU_TYPE_SEI == NALU_TYPE(nt)) {
+ 				// get binary header from payload data
+-				FINEST("video data offset %"PRIx64, _mediaFile.Cursor());
++				FINEST("video data offset %" PRIx64, _mediaFile.Cursor());
+ 				uint64_t currentCursor = _mediaFile.Cursor();
+ 				_buffer.IgnoreAll();
+ 				_buffer.ReadFromFs(_mediaFile, aux_plus_vidlen);
+--- a/sources/thelib/src/netio/epoll/iohandlermanager.cpp
++++ b/sources/thelib/src/netio/epoll/iohandlermanager.cpp
+@@ -115,7 +115,7 @@ void IOHandlerManager::RegisterIOHandler
+ 	size_t before = _activeIOHandlers.size();
+ 	_activeIOHandlers[pIOHandler->GetId()] = pIOHandler;
+ 	_fdStats.RegisterManaged(pIOHandler->GetType());
+-	DEBUG("Handlers count changed: %"PRIz"u->%"PRIz"u %s", before, before + 1,
++	DEBUG("Handlers count changed: %" PRIz "u->%" PRIz "u %s", before, before + 1,
+ 			STR(IOHandler::IOHTToString(pIOHandler->GetType())));
+ }
+ 
+@@ -125,7 +125,7 @@ void IOHandlerManager::UnRegisterIOHandl
+ 		FreeToken(pIOHandler);
+ 		size_t before = _activeIOHandlers.size();
+ 		_activeIOHandlers.erase(pIOHandler->GetId());
+-		DEBUG("Handlers count changed: %"PRIz"u->%"PRIz"u %s", before, before - 1,
++		DEBUG("Handlers count changed: %" PRIz "u->%" PRIz "u %s", before, before - 1,
+ 				STR(IOHandler::IOHTToString(pIOHandler->GetType())));
+ 	}
+ }
+--- a/sources/thelib/src/netio/epoll/tcpacceptor.cpp
++++ b/sources/thelib/src/netio/epoll/tcpacceptor.cpp
+@@ -140,14 +140,14 @@ bool TCPAcceptor::Accept() {
+ 	if (!_enabled) {
+ 		CLOSE_SOCKET(fd);
+ 		_droppedCount++;
+-		WARN("Acceptor is not enabled. Client dropped: %s:%"PRIu16" -> %s:%"PRIu16,
++		WARN("Acceptor is not enabled. Client dropped: %s:%" PRIu16 " -> %s:%" PRIu16,
+ 				inet_ntoa(((sockaddr_in *) & address)->sin_addr),
+ 				ENTOHS(((sockaddr_in *) & address)->sin_port),
+ 				STR(_ipAddress),
+ 				_port);
+ 		return true;
+ 	}
+-	INFO("Client connected: %s:%"PRIu16" -> %s:%"PRIu16,
++	INFO("Client connected: %s:%" PRIu16 " -> %s:%" PRIu16,
+ 			inet_ntoa(((sockaddr_in *) & address)->sin_addr),
+ 			ENTOHS(((sockaddr_in *) & address)->sin_port),
+ 			STR(_ipAddress),
+@@ -206,7 +206,7 @@ bool TCPAcceptor::Drop() {
+ 	CLOSE_SOCKET(fd);
+ 	_droppedCount++;
+ 
+-	INFO("Client explicitly dropped: %s:%"PRIu16" -> %s:%"PRIu16,
++	INFO("Client explicitly dropped: %s:%" PRIu16 " -> %s:%" PRIu16,
+ 			inet_ntoa(((sockaddr_in *) & address)->sin_addr),
+ 			ENTOHS(((sockaddr_in *) & address)->sin_port),
+ 			STR(_ipAddress),
+--- a/sources/thelib/src/netio/epoll/tcpcarrier.cpp
++++ b/sources/thelib/src/netio/epoll/tcpcarrier.cpp
+@@ -71,7 +71,7 @@ bool TCPCarrier::OnEvent(struct epoll_ev
+ 		IOBuffer *pInputBuffer = _pProtocol->GetInputBuffer();
+ 		o_assert(pInputBuffer != NULL);
+ 		if (!pInputBuffer->ReadFromTCPFd(_inboundFd, _recvBufferSize, _ioAmount)) {
+-			FATAL("Unable to read data. %s:%"PRIu16" -> %s:%"PRIu16" %s",
++			FATAL("Unable to read data. %s:%" PRIu16 " -> %s:%" PRIu16 " %s",
+ 					STR(_farIp), _farPort,
+ 					STR(_nearIp), _nearPort,
+ 					(_pProtocol != NULL) ? STR(*_pProtocol) : ""
+--- a/sources/thelib/src/netio/epoll/udpcarrier.cpp
++++ b/sources/thelib/src/netio/epoll/udpcarrier.cpp
+@@ -168,7 +168,7 @@ UDPCarrier* UDPCarrier::Create(string bi
+ 		}
+ 		uint32_t testVal = EHTONL(bindAddress.sin_addr.s_addr);
+ 		if ((testVal > 0xe0000000) && (testVal < 0xefffffff)) {
+-			INFO("Subscribe to multicast %s:%"PRIu16, STR(bindIp), bindPort);
++			INFO("Subscribe to multicast %s:%" PRIu16, STR(bindIp), bindPort);
+ 			int activateBroadcast = 1;
+ 			if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &activateBroadcast,
+ 					sizeof (activateBroadcast)) != 0) {
+@@ -194,7 +194,7 @@ UDPCarrier* UDPCarrier::Create(string bi
+ 		}
+ 		if (bind(sock, (sockaddr *) & bindAddress, sizeof (sockaddr)) != 0) {
+ 			int err = errno;
+-			FATAL("Unable to bind on address: udp://%s:%"PRIu16"; Error was: (%d) %s",
++			FATAL("Unable to bind on address: udp://%s:%" PRIu16 "; Error was: (%d) %s",
+ 					STR(bindIp), bindPort, err, strerror(err));
+ 			CLOSE_SOCKET(sock);
+ 			return NULL;
+--- a/sources/thelib/src/netio/fdstats.cpp
++++ b/sources/thelib/src/netio/fdstats.cpp
+@@ -85,10 +85,10 @@ void BaseFdStats::ResetInOutBytes() {
+ 
+ BaseFdStats::operator string() {
+ #ifdef GLOBALLY_ACCOUNT_BYTES
+-	return format("current: %"PRId64"; max: %"PRId64"; total: %"PRIu64"; in: %"PRIu64"; out: %"PRIu64,
++	return format("current: %" PRId64 "; max: %" PRId64 "; total: %" PRIu64 "; in: %" PRIu64 "; out: %" PRIu64,
+ 			_current, _max, _total, _inBytes, _outBytes);
+ #else
+-	return format("current: %"PRId64"; max: %"PRId64"; total: %"PRIu64,
++	return format("current: %" PRId64 "; max: %" PRId64 "; total: %" PRIu64,
+ 			_current, _max, _total);
+ #endif /* GLOBALLY_ACCOUNT_BYTES */
+ }
+@@ -267,7 +267,7 @@ FdStats::operator string() {
+ 			"          managedUdp: %s\n"
+ 			"    managedNonTcpUdp: %s\n"
+ 			"              rawUdp: %s\n"
+-			"         grand total: current: %"PRId64"; max: %"PRId64"; total: %"PRIu64"; in: %"PRIu64"; out: %"PRIu64,
++			"         grand total: current: %" PRId64 "; max: %" PRId64 "; total: %" PRIu64 "; in: %" PRIu64 "; out: %" PRIu64,
+ 			STR(_managedTcp),
+ 			STR(_managedTcpAcceptors),
+ 			STR(_managedTcpConnectors),
+@@ -287,7 +287,7 @@ FdStats::operator string() {
+ 			"          managedUdp: %s\n"
+ 			"    managedNonTcpUdp: %s\n"
+ 			"              rawUdp: %s\n"
+-			"         grand total: current: %"PRId64"; max: %"PRId64"; total: %"PRIu64,
++			"         grand total: current: %" PRId64 "; max: %" PRId64 "; total: %" PRIu64,
+ 			STR(_managedTcp),
+ 			STR(_managedTcpAcceptors),
+ 			STR(_managedTcpConnectors),
+--- a/sources/thelib/src/netio/kqueue/iohandlermanager.cpp
++++ b/sources/thelib/src/netio/kqueue/iohandlermanager.cpp
+@@ -154,7 +154,7 @@ void IOHandlerManager::RegisterIOHandler
+ 	_activeIOHandlers[pIOHandler->GetId()] = pIOHandler;
+ 	SetupToken(pIOHandler);
+ 	_fdStats.RegisterManaged(pIOHandler->GetType());
+-	DEBUG("Handlers count changed: %"PRIz"u->%"PRIz"u %s", before, before + 1,
++	DEBUG("Handlers count changed: %" PRIz "u->%" PRIz "u %s", before, before + 1,
+ 			STR(IOHandler::IOHTToString(pIOHandler->GetType())));
+ }
+ 
+@@ -164,7 +164,7 @@ void IOHandlerManager::UnRegisterIOHandl
+ 		FreeToken(pIOHandler);
+ 		size_t before = _activeIOHandlers.size();
+ 		_activeIOHandlers.erase(pIOHandler->GetId());
+-		DEBUG("Handlers count changed: %"PRIz"u->%"PRIz"u %s", before, before - 1,
++		DEBUG("Handlers count changed: %" PRIz "u->%" PRIz "u %s", before, before - 1,
+ 				STR(IOHandler::IOHTToString(pIOHandler->GetType())));
+ 	}
+ }
+--- a/sources/thelib/src/netio/kqueue/tcpacceptor.cpp
++++ b/sources/thelib/src/netio/kqueue/tcpacceptor.cpp
+@@ -134,14 +134,14 @@ bool TCPAcceptor::Accept() {
+ 	if (!_enabled) {
+ 		CLOSE_SOCKET(fd);
+ 		_droppedCount++;
+-		WARN("Acceptor is not enabled. Client dropped: %s:%"PRIu16" -> %s:%"PRIu16,
++		WARN("Acceptor is not enabled. Client dropped: %s:%" PRIu16 " -> %s:%" PRIu16,
+ 				inet_ntoa(((sockaddr_in *) & address)->sin_addr),
+ 				ENTOHS(((sockaddr_in *) & address)->sin_port),
+ 				STR(_ipAddress),
+ 				_port);
+ 		return true;
+ 	}
+-	INFO("Client connected: %s:%"PRIu16" -> %s:%"PRIu16,
++	INFO("Client connected: %s:%" PRIu16 " -> %s:%" PRIu16,
+ 			inet_ntoa(((sockaddr_in *) & address)->sin_addr),
+ 			ENTOHS(((sockaddr_in *) & address)->sin_port),
+ 			STR(_ipAddress),
+@@ -201,7 +201,7 @@ bool TCPAcceptor::Drop() {
+ 	CLOSE_SOCKET(fd);
+ 	_droppedCount++;
+ 
+-	INFO("Client explicitly dropped: %s:%"PRIu16" -> %s:%"PRIu16,
++	INFO("Client explicitly dropped: %s:%" PRIu16 " -> %s:%" PRIu16,
+ 			inet_ntoa(((sockaddr_in *) & address)->sin_addr),
+ 			ENTOHS(((sockaddr_in *) & address)->sin_port),
+ 			STR(_ipAddress),
+--- a/sources/thelib/src/netio/kqueue/tcpcarrier.cpp
++++ b/sources/thelib/src/netio/kqueue/tcpcarrier.cpp
+@@ -71,7 +71,7 @@ bool TCPCarrier::OnEvent(struct kevent &
+ 			IOBuffer *pInputBuffer = _pProtocol->GetInputBuffer();
+ 			o_assert(pInputBuffer != NULL);
+ 			if (!pInputBuffer->ReadFromTCPFd(event.ident, event.data, _ioAmount)) {
+-				FATAL("Unable to read data. %s:%"PRIu16" -> %s:%"PRIu16" %s",
++				FATAL("Unable to read data. %s:%" PRIu16 " -> %s:%" PRIu16 " %s",
+ 						STR(_farIp), _farPort,
+ 						STR(_nearIp), _nearPort,
+ 						(_pProtocol != NULL) ? STR(*_pProtocol) : ""
+--- a/sources/thelib/src/netio/kqueue/udpcarrier.cpp
++++ b/sources/thelib/src/netio/kqueue/udpcarrier.cpp
+@@ -164,7 +164,7 @@ UDPCarrier* UDPCarrier::Create(string bi
+ 		}
+ 		uint32_t testVal = EHTONL(bindAddress.sin_addr.s_addr);
+ 		if ((testVal > 0xe0000000) && (testVal < 0xefffffff)) {
+-			INFO("Subscribe to multicast %s:%"PRIu16, STR(bindIp), bindPort);
++			INFO("Subscribe to multicast %s:%" PRIu16, STR(bindIp), bindPort);
+ 			int activateBroadcast = 1;
+ 			if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &activateBroadcast,
+ 					sizeof (activateBroadcast)) != 0) {
+@@ -191,7 +191,7 @@ UDPCarrier* UDPCarrier::Create(string bi
+ 		}
+ 		if (bind(sock, (sockaddr *) & bindAddress, sizeof (sockaddr)) != 0) {
+ 			int err = errno;
+-			FATAL("Unable to bind on address: udp://%s:%"PRIu16"; Error was: (%d) %s",
++			FATAL("Unable to bind on address: udp://%s:%" PRIu16 "; Error was: (%d) %s",
+ 					STR(bindIp), bindPort, err, strerror(err));
+ 			CLOSE_SOCKET(sock);
+ 			return NULL;
+--- a/sources/thelib/src/netio/select/iohandlermanager.cpp
++++ b/sources/thelib/src/netio/select/iohandlermanager.cpp
+@@ -94,7 +94,7 @@ void IOHandlerManager::RegisterIOHandler
+ 	size_t before = _activeIOHandlers.size();
+ 	_activeIOHandlers[pIOHandler->GetId()] = pIOHandler;
+ 	_fdStats.RegisterManaged(pIOHandler->GetType());
+-	DEBUG("Handlers count changed: %"PRIz"u->%"PRIz"u %s", before, before + 1,
++	DEBUG("Handlers count changed: %" PRIz "u->%" PRIz "u %s", before, before + 1,
+ 			STR(IOHandler::IOHTToString(pIOHandler->GetType())));
+ }
+ 
+@@ -107,7 +107,7 @@ void IOHandlerManager::UnRegisterIOHandl
+ 		_fdStats.UnRegisterManaged(pIOHandler->GetType());
+ 		size_t before = _activeIOHandlers.size();
+ 		_activeIOHandlers.erase(pIOHandler->GetId());
+-		DEBUG("Handlers count changed: %"PRIz"u->%"PRIz"u %s", before, before - 1,
++		DEBUG("Handlers count changed: %" PRIz "u->%" PRIz "u %s", before, before - 1,
+ 				STR(IOHandler::IOHTToString(pIOHandler->GetType())));
+ 	}
+ }
+--- a/sources/thelib/src/netio/select/tcpacceptor.cpp
++++ b/sources/thelib/src/netio/select/tcpacceptor.cpp
+@@ -133,14 +133,14 @@ bool TCPAcceptor::Accept() {
+ 	if (!_enabled) {
+ 		CLOSE_SOCKET(fd);
+ 		_droppedCount++;
+-		WARN("Acceptor is not enabled. Client dropped: %s:%"PRIu16" -> %s:%"PRIu16,
++		WARN("Acceptor is not enabled. Client dropped: %s:%" PRIu16 " -> %s:%" PRIu16,
+ 				inet_ntoa(((sockaddr_in *) & address)->sin_addr),
+ 				ENTOHS(((sockaddr_in *) & address)->sin_port),
+ 				STR(_ipAddress),
+ 				_port);
+ 		return true;
+ 	}
+-	INFO("Client connected: %s:%"PRIu16" -> %s:%"PRIu16,
++	INFO("Client connected: %s:%" PRIu16 " -> %s:%" PRIu16,
+ 			inet_ntoa(((sockaddr_in *) & address)->sin_addr),
+ 			ENTOHS(((sockaddr_in *) & address)->sin_port),
+ 			STR(_ipAddress),
+@@ -199,7 +199,7 @@ bool TCPAcceptor::Drop() {
+ 	CLOSE_SOCKET(fd);
+ 	_droppedCount++;
+ 
+-	INFO("Client explicitly dropped: %s:%"PRIu16" -> %s:%"PRIu16,
++	INFO("Client explicitly dropped: %s:%" PRIu16 " -> %s:%" PRIu16,
+ 			inet_ntoa(((sockaddr_in *) & address)->sin_addr),
+ 			ENTOHS(((sockaddr_in *) & address)->sin_port),
+ 			STR(_ipAddress),
+--- a/sources/thelib/src/netio/select/udpcarrier.cpp
++++ b/sources/thelib/src/netio/select/udpcarrier.cpp
+@@ -164,7 +164,7 @@ UDPCarrier* UDPCarrier::Create(string bi
+ 		}
+ 		uint32_t testVal = EHTONL(bindAddress.sin_addr.s_addr);
+ 		if ((testVal > 0xe0000000) && (testVal < 0xefffffff)) {
+-			INFO("Subscribe to multicast %s:%"PRIu16, STR(bindIp), bindPort);
++			INFO("Subscribe to multicast %s:%" PRIu16, STR(bindIp), bindPort);
+ 			int activateBroadcast = 1;
+ 			if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &activateBroadcast,
+ 					sizeof (activateBroadcast)) != 0) {
+@@ -190,7 +190,7 @@ UDPCarrier* UDPCarrier::Create(string bi
+ 		}
+ 		if (bind(sock, (sockaddr *) & bindAddress, sizeof (sockaddr)) != 0) {
+ 			int err = LASTSOCKETERROR;
+-			FATAL("Unable to bind on address: udp://%s:%"PRIu16"; Error was: %d",
++			FATAL("Unable to bind on address: udp://%s:%" PRIu16 "; Error was: %d",
+ 					STR(bindIp), bindPort, err);
+ 			CLOSE_SOCKET(sock);
+ 			return NULL;
+--- a/sources/thelib/src/protocols/baseprotocol.cpp
++++ b/sources/thelib/src/protocols/baseprotocol.cpp
+@@ -51,7 +51,7 @@ BaseProtocol::BaseProtocol(uint64_t type
+ 
+ BaseProtocol::~BaseProtocol() {
+ #ifdef LOG_CONSTRUCTOR_DESTRUCTOR
+-	FINEST("Protocol with id %"PRIu32"(%p) of type %s going to be deleted; F: %p,N: %p, DF: %"PRIu8", DN: %"PRIu8,
++	FINEST("Protocol with id %" PRIu32 "(%p) of type %s going to be deleted; F: %p,N: %p, DF: %" PRIu8 ", DN: %" PRIu8,
+ 			_id,
+ 			this,
+ 			STR(tagToString(_type)),
+@@ -78,7 +78,7 @@ BaseProtocol::~BaseProtocol() {
+ 		}
+ 	}
+ #ifdef LOG_CONSTRUCTOR_DESTRUCTOR
+-	FINEST("Protocol with id %"PRIu32"(%p) of type %s deleted; F: %p,N: %p, DF: %"PRIu8", DN: %"PRIu8,
++	FINEST("Protocol with id %" PRIu32 "(%p) of type %s deleted; F: %p,N: %p, DF: %" PRIu8 ", DN: %" PRIu8,
+ 			_id,
+ 			this,
+ 			STR(tagToString(_type)),
+--- a/sources/thelib/src/protocols/http/basehttpprotocol.cpp
++++ b/sources/thelib/src/protocols/http/basehttpprotocol.cpp
+@@ -400,7 +400,7 @@ bool BaseHTTPProtocol::HandleChunkedCont
+ 		//8. Get its actual value and test it as well
+ 		chunkSize = strtol((char *) pBuffer, NULL, 16);
+ 		if (chunkSize > HTTP_MAX_CHUNK_SIZE) {
+-			FATAL("Chunk size too large. Maximum allowed is %"PRIu32" and we got %"PRIu32,
++			FATAL("Chunk size too large. Maximum allowed is %" PRIu32 " and we got %" PRIu32,
+ 					(uint32_t) HTTP_MAX_CHUNK_SIZE, chunkSize);
+ 			return false;
+ 		}
+@@ -436,12 +436,12 @@ bool BaseHTTPProtocol::HandleChunkedCont
+ 		}
+ 
+ 		//13. Ignore the bytes from the input buffer
+-		DEBUG_HTTP("available bytes before ignore: %"PRIu32, GETAVAILABLEBYTESCOUNT(buffer));
++		DEBUG_HTTP("available bytes before ignore: %" PRIu32, GETAVAILABLEBYTESCOUNT(buffer));
+ 		//				if (GETAVAILABLEBYTESCOUNT(buffer) == ((uint32_t) chunkSizeSize - 2 + 2 + chunkSize + 2)) {
+ 		//					DEBUG_HTTP("%s", STR(buffer));
+ 		//				}
+ 		buffer.Ignore((uint32_t) chunkSizeSize - 2 + 2 + chunkSize + 2);
+-		DEBUG_HTTP("available bytes  after ignore: %"PRIu32, GETAVAILABLEBYTESCOUNT(buffer));
++		DEBUG_HTTP("available bytes  after ignore: %" PRIu32, GETAVAILABLEBYTESCOUNT(buffer));
+ 
+ 		//14. reset the state if necessary
+ 		if (TransferCompleted()) {
+--- a/sources/thelib/src/protocols/http/httpauthhelper.cpp
++++ b/sources/thelib/src/protocols/http/httpauthhelper.cpp
+@@ -279,7 +279,7 @@ bool HTTPAuthHelper::ParseAuthLine(strin
+ 			}
+ 			default:
+ 			{
+-				FATAL("Invalid stage: %"PRIu32, stage);
++				FATAL("Invalid stage: %" PRIu32, stage);
+ 				return false;
+ 			}
+ 		}
+--- a/sources/thelib/src/protocols/protocolfactorymanager.cpp
++++ b/sources/thelib/src/protocols/protocolfactorymanager.cpp
+@@ -53,7 +53,7 @@ bool ProtocolFactoryManager::RegisterPro
+ 
+ 	FOR_VECTOR(protocols, i) {
+ 		if (MAP_HAS1(_factoriesByProtocolId, protocols[i])) {
+-			FATAL("protocol %"PRIx64" already handled by factory %u", protocols[i],
++			FATAL("protocol %" PRIx64 " already handled by factory %u", protocols[i],
+ 					_factoriesByProtocolId[protocols[i]]->GetId());
+ 			return false;
+ 		}
+@@ -137,7 +137,7 @@ BaseProtocol *ProtocolFactoryManager::Cr
+ 
+ 	FOR_VECTOR(chain, i) {
+ 		if (!MAP_HAS1(_factoriesByProtocolId, chain[i])) {
+-			FATAL("protocol %"PRIx64" not handled by anyone", chain[i]);
++			FATAL("protocol %" PRIx64 " not handled by anyone", chain[i]);
+ 			return NULL;
+ 		}
+ 	}
+--- a/sources/thelib/src/protocols/rawhttpstream/inboundrawhttpstreamprotocol.cpp
++++ b/sources/thelib/src/protocols/rawhttpstream/inboundrawhttpstreamprotocol.cpp
+@@ -235,7 +235,7 @@ bool InboundRawHTTPStreamProtocol::SendC
+ 	_outputBuffer.ReadFromString(HTTP_HEADERS_SERVER": "HTTP_HEADERS_SERVER_US"\r\n");
+ 	_outputBuffer.ReadFromString(HTTP_HEADERS_X_POWERED_BY": "HTTP_HEADERS_X_POWERED_BY_US"\r\n");
+ 	_outputBuffer.ReadFromString(HTTP_HEADERS_CONTENT_TYPE": text/xml\r\n");
+-	_outputBuffer.ReadFromString(format("%s: %"PRIu64"\r\n\r\n", HTTP_HEADERS_CONTENT_LENGTH, cd.Size()));
++	_outputBuffer.ReadFromString(format("%s: %" PRIu64 "\r\n\r\n", HTTP_HEADERS_CONTENT_LENGTH, cd.Size()));
+ 	_outputBuffer.ReadFromFs(cd, cd.Size());
+ 	//FINEST("_outputBuffer:\n%s", STR(_outputBuffer));
+ 	if (!EnqueueForOutbound()) {
+--- a/sources/thelib/src/protocols/rtmp/amf0serializer.cpp
++++ b/sources/thelib/src/protocols/rtmp/amf0serializer.cpp
+@@ -68,7 +68,7 @@ bool AMF0Serializer::ReadShortString(IOB
+ 	if (readType) {
+ 		AMF_CHECK_BOUNDARIES(buffer, 1);
+ 		if (GETIBPOINTER(buffer)[0] != AMF0_SHORT_STRING) {
+-			FATAL("AMF type not valid: want: %"PRIu8"; got: %"PRIu8,
++			FATAL("AMF type not valid: want: %" PRIu8 "; got: %" PRIu8,
+ 					AMF0_SHORT_STRING, GETIBPOINTER(buffer)[0]);
+ 			return false;
+ 		}
+@@ -88,7 +88,7 @@ bool AMF0Serializer::ReadShortString(IOB
+ 	AMF_CHECK_BOUNDARIES(buffer, length);
+ 	variant = string((char *) (GETIBPOINTER(buffer)), length);
+ 	if (!buffer.Ignore(length)) {
+-		FATAL("Unable to ignore %"PRIu16" bytes", length);
++		FATAL("Unable to ignore %" PRIu16 " bytes", length);
+ 		return false;
+ 	}
+ 	return true;
+@@ -110,7 +110,7 @@ bool AMF0Serializer::ReadLongString(IOBu
+ 	if (readType) {
+ 		AMF_CHECK_BOUNDARIES(buffer, 1);
+ 		if (GETIBPOINTER(buffer)[0] != AMF0_LONG_STRING) {
+-			FATAL("AMF type not valid: want: %"PRIu8"; got: %"PRIu8,
++			FATAL("AMF type not valid: want: %" PRIu8 "; got: %" PRIu8,
+ 					AMF0_LONG_STRING, GETIBPOINTER(buffer)[0]);
+ 			return false;
+ 		}
+@@ -131,7 +131,7 @@ bool AMF0Serializer::ReadLongString(IOBu
+ 	AMF_CHECK_BOUNDARIES(buffer, length);
+ 	variant = string((char *) (GETIBPOINTER(buffer)), length);
+ 	if (!buffer.Ignore(length)) {
+-		FATAL("Unable to ignore %"PRIu32" bytes", length);
++		FATAL("Unable to ignore %" PRIu32 " bytes", length);
+ 		return false;
+ 	}
+ 	return true;
+@@ -154,7 +154,7 @@ bool AMF0Serializer::ReadDouble(IOBuffer
+ 	if (readType) {
+ 		AMF_CHECK_BOUNDARIES(buffer, 1);
+ 		if (GETIBPOINTER(buffer)[0] != AMF0_NUMBER) {
+-			FATAL("AMF type not valid: want: %"PRIu8"; got: %"PRIu8,
++			FATAL("AMF type not valid: want: %" PRIu8 "; got: %" PRIu8,
+ 					AMF0_NUMBER, GETIBPOINTER(buffer)[0]);
+ 			return false;
+ 		}
+@@ -193,7 +193,7 @@ bool AMF0Serializer::ReadObject(IOBuffer
+ 	if (readType) {
+ 		AMF_CHECK_BOUNDARIES(buffer, 1);
+ 		if (GETIBPOINTER(buffer)[0] != AMF0_OBJECT) {
+-			FATAL("AMF type not valid: want: %"PRIu8"; got: %"PRIu8,
++			FATAL("AMF type not valid: want: %" PRIu8 "; got: %" PRIu8,
+ 					AMF0_OBJECT, GETIBPOINTER(buffer)[0]);
+ 			return false;
+ 		}
+@@ -257,7 +257,7 @@ bool AMF0Serializer::WriteObject(IOBuffe
+ 		if ((key.length() == 10)
+ 				&& (key[0] = '0')
+ 				&& (key[1] = 'x')) {
+-			key = format("%"PRIu32, (uint32_t) strtol(key.c_str(), NULL, 16));
++			key = format("%" PRIu32, (uint32_t) strtol(key.c_str(), NULL, 16));
+ 		}
+ 		if (!WriteShortString(buffer, key, false)) {
+ 			FATAL("Unable to serialize key");
+@@ -294,7 +294,7 @@ bool AMF0Serializer::ReadMixedArray(IOBu
+ 	if (readType) {
+ 		AMF_CHECK_BOUNDARIES(buffer, 1);
+ 		if (GETIBPOINTER(buffer)[0] != AMF0_MIXED_ARRAY) {
+-			FATAL("AMF type not valid: want: %"PRIu8"; got: %"PRIu8,
++			FATAL("AMF type not valid: want: %" PRIu8 "; got: %" PRIu8,
+ 					AMF0_MIXED_ARRAY, GETIBPOINTER(buffer)[0]);
+ 			return false;
+ 		}
+@@ -388,7 +388,7 @@ bool AMF0Serializer::WriteMixedArray(IOB
+ 		if ((key.length() == 10)
+ 				&& (key[0] = '0')
+ 				&& (key[1] = 'x')) {
+-			key = format("%"PRIu32, (uint32_t) strtol(key.c_str(), NULL, 16));
++			key = format("%" PRIu32, (uint32_t) strtol(key.c_str(), NULL, 16));
+ 		}
+ 		if (!WriteShortString(buffer, key, false)) {
+ 			FATAL("Unable to serialize key");
+@@ -409,7 +409,7 @@ bool AMF0Serializer::ReadArray(IOBuffer
+ 	if (readType) {
+ 		AMF_CHECK_BOUNDARIES(buffer, 1);
+ 		if (GETIBPOINTER(buffer)[0] != AMF0_ARRAY) {
+-			FATAL("AMF type not valid: want: %"PRIu8"; got: %"PRIu8,
++			FATAL("AMF type not valid: want: %" PRIu8 "; got: %" PRIu8,
+ 					AMF0_ARRAY, GETIBPOINTER(buffer)[0]);
+ 			return false;
+ 		}
+@@ -451,7 +451,7 @@ bool AMF0Serializer::ReadAMF3Object(IOBu
+ 	if (readType) {
+ 		AMF_CHECK_BOUNDARIES(buffer, 1);
+ 		if (GETIBPOINTER(buffer)[0] != AMF0_AMF3_OBJECT) {
+-			FATAL("AMF type not valid: want: %"PRIu8"; got: %"PRIu8,
++			FATAL("AMF type not valid: want: %" PRIu8 "; got: %" PRIu8,
+ 					AMF0_AMF3_OBJECT, GETIBPOINTER(buffer)[0]);
+ 			return false;
+ 		}
+@@ -487,7 +487,7 @@ bool AMF0Serializer::ReadBoolean(IOBuffe
+ 	if (readType) {
+ 		AMF_CHECK_BOUNDARIES(buffer, 1);
+ 		if (GETIBPOINTER(buffer)[0] != AMF0_BOOLEAN) {
+-			FATAL("AMF type not valid: want: %"PRIu8"; got: %"PRIu8,
++			FATAL("AMF type not valid: want: %" PRIu8 "; got: %" PRIu8,
+ 					AMF0_BOOLEAN, GETIBPOINTER(buffer)[0]);
+ 			return false;
+ 		}
+@@ -525,7 +525,7 @@ bool AMF0Serializer::ReadTimestamp(IOBuf
+ 	if (readType) {
+ 		AMF_CHECK_BOUNDARIES(buffer, 1);
+ 		if (GETIBPOINTER(buffer)[0] != AMF0_TIMESTAMP) {
+-			FATAL("AMF type not valid: want: %"PRIu8"; got: %"PRIu8,
++			FATAL("AMF type not valid: want: %" PRIu8 "; got: %" PRIu8,
+ 					AMF0_TIMESTAMP, GETIBPOINTER(buffer)[0]);
+ 			return false;
+ 		}
+@@ -571,7 +571,7 @@ bool AMF0Serializer::WriteTimestamp(IOBu
+ bool AMF0Serializer::ReadNull(IOBuffer &buffer, Variant &variant) {
+ 	AMF_CHECK_BOUNDARIES(buffer, 1);
+ 	if (GETIBPOINTER(buffer)[0] != AMF0_NULL) {
+-		FATAL("AMF type not valid: want: %"PRIu8"; got: %"PRIu8,
++		FATAL("AMF type not valid: want: %" PRIu8 "; got: %" PRIu8,
+ 				AMF0_NULL, GETIBPOINTER(buffer)[0]);
+ 		return false;
+ 	}
+@@ -594,7 +594,7 @@ bool AMF0Serializer::WriteNull(IOBuffer
+ bool AMF0Serializer::ReadUndefined(IOBuffer &buffer, Variant &variant) {
+ 	AMF_CHECK_BOUNDARIES(buffer, 1);
+ 	if (GETIBPOINTER(buffer)[0] != AMF0_UNDEFINED) {
+-		FATAL("AMF type not valid: want: %"PRIu8"; got: %"PRIu8,
++		FATAL("AMF type not valid: want: %" PRIu8 "; got: %" PRIu8,
+ 				AMF0_UNDEFINED, GETIBPOINTER(buffer)[0]);
+ 		return false;
+ 	}
+@@ -730,7 +730,7 @@ bool AMF0Serializer::Read(IOBuffer &buff
+ 		}
+ 		default:
+ 		{
+-			FATAL("Unable to de-serialize type %"PRIu8"; Buffer: %s",
++			FATAL("Unable to de-serialize type %" PRIu8 "; Buffer: %s",
+ 					GETIBPOINTER(buffer)[0], STR(buffer));
+ 			return false;
+ 		}
+--- a/sources/thelib/src/protocols/rtmp/basertmpappprotocolhandler.cpp
++++ b/sources/thelib/src/protocols/rtmp/basertmpappprotocolhandler.cpp
+@@ -632,8 +632,8 @@ bool BaseRTMPAppProtocolHandler::Process
+ 				bufferLen = bufferLen / 1000 + 1;
+ 			else
+ 				bufferLen = bufferLen / 1000;
+-			//			FINEST("streamId: %"PRIu32, streamId);
+-			//			FINEST("bufferLen: %"PRIu32, bufferLen);
++			//			FINEST("streamId: %" PRIu32, streamId);
++			//			FINEST("bufferLen: %" PRIu32, bufferLen);
+ 			BaseStream *pStream = pFrom->GetRTMPStream(streamId);
+ 			if (pStream == NULL) {
+ 				return true;
+@@ -958,7 +958,7 @@ bool BaseRTMPAppProtocolHandler::Process
+ 	map<uint32_t, BaseOutStream *> subscribedOutStreams =
+ 			GetApplication()->GetStreamsManager()->GetWaitingSubscribers(
+ 			streamName, pInNetRTMPStream->GetType(), true);
+-	//FINEST("subscribedOutStreams count: %"PRIz"u", subscribedOutStreams.size());
++	//FINEST("subscribedOutStreams count: %" PRIz "u", subscribedOutStreams.size());
+ 
+ 
+ 	//7. Bind the waiting subscribers
+--- a/sources/thelib/src/protocols/rtmp/basertmpprotocol.cpp
++++ b/sources/thelib/src/protocols/rtmp/basertmpprotocol.cpp
+@@ -364,7 +364,7 @@ void BaseRTMPProtocol::GetStats(Variant
+ 
+ bool BaseRTMPProtocol::ResetChannel(uint32_t channelId) {
+ 	if (channelId >= MAX_CHANNELS_COUNT) {
+-		FATAL("Invalid channel id in reset message: %"PRIu32, channelId);
++		FATAL("Invalid channel id in reset message: %" PRIu32, channelId);
+ 		return false;
+ 	}
+ 	_channels[channelId].Reset();
+@@ -487,7 +487,7 @@ void BaseRTMPProtocol::TrySetOutboundChu
+ 
+ BaseStream * BaseRTMPProtocol::GetRTMPStream(uint32_t rtmpStreamId) {
+ 	if (rtmpStreamId == 0 || rtmpStreamId >= MAX_STREAMS_COUNT) {
+-		//WARN("Invalid stream id: %"PRIu32, rtmpStreamId);
++		//WARN("Invalid stream id: %" PRIu32, rtmpStreamId);
+ 		return NULL;
+ 	}
+ 	return _streams[rtmpStreamId];
+@@ -616,7 +616,7 @@ BaseOutNetRTMPStream * BaseRTMPProtocol:
+ 	} else {
+ 
+ 		if (_streams[streamId]->GetType() != ST_NEUTRAL_RTMP) {
+-			FATAL("Try to play a stream over a non neutral stream: id: %u; type: %"PRIu64,
++			FATAL("Try to play a stream over a non neutral stream: id: %u; type: %" PRIu64,
+ 					streamId, _streams[streamId]->GetType());
+ 			return NULL;
+ 		}
+@@ -886,7 +886,7 @@ bool BaseRTMPProtocol::ProcessBytes(IOBu
+ 				case RM_HEADER_MESSAGETYPE_VIDEODATA:
+ 				{
+ 					if (H_SI(header) >= MAX_STREAMS_COUNT) {
+-						FATAL("The server doesn't support stream ids bigger than %"PRIu32,
++						FATAL("The server doesn't support stream ids bigger than %" PRIu32,
+ 								(uint32_t) MAX_STREAMS_COUNT);
+ 						return false;
+ 					}
+@@ -918,7 +918,7 @@ bool BaseRTMPProtocol::ProcessBytes(IOBu
+ 				case RM_HEADER_MESSAGETYPE_AUDIODATA:
+ 				{
+ 					if (H_SI(header) >= MAX_STREAMS_COUNT) {
+-						FATAL("The server doesn't support stream ids bigger than %"PRIu32,
++						FATAL("The server doesn't support stream ids bigger than %" PRIu32,
+ 								(uint32_t) MAX_STREAMS_COUNT);
+ 						return false;
+ 					}
+--- a/sources/thelib/src/protocols/rtmp/header_le_ba.cpp
++++ b/sources/thelib/src/protocols/rtmp/header_le_ba.cpp
+@@ -346,7 +346,7 @@ bool Header::Write(IOBuffer &buffer) {
+ }
+ 
+ Header::operator string() {
+-	return format("(RC: %"PRIu8"; HT: %"PRIu8"; CI: %02"PRIu32"; T: % 9"PRIu32"; L: % 6"PRIu32"; MT: % 2"PRIu8"; SI: % 2"PRIu32"; IA: %"PRIu8")",
++	return format("(RC: %" PRIu8 "; HT: %" PRIu8 "; CI: %02" PRIu32 "; T: % 9" PRIu32 "; L: % 6" PRIu32 "; MT: % 2" PRIu8 "; SI: % 2" PRIu32 "; IA: %" PRIu8 ")",
+ 			readCompleted, ht, ci, hf.s.ts, hf.s.ml, hf.s.mt, hf.s.si, isAbsolute);
+ }
+ 
+--- a/sources/thelib/src/protocols/rtmp/monitorrtmpprotocol.cpp
++++ b/sources/thelib/src/protocols/rtmp/monitorrtmpprotocol.cpp
+@@ -278,7 +278,7 @@ bool MonitorRTMPProtocol::ProcessBytes(I
+ 						if ((uint8_t) VH_MT(msg) == RM_HEADER_MESSAGETYPE_ABORTMESSAGE) {
+ 							uint32_t channelId = (uint32_t) msg[RM_ABORTMESSAGE];
+ 							if (channelId >= _maxChannelsCount) {
+-								FATAL("Invalid channel id in reset message: %"PRIu32, channelId);
++								FATAL("Invalid channel id in reset message: %" PRIu32, channelId);
+ 								return false;
+ 							}
+ 							o_assert(_channels[channelId].id == channelId);
+--- a/sources/thelib/src/protocols/rtmp/rtmpprotocolserializer.cpp
++++ b/sources/thelib/src/protocols/rtmp/rtmpprotocolserializer.cpp
+@@ -720,7 +720,7 @@ bool RTMPProtocolSerializer::Deserialize
+ 		Variant &message) {
+ 	AMF_CHECK_BOUNDARIES(buffer, 1);
+ 	if (GETIBPOINTER(buffer)[0] != 0) {
+-		FATAL("Encoding %"PRIu8" not supported yet", GETIBPOINTER(buffer)[0]);
++		FATAL("Encoding %" PRIu8 " not supported yet", GETIBPOINTER(buffer)[0]);
+ 		return false;
+ 	}
+ 
+--- a/sources/thelib/src/protocols/rtmp/streaming/baseoutnetrtmpstream.cpp
++++ b/sources/thelib/src/protocols/rtmp/streaming/baseoutnetrtmpstream.cpp
+@@ -64,7 +64,7 @@ BaseOutNetRTMPStream::BaseOutNetRTMPStre
+ 	_videoCurrentFrameDropped = false;
+ 	_maxBufferSize = 65536 * 2;
+ 	_attachedStreamType = 0;
+-	_clientId = format("%d_%d_%"PRIz"u", _pProtocol->GetId(), _rtmpStreamId, (size_t)this);
++	_clientId = format("%d_%d_%" PRIz "u", _pProtocol->GetId(), _rtmpStreamId, (size_t)this);
+ 
+ 	_paused = false;
+ 
+--- a/sources/thelib/src/protocols/rtmp/streaming/infilertmpstream.cpp
++++ b/sources/thelib/src/protocols/rtmp/streaming/infilertmpstream.cpp
+@@ -74,12 +74,12 @@ bool InFileRTMPStream::AVCBuilder::Build
+ 	}
+ 
+ 	if (!pFile->SeekTo(mediaFrame.start)) {
+-		FATAL("Unable to seek to position %"PRIu64, mediaFrame.start);
++		FATAL("Unable to seek to position %" PRIu64, mediaFrame.start);
+ 		return false;
+ 	}
+ 
+ 	if (!buffer.ReadFromFs(*pFile, (uint32_t) mediaFrame.length)) {
+-		FATAL("Unable to read %"PRIu64" bytes from offset %"PRIu64, mediaFrame.length, mediaFrame.start);
++		FATAL("Unable to read %" PRIu64 " bytes from offset %" PRIu64, mediaFrame.length, mediaFrame.start);
+ 		return false;
+ 	}
+ 
+@@ -107,13 +107,13 @@ bool InFileRTMPStream::AACBuilder::Build
+ 
+ 	//2. Seek into the data file at the correct position
+ 	if (!pFile->SeekTo(mediaFrame.start)) {
+-		FATAL("Unable to seek to position %"PRIu64, mediaFrame.start);
++		FATAL("Unable to seek to position %" PRIu64, mediaFrame.start);
+ 		return false;
+ 	}
+ 
+ 	//3. Read the data
+ 	if (!buffer.ReadFromFs(*pFile, (uint32_t) mediaFrame.length)) {
+-		FATAL("Unable to read %"PRIu64" bytes from offset %"PRIu64, mediaFrame.length, mediaFrame.start);
++		FATAL("Unable to read %" PRIu64 " bytes from offset %" PRIu64, mediaFrame.length, mediaFrame.start);
+ 		return false;
+ 	}
+ 
+@@ -134,13 +134,13 @@ bool InFileRTMPStream::MP3Builder::Build
+ 
+ 	//2. Seek into the data file at the correct position
+ 	if (!pFile->SeekTo(mediaFrame.start)) {
+-		FATAL("Unable to seek to position %"PRIu64, mediaFrame.start);
++		FATAL("Unable to seek to position %" PRIu64, mediaFrame.start);
+ 		return false;
+ 	}
+ 
+ 	//3. Read the data
+ 	if (!buffer.ReadFromFs(*pFile, (uint32_t) mediaFrame.length)) {
+-		FATAL("Unable to read %"PRIu64" bytes from offset %"PRIu64, mediaFrame.length, mediaFrame.start);
++		FATAL("Unable to read %" PRIu64 " bytes from offset %" PRIu64, mediaFrame.length, mediaFrame.start);
+ 		return false;
+ 	}
+ 
+@@ -159,13 +159,13 @@ bool InFileRTMPStream::PassThroughBuilde
+ 		MediaFrame &mediaFrame, IOBuffer &buffer) {
+ 	//1. Seek into the data file at the correct position
+ 	if (!pFile->SeekTo(mediaFrame.start)) {
+-		FATAL("Unable to seek to position %"PRIu64, mediaFrame.start);
++		FATAL("Unable to seek to position %" PRIu64, mediaFrame.start);
+ 		return false;
+ 	}
+ 
+ 	//2. Read the data
+ 	if (!buffer.ReadFromFs(*pFile, (uint32_t) mediaFrame.length)) {
+-		FATAL("Unable to read %"PRIu64" bytes from offset %"PRIu64, mediaFrame.length, mediaFrame.start);
++		FATAL("Unable to read %" PRIu64 " bytes from offset %" PRIu64, mediaFrame.length, mediaFrame.start);
+ 		return false;
+ 	}
+ 
+@@ -418,14 +418,14 @@ bool InFileRTMPStream::BuildFrame(FileCl
+ bool InFileRTMPStream::FeedMetaData(FileClass *pFile, MediaFrame &mediaFrame) {
+ 	//1. Seek into the data file at the correct position
+ 	if (!pFile->SeekTo(mediaFrame.start)) {
+-		FATAL("Unable to seek to position %"PRIu64, mediaFrame.start);
++		FATAL("Unable to seek to position %" PRIu64, mediaFrame.start);
+ 		return false;
+ 	}
+ 
+ 	//2. Read the data
+ 	_metadataBuffer.IgnoreAll();
+ 	if (!_metadataBuffer.ReadFromFs(*pFile, (uint32_t) mediaFrame.length)) {
+-		FATAL("Unable to read %"PRIu64" bytes from offset %"PRIu64, mediaFrame.length, mediaFrame.start);
++		FATAL("Unable to read %" PRIu64 " bytes from offset %" PRIu64, mediaFrame.length, mediaFrame.start);
+ 		return false;
+ 	}
+ 
+--- a/sources/thelib/src/protocols/rtmp/streaming/innetrtmpstream.cpp
++++ b/sources/thelib/src/protocols/rtmp/streaming/innetrtmpstream.cpp
+@@ -33,7 +33,7 @@ InNetRTMPStream::InNetRTMPStream(BaseRTM
+ 	_rtmpStreamId = rtmpStreamId;
+ 	_chunkSize = pProtocol->GetInboundChunkSize();
+ 	_channelId = channelId;
+-	_clientId = format("%d_%d_%"PRIz"u", _pProtocol->GetId(), _rtmpStreamId, (size_t)this);
++	_clientId = format("%d_%d_%" PRIz "u", _pProtocol->GetId(), _rtmpStreamId, (size_t)this);
+ 	_lastVideoTime = 0;
+ 	_lastAudioTime = 0;
+ 	_pOutFileRTMPFLVStream = NULL;
+@@ -319,7 +319,7 @@ bool InNetRTMPStream::InitializeAudioCap
+ 		return false;
+ 	}
+ 
+-	//	FINEST("Cached the AAC audio codec initialization: %"PRIu32,
++	//	FINEST("Cached the AAC audio codec initialization: %" PRIu32,
+ 	//			GETAVAILABLEBYTESCOUNT(_audioCodecInit));
+ 
+ 	return true;
+--- a/sources/thelib/src/protocols/rtp/basertspappprotocolhandler.cpp
++++ b/sources/thelib/src/protocols/rtp/basertspappprotocolhandler.cpp
+@@ -1679,7 +1679,7 @@ string BaseRTSPAppProtocolHandler::Compu
+ 	//3. Prepare the body of the response
+ 	string result = "";
+ 	result += "v=0\r\n";
+-	result += format("o=- %"PRIu32" 0 IN IP4 %s\r\n", pFrom->GetId(), STR(nearAddress));
++	result += format("o=- %" PRIu32 " 0 IN IP4 %s\r\n", pFrom->GetId(), STR(nearAddress));
+ 	result += "s=" + targetStreamName + "\r\n";
+ 	result += "u="BRANDING_WEB"\r\n";
+ 	result += "e="BRANDING_EMAIL"\r\n";
+--- a/sources/thelib/src/protocols/rtp/connectivity/inboundconnectivity.cpp
++++ b/sources/thelib/src/protocols/rtp/connectivity/inboundconnectivity.cpp
+@@ -243,7 +243,7 @@ bool InboundConnectivity::Initialize() {
+ 	map<uint32_t, BaseOutStream *> subscribedOutStreams =
+ 			pApplication->GetStreamsManager()->GetWaitingSubscribers(
+ 			_streamName, _pInStream->GetType(), true);
+-	//FINEST("subscribedOutStreams count: %"PRIz"u", subscribedOutStreams.size());
++	//FINEST("subscribedOutStreams count: %" PRIz "u", subscribedOutStreams.size());
+ 
+ 
+ 	//8. Bind the waiting subscribers
+@@ -272,11 +272,11 @@ string InboundConnectivity::GetTransport
+ 		InboundRTPProtocol *pRTP = isAudio ? _pRTPAudio : _pRTPVideo;
+ 		RTCPProtocol *pRTCP = isAudio ? _pRTCPAudio : _pRTCPVideo;
+ 		if (isClient) {
+-			return format("RTP/AVP;unicast;client_port=%"PRIu16"-%"PRIu16,
++			return format("RTP/AVP;unicast;client_port=%" PRIu16 "-%" PRIu16,
+ 					((UDPCarrier *) pRTP->GetIOHandler())->GetNearEndpointPort(),
+ 					((UDPCarrier *) pRTCP->GetIOHandler())->GetNearEndpointPort());
+ 		} else {
+-			return format("RTP/AVP;unicast;client_port=%s;server_port=%"PRIu16"-%"PRIu16,
++			return format("RTP/AVP;unicast;client_port=%s;server_port=%" PRIu16 "-%" PRIu16,
+ 					STR(track["portsOrChannels"]["all"]),
+ 					((UDPCarrier *) pRTP->GetIOHandler())->GetNearEndpointPort(),
+ 					((UDPCarrier *) pRTCP->GetIOHandler())->GetNearEndpointPort());
+--- a/sources/thelib/src/protocols/rtp/connectivity/outboundconnectivity.cpp
++++ b/sources/thelib/src/protocols/rtp/connectivity/outboundconnectivity.cpp
+@@ -126,20 +126,20 @@ void OutboundConnectivity::SetOutStream(
+ }
+ 
+ string OutboundConnectivity::GetVideoPorts() {
+-	return format("%"PRIu16"-%"PRIu16, _videoDataPort, _videoRTCPPort);
++	return format("%" PRIu16 "-%" PRIu16, _videoDataPort, _videoRTCPPort);
+ }
+ 
+ string OutboundConnectivity::GetAudioPorts() {
+-	return format("%"PRIu16"-%"PRIu16, _audioDataPort, _audioRTCPPort);
++	return format("%" PRIu16 "-%" PRIu16, _audioDataPort, _audioRTCPPort);
+ }
+ 
+ string OutboundConnectivity::GetVideoChannels() {
+-	return format("%"PRIu8"-%"PRIu8, _rtpClient.videoDataChannel,
++	return format("%" PRIu8 "-%" PRIu8, _rtpClient.videoDataChannel,
+ 			_rtpClient.videoRtcpChannel);
+ }
+ 
+ string OutboundConnectivity::GetAudioChannels() {
+-	return format("%"PRIu8"-%"PRIu8, _rtpClient.audioDataChannel,
++	return format("%" PRIu8 "-%" PRIu8, _rtpClient.audioDataChannel,
+ 			_rtpClient.audioRtcpChannel);
+ }
+ 
+--- a/sources/thelib/src/protocols/rtp/nattraversalprotocol.cpp
++++ b/sources/thelib/src/protocols/rtp/nattraversalprotocol.cpp
+@@ -60,12 +60,12 @@ bool NATTraversalProtocol::SignalInputDa
+ 	}
+ 	string ipAddress = inet_ntoa(_pOutboundAddress->sin_addr);
+ 	if (_pOutboundAddress->sin_port == pPeerAddress->sin_port) {
+-		INFO("The client has public endpoint: %s:%"PRIu16,
++		INFO("The client has public endpoint: %s:%" PRIu16,
+ 				STR(ipAddress),
+ 				ENTOHS(_pOutboundAddress->sin_port));
+ 	} else {
+ 
+-		INFO("The client is behind firewall: %s:%"PRIu16" -> %s:%"PRIu16,
++		INFO("The client is behind firewall: %s:%" PRIu16 " -> %s:%" PRIu16,
+ 				STR(ipAddress),
+ 				ENTOHS(_pOutboundAddress->sin_port),
+ 				STR(ipAddress),
+--- a/sources/thelib/src/protocols/rtp/rtspprotocol.cpp
++++ b/sources/thelib/src/protocols/rtp/rtspprotocol.cpp
+@@ -485,7 +485,7 @@ bool RTSPProtocol::SendMessage(Variant &
+ 
+ 	//2. Add the content length if required
+ 	if (content.size() > 0) {
+-		headers[RTSP_HEADERS][RTSP_HEADERS_CONTENT_LENGTH] = format("%"PRIz"u", content.size());
++		headers[RTSP_HEADERS][RTSP_HEADERS_CONTENT_LENGTH] = format("%" PRIz "u", content.size());
+ 	}
+ 
+ 	//3. Add the session id if necessary
+@@ -732,7 +732,7 @@ bool RTSPProtocol::HandleRTSPMessage(IOB
+ 		_inboundContent += string((char *) GETIBPOINTER(buffer), chunkLength);
+ 		buffer.Ignore(chunkLength);
+ 		if (_inboundContent.size() < _contentLength) {
+-			FINEST("Not enough data. Wanted: %u; got: %"PRIz"u", _contentLength, _inboundContent.size());
++			FINEST("Not enough data. Wanted: %u; got: %" PRIz "u", _contentLength, _inboundContent.size());
+ 			return true;
+ 		}
+ 	}
+--- a/sources/thelib/src/protocols/rtp/sdp.cpp
++++ b/sources/thelib/src/protocols/rtp/sdp.cpp
+@@ -223,10 +223,10 @@ bool SDP::ParseTransportLine(string raw,
+ 				FATAL("Invalid transport line: %s", STR(raw));
+ 				return false;
+ 			}
+-			all = format("%"PRIu16"-%"PRIu16, data, rtcp);
++			all = format("%" PRIu16 "-%" PRIu16, data, rtcp);
+ 		} else {
+ 			data = (uint16_t) atoi(STR(parts[0]));
+-			all = format("%"PRIu16, data);
++			all = format("%" PRIu16, data);
+ 			rtcp = 0;
+ 		}
+ 		if (all != raw) {
+--- a/sources/thelib/src/protocols/rtp/streaming/innetrtpstream.cpp
++++ b/sources/thelib/src/protocols/rtp/streaming/innetrtpstream.cpp
+@@ -165,9 +165,9 @@ bool InNetRTPStream::FeedData(uint8_t *p
+ 	switch (_rtcpPresence) {
+ 		case RTCP_PRESENCE_UNKNOWN:
+ 		{
+-			DEBUG_RTCP_PRESENCE("RTCP_PRESENCE_UNKNOWN: %"PRIz"u", (time(NULL) - _rtcpDetectionStart));
++			DEBUG_RTCP_PRESENCE("RTCP_PRESENCE_UNKNOWN: %" PRIz "u", (time(NULL) - _rtcpDetectionStart));
+ 			if (_rtcpDetectionInterval == 0) {
+-				WARN("RTCP disabled on stream %s(%"PRIu32") with name %s. A/V drifting may occur over long periods of time",
++				WARN("RTCP disabled on stream %s(%" PRIu32 ") with name %s. A/V drifting may occur over long periods of time",
+ 						STR(tagToString(GetType())), GetUniqueId(), STR(GetName()));
+ 				_rtcpPresence = RTCP_PRESENCE_ABSENT;
+ 				return true;
+@@ -177,7 +177,7 @@ bool InNetRTPStream::FeedData(uint8_t *p
+ 				return true;
+ 			}
+ 			if ((time(NULL) - _rtcpDetectionStart) > _rtcpDetectionInterval) {
+-				WARN("Stream %s(%"PRIu32") with name %s doesn't have RTCP. A/V drifting may occur over long periods of time",
++				WARN("Stream %s(%" PRIu32 ") with name %s doesn't have RTCP. A/V drifting may occur over long periods of time",
+ 						STR(tagToString(GetType())), GetUniqueId(), STR(GetName()));
+ 				_rtcpPresence = RTCP_PRESENCE_ABSENT;
+ 				return true;
+@@ -199,7 +199,7 @@ bool InNetRTPStream::FeedData(uint8_t *p
+ 				videoRTCPPresent = true;
+ 			}
+ 			if (audioRTCPPresent && videoRTCPPresent) {
+-				DEBUG_RTCP_PRESENCE("RTCP available on stream %s(%"PRIu32") with name %s.",
++				DEBUG_RTCP_PRESENCE("RTCP available on stream %s(%" PRIu32 ") with name %s.",
+ 						STR(tagToString(GetType())), GetUniqueId(), STR(GetName()));
+ 				_rtcpPresence = RTCP_PRESENCE_AVAILABLE;
+ 			}
+@@ -225,7 +225,7 @@ bool InNetRTPStream::FeedData(uint8_t *p
+ 		}
+ 		default:
+ 		{
+-			ASSERT("Invalid _rtcpPresence: %"PRIu8, _rtcpPresence);
++			ASSERT("Invalid _rtcpPresence: %" PRIu8, _rtcpPresence);
+ 			return false;
+ 		}
+ 	}
+@@ -293,7 +293,7 @@ bool InNetRTPStream::FeedVideoData(uint8
+ 		return true;
+ 	} else {
+ 		if ((uint16_t) (_videoSequence + 1) != (uint16_t) GET_RTP_SEQ(rtpHeader)) {
+-			WARN("Missing video packet. Wanted: %"PRIu16"; got: %"PRIu16" on stream: %s",
++			WARN("Missing video packet. Wanted: %" PRIu16 "; got: %" PRIu16 " on stream: %s",
+ 					(uint16_t) (_videoSequence + 1),
+ 					(uint16_t) GET_RTP_SEQ(rtpHeader),
+ 					STR(GetName()));
+@@ -312,7 +312,7 @@ bool InNetRTPStream::FeedVideoData(uint8
+ 	uint8_t naluType = NALU_TYPE(pData[0]);
+ 	if (naluType <= 23) {
+ 		//3. Standard NALU
+-		//FINEST("V: %08"PRIx32, rtpHeader._timestamp);
++		//FINEST("V: %08" PRIx32, rtpHeader._timestamp);
+ 		_videoPacketsCount++;
+ 		_videoBytesCount += dataLength;
+ 		return FeedData(pData, dataLength, 0, dataLength, ts, false);
+@@ -333,7 +333,7 @@ bool InNetRTPStream::FeedVideoData(uint8
+ 			//middle NAL
+ 			_currentNalu.ReadFromBuffer(pData + 2, dataLength - 2);
+ 			if (((pData[1] >> 6)&0x01) == 1) {
+-				//FINEST("V: %08"PRIx32, rtpHeader._timestamp);
++				//FINEST("V: %08" PRIx32, rtpHeader._timestamp);
+ 				_videoPacketsCount++;
+ 				_videoBytesCount += GETAVAILABLEBYTESCOUNT(_currentNalu);
+ 				if (!FeedData(GETIBPOINTER(_currentNalu),
+@@ -391,7 +391,7 @@ bool InNetRTPStream::FeedAudioData(uint8
+ 		return true;
+ 	} else {
+ 		if ((uint16_t) (_audioSequence + 1) != (uint16_t) GET_RTP_SEQ(rtpHeader)) {
+-			WARN("Missing audio packet. Wanted: %"PRIu16"; got: %"PRIu16" on stream: %s",
++			WARN("Missing audio packet. Wanted: %" PRIu16 "; got: %" PRIu16 " on stream: %s",
+ 					(uint16_t) (_audioSequence + 1),
+ 					(uint16_t) GET_RTP_SEQ(rtpHeader),
+ 					STR(GetName()));
+@@ -406,7 +406,7 @@ bool InNetRTPStream::FeedAudioData(uint8
+ 	//1. Compute chunks count
+ 	uint16_t chunksCount = ENTOHSP(pData);
+ 	if ((chunksCount % 16) != 0) {
+-		FATAL("Invalid AU headers length: %"PRIx16, chunksCount);
++		FATAL("Invalid AU headers length: %" PRIx16, chunksCount);
+ 		return false;
+ 	}
+ 	chunksCount = chunksCount / 16;
+@@ -424,7 +424,7 @@ bool InNetRTPStream::FeedAudioData(uint8
+ 		}
+ 		ts = (double) (rtpTs + i * 1024) / (double) _capabilities.aac._sampleRate * 1000.00;
+ 		if ((cursor + chunkSize) > dataLength) {
+-			FATAL("Unable to feed data: cursor: %"PRIu32"; chunkSize: %"PRIu16"; dataLength: %"PRIu32"; chunksCount: %"PRIu16,
++			FATAL("Unable to feed data: cursor: %" PRIu32 "; chunkSize: %" PRIu16 "; dataLength: %" PRIu32 "; chunksCount: %" PRIu16,
+ 					cursor, chunkSize, dataLength, chunksCount);
+ 			return false;
+ 		}
+--- a/sources/thelib/src/protocols/ssl/basesslprotocol.cpp
++++ b/sources/thelib/src/protocols/ssl/basesslprotocol.cpp
+@@ -223,8 +223,8 @@ string BaseSSLProtocol::DumpBIO(BIO *pBI
+ 	formatString += "next_bio: %p\n";
+ 	formatString += "prev_bio: %p\n";
+ 	formatString += "references: %d\n";
+-	formatString += "num_read: %"PRId64"\n";
+-	formatString += "num_write: %"PRId64;
++	formatString += "num_read: %" PRId64 "\n";
++	formatString += "num_write: %" PRId64;
+ 	return format(formatString,
+ 			pBIO->method,
+ 			pBIO->callback,
+--- a/sources/thelib/src/protocols/ts/inboundtsprotocol.cpp
++++ b/sources/thelib/src/protocols/ts/inboundtsprotocol.cpp
+@@ -308,7 +308,7 @@ bool InboundTSProtocol::ProcessPacket(ui
+ 		}
+ 		default:
+ 		{
+-			WARN("PID type not implemented: %d. Pid number: %"PRIu16,
++			WARN("PID type not implemented: %d. Pid number: %" PRIu16,
+ 					pPIDDescriptor->type, pPIDDescriptor->pid);
+ 			return false;
+ 		}
+@@ -465,7 +465,7 @@ bool InboundTSProtocol::ProcessPidTypePM
+ 		map<uint32_t, BaseOutStream *> subscribedOutStreams =
+ 				GetApplication()->GetStreamsManager()->GetWaitingSubscribers(
+ 				streamName, pStream->GetType(), true);
+-		//FINEST("subscribedOutStreams count: %"PRIz"u", subscribedOutStreams.size());
++		//FINEST("subscribedOutStreams count: %" PRIz "u", subscribedOutStreams.size());
+ 
+ 
+ 		//8. Bind the waiting subscribers
+--- a/sources/thelib/src/protocols/ts/innettsstream.cpp
++++ b/sources/thelib/src/protocols/ts/innettsstream.cpp
+@@ -183,7 +183,7 @@ bool InNetTSStream::FeedData(uint8_t *pD
+ 				value = (value + roll)&0x1ffffffff;
+ #endif /* __FORCE_ROLL_OVER_FOR_DEBUG */
+ #ifdef __DUMP_TIMESTAMP_INFO_FOR_DEBUG
+-				string dbg = format("%c lastRawPts: %09"PRIx64" -> value: %09"PRIx64"; ", isAudio ? 'A' : 'V', lastRawPts, value);
++				string dbg = format("%c lastRawPts: %09" PRIx64 " -> value: %09" PRIx64 "; ", isAudio ? 'A' : 'V', lastRawPts, value);
+ #endif /* __DUMP_TIMESTAMP_INFO_FOR_DEBUG */
+ 				if (((lastRawPts >> 32) == 1)
+ 						&& ((value >> 32) == 0)) {
+@@ -195,7 +195,7 @@ bool InNetTSStream::FeedData(uint8_t *pD
+ 				lastRawPts = value;
+ 				value += (rollOverCount * 0x1ffffffffLL);
+ #ifdef __DUMP_TIMESTAMP_INFO_FOR_DEBUG
+-				dbg += format("final: %09"PRIx64"; ", value);
++				dbg += format("final: %09" PRIx64 "; ", value);
+ #endif /* __DUMP_TIMESTAMP_INFO_FOR_DEBUG */
+ 				double tempPtsTime = (double) value / 90.00;
+ 				if (ptsTime > tempPtsTime) {
+--- a/sources/thelib/src/protocols/ts/tspacketpat.cpp
++++ b/sources/thelib/src/protocols/ts/tspacketpat.cpp
+@@ -61,14 +61,14 @@ TSPacketPAT::operator string() {
+ 	result += format("lastSectionNumber:      %hhu\n", _lastSectionNumber);
+ 	result += format("crc:                    %x\n", _crc);
+ 	result += format("entriesCount:           %u\n", _entriesCount);
+-	result += format("NIT count:              %"PRIz"u\n", _networkPids.size());
++	result += format("NIT count:              %" PRIz "u\n", _networkPids.size());
+ 	if (_networkPids.size() > 0) {
+ 
+ 		FOR_MAP(_networkPids, uint16_t, uint16_t, i) {
+ 			result += format("\tNIT %hu: %hu\n", MAP_KEY(i), MAP_VAL(i));
+ 		}
+ 	}
+-	result += format("PMT count:              %"PRIz"u\n", _programPids.size());
++	result += format("PMT count:              %" PRIz "u\n", _programPids.size());
+ 	if (_programPids.size() > 0) {
+ 
+ 		FOR_MAP(_programPids, uint16_t, uint16_t, i) {
+--- a/sources/thelib/src/protocols/ts/tspacketpmt.cpp
++++ b/sources/thelib/src/protocols/ts/tspacketpmt.cpp
+@@ -48,13 +48,13 @@ TSPacketPMT::operator string() {
+ 	result += format("reserved5:              %hhu\n", _reserved5);
+ 	result += format("programInfoLength:      %hu\n", _programInfoLength);
+ 	result += format("crc:                    %x\n", _crc);
+-	result += format("descriptors count:      %"PRIz"u\n", _programInfoDescriptors.size());
++	result += format("descriptors count:      %" PRIz "u\n", _programInfoDescriptors.size());
+ 	for (uint32_t i = 0; i < _programInfoDescriptors.size(); i++) {
+ 		result += format("\t%s", STR(_programInfoDescriptors[i]));
+ 		if (i != _programInfoDescriptors.size() - 1)
+ 			result += "\n";
+ 	}
+-	result += format("streams count:          %"PRIz"u\n", _streams.size());
++	result += format("streams count:          %" PRIz "u\n", _streams.size());
+ 
+ 	FOR_MAP(_streams, uint16_t, TSStreamInfo, i) {
+ 		result += format("\t%hu: %s\n", MAP_KEY(i), STR(MAP_VAL(i).toString(1)));
+--- a/sources/thelib/src/streaming/baseinfilestream.cpp
++++ b/sources/thelib/src/streaming/baseinfilestream.cpp
+@@ -113,17 +113,17 @@ BaseInFileStream::~BaseInFileStream() {
+ 
+ void BaseInFileStream::SetClientSideBuffer(uint32_t value) {
+ 	if (value == 0) {
+-		//WARN("Invalid client side buffer value: %"PRIu32, value);
++		//WARN("Invalid client side buffer value: %" PRIu32, value);
+ 		return;
+ 	}
+ 	if (value > 120) {
+ 		value = 120;
+ 	}
+ 	if (_clientSideBufferLength > value) {
+-		//WARN("Client side buffer must be bigger than %"PRIu32, _clientSideBufferLength);
++		//WARN("Client side buffer must be bigger than %" PRIu32, _clientSideBufferLength);
+ 		return;
+ 	}
+-	//	FINEST("Client side buffer modified: %"PRIu32" -> %"PRIu32,
++	//	FINEST("Client side buffer modified: %" PRIu32 " -> %" PRIu32,
+ 	//			_clientSideBufferLength, value);
+ 	_clientSideBufferLength = value;
+ }
+@@ -276,7 +276,7 @@ bool BaseInFileStream::Initialize(Varian
+ 	//5. Compute the optimal window size by reading the biggest frame size
+ 	//from the seek file.
+ 	if (!_pSeekFile->SeekTo(_pSeekFile->Size() - 8)) {
+-		FATAL("Unable to seek to %"PRIu64" position", _pSeekFile->Cursor() - 8);
++		FATAL("Unable to seek to %" PRIu64 " position", _pSeekFile->Cursor() - 8);
+ 		return false;
+ 	}
+ 	uint64_t maxFrameSize = 0;
+@@ -302,7 +302,7 @@ bool BaseInFileStream::Initialize(Varian
+ 
+ 	//4. Read the frames count from the file
+ 	if (!_pSeekFile->SeekTo(_seekBaseOffset)) {
+-		FATAL("Unable to seek to _seekBaseOffset: %"PRIu64, _seekBaseOffset);
++		FATAL("Unable to seek to _seekBaseOffset: %" PRIu64, _seekBaseOffset);
+ 		return false;
+ 	}
+ 	if (!_pSeekFile->ReadUI32(&_totalFrames, false)) {
+@@ -327,7 +327,7 @@ bool BaseInFileStream::Initialize(Varian
+ 			val = 1;
+ 		if (val > (_clientSideBufferLength - 1))
+ 			val = _clientSideBufferLength - 1;
+-		FINEST("_clientSideBufferLength: %"PRIu32"; timer: %"PRIu32, _clientSideBufferLength, (uint32_t) val);
++		FINEST("_clientSideBufferLength: %" PRIu32 "; timer: %" PRIu32, _clientSideBufferLength, (uint32_t) val);
+ 		_pTimer->EnqueueForTimeEvent((uint32_t) val);
+ 	}
+ 
+@@ -388,7 +388,7 @@ bool BaseInFileStream::Initialize(int32_
+ 	//5. Compute the optimal window size by reading the biggest frame size
+ 	//from the seek file.
+ 	if (!_pSeekFile->SeekTo(_pSeekFile->Size() - 8)) {
+-		FATAL("Unable to seek to %"PRIu64" position", _pSeekFile->Cursor() - 8);
++		FATAL("Unable to seek to %" PRIu64 " position", _pSeekFile->Cursor() - 8);
+ 		return false;
+ 	}
+ 	uint64_t maxFrameSize = 0;
+@@ -413,7 +413,7 @@ bool BaseInFileStream::Initialize(int32_
+ 
+ 	//4. Read the frames count from the file
+ 	if (!_pSeekFile->SeekTo(_seekBaseOffset)) {
+-		FATAL("Unable to seek to _seekBaseOffset: %"PRIu64, _seekBaseOffset);
++		FATAL("Unable to seek to _seekBaseOffset: %" PRIu64, _seekBaseOffset);
+ 		return false;
+ 	}
+ 	if (!_pSeekFile->ReadUI32(&_totalFrames, false)) {
+--- a/sources/thelib/src/streaming/streamcapabilities.cpp
++++ b/sources/thelib/src/streaming/streamcapabilities.cpp
+@@ -40,7 +40,7 @@ _VIDEO_AVC::~_VIDEO_AVC() {
+ 
+ #define CHECK_BA_LIMITS(name,length) \
+ if(ba.AvailableBits()<length) { \
+-	FATAL("Unable to read `"name"` value. Not enough bits. Wanted: %u; Have: %u", \
++	FATAL("Unable to read `" name "` value. Not enough bits. Wanted: %u; Have: %u", \
+ 		(uint32_t)length, ba.AvailableBits()); \
+ 	return false; \
+ }
+@@ -55,7 +55,7 @@ if(ba.AvailableBits()<length) { \
+ { \
+ 	uint64_t ___value___=0; \
+ 	if(!ba.ReadExpGolomb(___value___)) { \
+-		FATAL("Unable to read `"name"` value"); \
++		FATAL("Unable to read `" name "` value"); \
+ 		return false; \
+ 	} \
+ 	v[name]=(type)___value___; \
+@@ -463,10 +463,10 @@ bool _VIDEO_AVC::Deserialize(IOBuffer &s
+ 
+ _VIDEO_AVC::operator string() {
+ 	string result;
+-	result += format("_spsLength: %"PRIu16"\n", _spsLength);
+-	result += format("_ppsLength: %"PRIu16"\n", _ppsLength);
+-	result += format("_rate: %"PRIu32"\n", _rate);
+-	result += format("WxH: %"PRIu32"x%"PRIu32, _width, _height);
++	result += format("_spsLength: %" PRIu16 "\n", _spsLength);
++	result += format("_ppsLength: %" PRIu16 "\n", _ppsLength);
++	result += format("_rate: %" PRIu32 "\n", _rate);
++	result += format("WxH: %" PRIu32 "x%" PRIu32, _width, _height);
+ 	return result;
+ }
+ 
+@@ -745,7 +745,7 @@ bool StreamCapabilities::Deserialize(str
+ 		return false;
+ 	}
+ 	if (length > 1024 * 1024) {
+-		FATAL("Invalid stream capabilities length in file %s: %"PRIu32, STR(seekFilePath), length);
++		FATAL("Invalid stream capabilities length in file %s: %" PRIu32, STR(seekFilePath), length);
+ 		return false;
+ 	}
+ 
+@@ -775,7 +775,7 @@ bool StreamCapabilities::Deserialize(IOB
+ 	}
+ 	uint64_t ver = ENTOHLLP(pBuffer);
+ 	if (ver != __STREAM_CAPABILITIES_VERSION) {
+-		FATAL("Invalid stream capabilities version. Wanted: %"PRIu64"; Got: %"PRIu64,
++		FATAL("Invalid stream capabilities version. Wanted: %" PRIu64 "; Got: %" PRIu64,
+ 				__STREAM_CAPABILITIES_VERSION, ver);
+ 		return false;
+ 	}
+--- a/sources/thelib/src/streaming/streamsmanager.cpp
++++ b/sources/thelib/src/streaming/streamsmanager.cpp
+@@ -103,7 +103,7 @@ map<uint32_t, BaseOutStream *> StreamsMa
+ 	shortSubscribers = FindByTypeByName(ST_OUT, shortName, true, false);
+ 	longSubscribers = FindByTypeByName(ST_OUT, streamName, true, false);
+ 
+-	//	FINEST("short count: %"PRIz"u; long count: %"PRIz"u",
++	//	FINEST("short count: %" PRIz "u; long count: %" PRIz "u",
+ 	//			shortSubscribers.size(), longSubscribers.size());
+ 
+ 	//3. merge them
+--- a/sources/thelib/include/mediaformats/mediaframe.h
++++ b/sources/thelib/include/mediaformats/mediaframe.h
+@@ -37,7 +37,7 @@ typedef struct _MediaFrame {
+ 	int32_t compositionOffset;
+ 
+ 	operator string() {
+-		return format("s: %"PRIx64"; l: %"PRIx64"; t: %hhu; dt: %.2f; kf: %hhu; at: %.2f; bh: %hhu",
++		return format("s: %" PRIx64 "; l: %" PRIx64 "; t: %hhu; dt: %.2f; kf: %hhu; at: %.2f; bh: %hhu",
+ 				start, length, type, deltaTime, isKeyFrame, absoluteTime, isBinaryHeader);
+ 	};
+ } MediaFrame;
+--- a/sources/thelib/include/protocols/ts/tspacketpmt.h
++++ b/sources/thelib/include/protocols/ts/tspacketpmt.h
+@@ -56,7 +56,7 @@ typedef struct _TSStreamInfo {
+ 	}
+ 
+ 	string toString(int32_t indent) {
+-		string result = format("%sstreamType: %hhx; elementaryPID: %hu; esInfoLength: %hu; descriptors count: %"PRIz"u\n",
++		string result = format("%sstreamType: %hhx; elementaryPID: %hu; esInfoLength: %hu; descriptors count: %" PRIz "u\n",
+ 				STR(string(indent, '\t')),
+ 				streamType, elementaryPID, esInfoLength, esDescriptors.size());
+ 		for (uint32_t i = 0; i < esDescriptors.size(); i++) {
