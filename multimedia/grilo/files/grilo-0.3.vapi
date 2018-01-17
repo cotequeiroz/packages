@@ -122,6 +122,7 @@ namespace Grl {
 		[CCode (cname = "grl_media_container_new", has_construct_function = false)]
 		public Media.container_new ();
 		public unowned string get_album ();
+		public int get_album_disc_number ();
 		public unowned string get_artist ();
 		public unowned string get_artist_nth (uint index);
 		public unowned string get_author ();
@@ -303,7 +304,7 @@ namespace Grl {
 		public void register_keys ();
 		public void set_filename (string filename);
 		public void set_id (string id);
-		public void set_module (GLib.Module module);
+		public void set_module (GLib.TypeModule module);
 		public void set_module_name (string module_name);
 		public void unload ();
 		[NoAccessorMethod]
