@@ -1,0 +1,97 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -85,7 +85,6 @@ AM_CONDITIONAL(USE_GSTREAMER, test x"$HA
+ AC_SUBST(GSTREAMER_CFLAGS)
+ AC_SUBST(GSTREAMER_LIBS)
+ 
+-PKG_CHECK_MODULES([CHECK], [check >= 0.9.4],have_check=yes,have_check=no)
+ AM_CONDITIONAL(HAVE_CHECK, test x"$have_check" = "xyes")
+ 
+ AM_PROG_VALAC([0.11.4])
+--- a/configure
++++ b/configure
+@@ -12680,80 +12680,11 @@ fi
+ pkg_failed=no
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for CHECK" >&5
+ $as_echo_n "checking for CHECK... " >&6; }
+-
+-if test -n "$CHECK_CFLAGS"; then
+-    pkg_cv_CHECK_CFLAGS="$CHECK_CFLAGS"
+- elif test -n "$PKG_CONFIG"; then
+-    if test -n "$PKG_CONFIG" && \
+-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"check >= 0.9.4\""; } >&5
+-  ($PKG_CONFIG --exists --print-errors "check >= 0.9.4") 2>&5
+-  ac_status=$?
+-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+-  test $ac_status = 0; }; then
+-  pkg_cv_CHECK_CFLAGS=`$PKG_CONFIG --cflags "check >= 0.9.4" 2>/dev/null`
+-		      test "x$?" != "x0" && pkg_failed=yes
+-else
+-  pkg_failed=yes
+-fi
+- else
+-    pkg_failed=untried
+-fi
+-if test -n "$CHECK_LIBS"; then
+-    pkg_cv_CHECK_LIBS="$CHECK_LIBS"
+- elif test -n "$PKG_CONFIG"; then
+-    if test -n "$PKG_CONFIG" && \
+-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"check >= 0.9.4\""; } >&5
+-  ($PKG_CONFIG --exists --print-errors "check >= 0.9.4") 2>&5
+-  ac_status=$?
+-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+-  test $ac_status = 0; }; then
+-  pkg_cv_CHECK_LIBS=`$PKG_CONFIG --libs "check >= 0.9.4" 2>/dev/null`
+-		      test "x$?" != "x0" && pkg_failed=yes
+-else
+-  pkg_failed=yes
+-fi
+- else
+-    pkg_failed=untried
+-fi
+-
+-
+-
+-if test $pkg_failed = yes; then
+-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+-$as_echo "no" >&6; }
+-
+-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+-        _pkg_short_errors_supported=yes
+-else
+-        _pkg_short_errors_supported=no
+-fi
+-        if test $_pkg_short_errors_supported = yes; then
+-	        CHECK_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "check >= 0.9.4" 2>&1`
+-        else
+-	        CHECK_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "check >= 0.9.4" 2>&1`
+-        fi
+-	# Put the nasty error message in config.log where it belongs
+-	echo "$CHECK_PKG_ERRORS" >&5
+-
+-	have_check=no
+-elif test $pkg_failed = untried; then
+-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+ $as_echo "no" >&6; }
+-	have_check=no
+-else
+-	CHECK_CFLAGS=$pkg_cv_CHECK_CFLAGS
+-	CHECK_LIBS=$pkg_cv_CHECK_LIBS
+-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+-$as_echo "yes" >&6; }
+-	have_check=yes
+-fi
+- if test x"$have_check" = "xyes"; then
+-  HAVE_CHECK_TRUE=
+-  HAVE_CHECK_FALSE='#'
+-else
+-  HAVE_CHECK_TRUE='#'
+-  HAVE_CHECK_FALSE=
+-fi
++have_check=no
++HAVE_CHECK_TRUE='#'
++HAVE_CHECK_FALSE=
+ 
+ 
+ # Extract the first word of "valac", so it can be a program name with args.
