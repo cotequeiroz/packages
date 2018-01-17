@@ -19,10 +19,12 @@ PKG_SOURCE_URL:=https://www.snort.org/downloads/snort/ \
 	@SF/$(PKG_NAME)
 PKG_HASH:=db57c532919d9ababac127f29dbdc05ed832394880e46cad81a5dde713ccb4be
 
-PKG_BUILD_DEPENDS:=librpc
+PKG_BUILD_DEPENDS:=libtirpc
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
+
+TARGET_CFLAGS:=-I$(STAGING_DIR)/usr/include/tirpc $(TARGET_CFLAGS)
 
 include $(INCLUDE_DIR)/package.mk
 
