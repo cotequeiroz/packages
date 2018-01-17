@@ -25,6 +25,7 @@ PKG_INSTALL:=1
 PKG_CHECK_FORMAT_SECURITY:=0
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/host-build.mk
 
 MAKE_PATH:=src
 
@@ -83,6 +84,9 @@ define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib \
 		$(1)/usr
+	$(INSTALL_DIR) $(STAGING_DIR_HOST)/bin
+	$(CP) $(PKG_INSTALL_DIR)/usr/bin/krb5-config \
+		$(STAGING_DIR_HOST)/bin/$(GNU_TARGET_NAME)-krb5-config
 endef
 
 define Package/krb5-libs/install
