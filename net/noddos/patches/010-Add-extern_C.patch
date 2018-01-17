@@ -1,0 +1,14 @@
+--- a/src/Ipset.h
++++ b/src/Ipset.h
+@@ -32,9 +32,11 @@
+ #include <arpa/inet.h>
+ #include <syslog.h>
+ 
++extern "C" {
+ #include <libipset/linux_ip_set.h>
+ #include <libipset/types.h>
+ #include <libipset/session.h>
++}
+ 
+ #include <tins/ip_address.h>
+ #include <tins/ipv6_address.h>
