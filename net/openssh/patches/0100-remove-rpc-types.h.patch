@@ -1,0 +1,20 @@
+--- a/configure
++++ b/configure
+@@ -6924,7 +6924,6 @@ for ac_header in  \
+ 	poll.h \
+ 	pty.h \
+ 	readpassphrase.h \
+-	rpc/types.h \
+ 	security/pam_appl.h \
+ 	sha2.h \
+ 	shadow.h \
+--- a/configure.ac
++++ b/configure.ac
+@@ -393,7 +393,6 @@ AC_CHECK_HEADERS([ \
+ 	poll.h \
+ 	pty.h \
+ 	readpassphrase.h \
+-	rpc/types.h \
+ 	security/pam_appl.h \
+ 	sha2.h \
+ 	shadow.h \
