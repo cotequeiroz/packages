@@ -26,6 +26,7 @@ PKG_MOD_AVAILABLE:= \
 	attr-sql \
 	blowfish \
 	ccm \
+	chapoly \
 	cmac \
 	constraints \
 	connmark \
@@ -148,6 +149,7 @@ $(call Package/strongswan/Default)
 	+strongswan-mod-attr-sql \
 	+strongswan-mod-blowfish \
 	+strongswan-mod-ccm \
+	+strongswan-mod-chapoly \
 	+strongswan-mod-cmac \
 	+strongswan-mod-constraints \
 	+strongswan-mod-connmark \
@@ -601,6 +603,7 @@ $(eval $(call BuildPlugin,attr,file based config,))
 $(eval $(call BuildPlugin,attr-sql,SQL based config,+strongswan-charon))
 $(eval $(call BuildPlugin,blowfish,Blowfish crypto,))
 $(eval $(call BuildPlugin,ccm,CCM AEAD wrapper crypto,))
+$(eval $(call BuildPlugin,chapoly,Chacha20Poly1305 crypto,+kmod-crypto-chacha20poly1305))
 $(eval $(call BuildPlugin,cmac,CMAC crypto,))
 $(eval $(call BuildPlugin,connmark,netfilter connection marking,))
 $(eval $(call BuildPlugin,constraints,advanced X509 constraint checking,))
