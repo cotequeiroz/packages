@@ -21,7 +21,7 @@ PKG_BUILD_DEPENDS:=unixodbc/host
 include $(INCLUDE_DIR)/package.mk
 
 CONFIGURE_ARGS += \
-	--with-unixodbc=$(STAGING_DIR)/usr \
+	--with-unixodbc=$(STAGING_DIR_HOST)/bin/odbc_config \
 	--with-libpq=$(STAGING_DIR)/usr
 
 define Package/psqlodbc/Default
