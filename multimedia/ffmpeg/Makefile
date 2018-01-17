@@ -328,8 +328,8 @@ define Package/libffmpeg-full
 $(call Package/libffmpeg/Default)
  TITLE+= (full)
  DEPENDS+= @BUILD_PATENTED +alsa-lib +PACKAGE_libopus:libopus \
- 	   +(SOFT_FLOAT&&PACKAGE_shine):shine +(!SOFT_FLOAT&&PACKAGE_lame-lib):lame-lib \
-	   +(!SOFT_FLOAT&&PACKAGE_libx264):libx264
+ 	   +SOFT_FLOAT:shine +!SOFT_FLOAT:lame-lib \
+	   +!SOFT_FLOAT:libx264
  VARIANT:=full
 endef
 
