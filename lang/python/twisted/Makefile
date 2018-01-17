@@ -22,6 +22,8 @@ PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
 
+TARGET_CFLAGS:=-I$(STAGING_DIR)/usr/include/tirpc $(TARGET_CFLAGS)
+
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
 include ../python3-package.mk
