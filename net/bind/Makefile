@@ -111,6 +111,7 @@ define Package/bind-dig
 endef
 
 export BUILD_CC="$(TARGET_CC)"
+TARGET_CFLAGS += -DDIG_SIGCHASE
 
 CONFIGURE_ARGS += \
 	--enable-shared \
