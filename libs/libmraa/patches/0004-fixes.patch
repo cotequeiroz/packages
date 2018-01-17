@@ -38,7 +38,7 @@ Subject: [PATCH 4/4] fixes
  static unsigned int mmap_count = 0;
  static int platform_detected = 0;
  
-@@ -129,9 +132,10 @@
+@@ -129,9 +132,10 @@ mraa_mtk_linkit_mmap_setup(mraa_gpio_con
          }
  
          mmap_reg = (uint8_t*) mmap(NULL, MT7628_BLOCK_SIZE, PROT_READ | PROT_WRITE,
@@ -51,7 +51,7 @@ Subject: [PATCH 4/4] fixes
              mmap_reg = NULL;
              close(mmap_fd);
              return MRAA_ERROR_NO_RESOURCES;
-@@ -144,201 +148,442 @@
+@@ -144,201 +148,442 @@ mraa_mtk_linkit_mmap_setup(mraa_gpio_con
      return MRAA_SUCCESS;
  }
  
@@ -655,7 +655,7 @@ Subject: [PATCH 4/4] fixes
              b->gpio_count++;
 --- a/src/gpio/gpio.c
 +++ b/src/gpio/gpio.c
-@@ -113,6 +113,8 @@
+@@ -114,6 +114,8 @@ mraa_gpio_init_internal(mraa_adv_func_t*
          close(export);
      }
  

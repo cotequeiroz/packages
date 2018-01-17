@@ -8,14 +8,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libmraa
-PKG_VERSION:=0.8.0
+PKG_VERSION:=0.8.1
 
 PKG_RELEASE=$(PKG_SOURCE_VERSION)
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/intel-iot-devkit/mraa.git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=70600dece4138b0c0dbaff42f57828f1559cd840
+PKG_SOURCE_VERSION:=049ba5fa9f2d18ac0ec6729c46916b34998d3c5f
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 PKG_MIRROR_HASH:=9cbda58e7c7790db3d62cee62f399975effcdc2d9688d3d6bb2b4a86748faff9
 PKG_BUILD_DEPENDS:=node python/host swig/host node/host
@@ -33,6 +33,7 @@ CMAKE_OPTIONS=-DBUILDARCH=$(CONFIG_ARCH) \
 	-DSWIG_DIR=$(STAGING_DIR_HOSTPKG)/bin
 
 TARGET_CFLAGS+=-I$(STAGING_DIR)/usr/include/node
+TARGET_CXXFLAGS +=-I$(STAGING_DIR)/usr/include/node $(if $(CONFIG_GCC_VERSION_4_8),-std=gnu++11,-std=gnu++14)
 
 define Package/libmraa
   SECTION:=libs
