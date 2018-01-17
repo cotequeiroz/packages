@@ -57,7 +57,7 @@ endef
 
 define Package/libhamlib
   $(call Package/libhamlib/Default)
-  DEPENDS:=+libusb-1.0
+  DEPENDS:=+libusb-1.0 +libusb-compat
   MENU:=1
 endef
 
@@ -84,7 +84,7 @@ CONFIGURE_ARGS+= \
 	--with-pic \
 
 CONFIGURE_VARS+= \
-	LIBUSB_LIBS="-lusb-1.0" \
+	LIBUSB_LIBS="-lusb -lusb-1.0" \
 
 define Package/hamlib/install
 	$(INSTALL_DIR) $(1)/usr/bin
