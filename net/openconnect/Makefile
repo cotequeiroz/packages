@@ -51,6 +51,7 @@ endef
 CONFIGURE_ARGS += \
 	--disable-shared \
 	--with-vpnc-script=/lib/netifd/vpnc-script \
+	--without-gssapi \
 	--without-libpcsclite \
 	--without-stoken \
 	--without-lz4
@@ -58,11 +59,17 @@ CONFIGURE_ARGS += \
 ifeq ($(CONFIG_OPENCONNECT_OPENSSL),y)
 CONFIGURE_ARGS += \
 	--without-gnutls
+TARGET_CPPFLAGS += \
+	-DERR_LIB_PKCS11=ERR_LIB_USER \
+	-DPKCS11_F_PKCS11_LOGIN=CKR_F_PKCS11_LOGIN
 endif
 
 ifeq ($(CONFIG_OPENCONNECT_STOKEN),y)
 CONFIGURE_ARGS += \
 	--with-stoken
+else
+CONFIGURE_ARGS += \
+	--without-stoken
 endif
 
 define Package/openconnect/install
