@@ -1,0 +1,13 @@
+--- a/m4.include/vfs/rpc.m4
++++ b/m4.include/vfs/rpc.m4
+@@ -1,8 +1,8 @@
+ AC_DEFUN([AC_CHECK_RPC],
+ [
+       AC_CHECK_FUNCS(pmap_set, , [
+-	 AC_CHECK_LIB(rpc, pmap_set, [
+-	   LIBS="-lrpc $LIBS"
++	 AC_CHECK_LIB(tirpc, pmap_set, [
++	   LIBS="-ltirpc $LIBS"
+ 	  AC_DEFINE(HAVE_PMAP_SET)
+ 	  ])])
+       AC_CHECK_FUNCS(pmap_getport pmap_getmaps rresvport)

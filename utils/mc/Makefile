@@ -32,10 +32,14 @@ PKG_CONFIG_DEPENDS := \
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
 
+ifdef CONFIG_MC_VFS
+  TARGET_CFLAGS += -I$(STAGING_DIR)/usr/include/tirpc
+endif
+
 define Package/mc
 	SECTION:=utils
 	CATEGORY:=Utilities
-	DEPENDS:=+glib2 +libncurses +libmount +MC_VFS:libssh2 $(LIBRPC_DEPENDS) $(ICONV_DEPENDS)
+	DEPENDS:=+glib2 +libncurses +libmount +MC_VFS:libssh2 +MC_VFS:libtirpc $(ICONV_DEPENDS)
 	TITLE:=Midnight Commander - a powerful visual file manager
 	URL:=https://www.midnight-commander.org/
 	MENU:=1
@@ -52,6 +56,7 @@ move and delete files and whole directory trees, search for files and run comman
 Internal viewer and editor are included as well.
 
 endef
+
 
 CONFIGURE_ARGS += \
 	--enable-silent-rules \
