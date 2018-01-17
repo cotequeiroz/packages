@@ -27,7 +27,7 @@ define Package/nfs-kernel-server/Default
   SECTION:=net
   CATEGORY:=Network
   SUBMENU:=Filesystem
-  DEPENDS:=+libwrap +libblkid +libuuid $(LIBRPC_DEPENDS)
+  DEPENDS:=+libwrap +libblkid +libuuid +libtirpc
   URL:=http://nfs.sourceforge.net/
   MAINTAINER:=Peter Wagner <tripolar@gmx.at>
 endef
@@ -35,7 +35,7 @@ endef
 define Package/nfs-kernel-server
   $(call Package/nfs-kernel-server/Default)
   TITLE:=Kernel NFS server support
-  DEPENDS+= +kmod-fs-nfsd +kmod-fs-nfs +portmap
+  DEPENDS+= +kmod-fs-nfsd +kmod-fs-nfs +rpcbind
 endef
 
 define Package/nfs-kernel-server/description
@@ -60,7 +60,7 @@ define Package/nfs-utils
   $(call Package/nfs-kernel-server/Default)
   SECTION:=utils
   CATEGORY:=Utilities
-  DEPENDS+= +libevent2 +USE_UCLIBC:librpc
+  DEPENDS+= +libevent2 +libtirpc
   TITLE:=updated mount utility (includes nfs4)
 endef
 
@@ -70,19 +70,17 @@ endef
 
 TARGET_CFLAGS += -I$(PKG_BUILD_DIR)/lib -I$(STAGING_DIR)/usr/include/libevent \
 		 -I$(STAGING_DIR)/usr/include/ -Drpc_uint=uint
-TARGET_LDFLAGS += -Wl,-rpath-link=$(STAGING_DIR)/usr/lib $(LIBRPC) \
+TARGET_LDFLAGS += -Wl,-rpath-link=$(STAGING_DIR)/usr/lib \
 		  -L$(STAGING_DIR)/usr/lib/libevent
 
 CONFIGURE_ARGS += \
 	--disable-gss \
 	--disable-nfsv4 \
 	--disable-nfsv41 \
-	--disable-ipv6 \
-	--enable-static \
 	--enable-shared \
 	--disable-caps \
-	--disable-tirpc \
-	--disable-nfsdcld
+	$(if $(or $(CONFIG_IPV6),$(CONFIG_NFS_KERNEL_LEGACY_PORTMAP)),--disable-ipv6) \
+	$(if $(CONFIG_NFS_KERNEL_LEGACY_PORTMAP),--disable-tirpc)
 
 CONFIGURE_VARS += \
 	libblkid_cv_is_recent=yes \
