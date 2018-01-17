@@ -30,6 +30,7 @@ endef
 
 TARGET_CXXFLAGS+=-std=c++11
 TARGET_LDFLAGS+=-lpthread
+CONFIGURE_VARS+= ac_cv_header_libunwind_h=0
 
 define Build/Configure
 	$(call Build/Configure/Default,)
