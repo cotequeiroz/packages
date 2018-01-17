@@ -117,6 +117,7 @@ define Package/bind-dig
 endef
 
 export BUILD_CC="$(TARGET_CC)"
+TARGET_CFLAGS += -DDIG_SIGCHASE
 
 CONFIGURE_ARGS += \
 	--enable-ipv6=$(if $(CONFIG_IPV6),yes,no) \
