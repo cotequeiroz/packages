@@ -1,0 +1,32 @@
+--- a/src/PacketSnoop.h
++++ b/src/PacketSnoop.h
+@@ -41,8 +41,27 @@
+ #include <netinet/ip.h>
+ #include <netinet/tcp.h>
+ #include <netinet/udp.h>
+-#if __GLIBC__ >= 2 && __GLIBC_MINOR >= 1
+-#include <netpacket/packet.h>
++#if __GLIBC__ >= 2
++#ifdef __UAPI_DEF_IP6_MTUINFO
++#undef __UAPI_DEF_IP6_MTUINFO
++#endif
++#define __UAPI_DEF_IP6_MTUINFO 0
++#ifdef __UAPI_DEF_IN6_ADDR
++#undef __UAPI_DEF_IN6_ADDR
++#endif
++#define __UAPI_DEF_IN6_ADDR 0
++#ifdef __UAPI_DEF_SOCKADDR_IN6
++#undef __UAPI_DEF_SOCKADDR_IN6
++#endif
++#define __UAPI_DEF_SOCKADDR_IN6 0
++#ifdef __UAPI_DEF_IPV6_MREQ
++#undef __UAPI_DEF_IPV6_MREQ
++#endif
++#define __UAPI_DEF_IPV6_MREQ 0
++#ifdef __UAPI_DEF_IN6_PKTINFO
++#undef __UAPI_DEF_IN6_PKTINFO
++#endif
++#define __UAPI_DEF_IN6_PKTINFO 0
+ #include <net/ethernet.h>   /* the L2 protocols */
+ #else
+ #include <asm/types.h>
