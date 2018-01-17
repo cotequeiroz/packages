@@ -88,6 +88,7 @@ CONFIGURE_ARGS += \
 	--with-libpcre="$(STAGING_DIR)/usr" \
 	--with-libpcap="$(STAGING_DIR)/usr" \
 	--without-liblua \
+	--without-libssh2 \
 	--without-zenmap
 
 CONFIGURE_VARS += \
@@ -95,7 +96,7 @@ CONFIGURE_VARS += \
 	CXXFLAGS="$$$$CXXFLAGS -fno-builtin"
 
 ifeq ($(BUILD_VARIANT),ssl)
-	CONFIGURE_ARGS += --with-openssl="$(STAGING_DIR)/usr" --without-libssh2
+	CONFIGURE_ARGS += --with-openssl="$(STAGING_DIR)/usr"
 else
 	CONFIGURE_ARGS += --without-openssl
 endif
