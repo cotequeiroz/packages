@@ -327,12 +327,9 @@ endef
 define Package/libffmpeg-full
 $(call Package/libffmpeg/Default)
  TITLE+= (full)
- DEPENDS+= @BUILD_PATENTED +alsa-lib +PACKAGE_libopus:libopus
- ifeq ($(CONFIG_SOFT_FLOAT),y)
-	DEPENDS+= +PACKAGE_shine:shine
- else
-	DEPENDS+= +PACKAGE_lame-lib:lame-lib +PACKAGE_libx264:libx264
- endif
+ DEPENDS+= @BUILD_PATENTED +alsa-lib +PACKAGE_libopus:libopus \
+ 	   +SOFT_FLOAT:shine +!SOFT_FLOAT:lame-lib \
+	   +!SOFT_FLOAT:libx264
  VARIANT:=full
 endef
 
@@ -357,6 +354,7 @@ $(call Package/ffmpeg/Default/description)
  This package contains minimal-featured FFmpeg shared libraries.
 endef
 
+TARGET_CXXFLAGS += -std=gnu++11
 
 FFMPEG_CONFIGURE:= \
 	CFLAGS="$(TARGET_CFLAGS) $(TARGET_CPPFLAGS) $(FPIC)" \
