@@ -55,6 +55,7 @@ CONFIGURE_ARGS += \
 	--with-ssl-dir="$(STAGING_DIR)/usr" \
 	--with-uams-path="/usr/lib/uams" \
 	--without-acls \
+	--without-dtrace \
 	--without-kerberos \
 	--without-mysql \
 	--with-mysql-config=false \
