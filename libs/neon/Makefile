@@ -52,6 +52,7 @@ CONFIGURE_ARGS += \
 	--with-expat \
 	--with-ssl="openssl" \
 	--without-egd \
+	--without-gssapi \
 	--without-libproxy
 
 CONFIGURE_VARS += \
