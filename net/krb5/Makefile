@@ -25,6 +25,7 @@ PKG_INSTALL:=1
 PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/host-build.mk
 
 MAKE_PATH:=src
 
@@ -95,6 +96,9 @@ define Build/InstallDev
 	# needed for samba4, to detect system-krb5
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/krb5-config $(1)/usr/bin
+	$(INSTALL_DIR) $(STAGING_DIR_HOST)/bin
+	$(CP) $(PKG_INSTALL_DIR)/usr/bin/krb5-config \
+		$(STAGING_DIR_HOST)/bin/$(GNU_TARGET_NAME)-krb5-config
 endef
 
 define Package/krb5-libs/install
