@@ -31,6 +31,10 @@ PKG_CONFIG_DEPENDS := \
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
 
+ifdef CONFIG_MC_VFS
+  TARGET_CFLAGS += -I$(STAGING_DIR)/usr/include/tirpc
+endif
+
 define Package/mc
 	SECTION:=utils
 	CATEGORY:=Utilities
@@ -51,6 +55,7 @@ move and delete files and whole directory trees, search for files and run comman
 Internal viewer and editor are included as well.
 
 endef
+
 
 CONFIGURE_ARGS += \
 	--enable-silent-rules \
