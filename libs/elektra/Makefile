@@ -20,7 +20,7 @@ PKG_RELEASE:=1
 # Use this for official releasees
 PKG_HASH:=51892570f18d1667d0da4d0908a091e41b41c20db9835765677109a3d150cd26
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://ftp.libelektra.org/ftp/elektra/releases
+PKG_SOURCE_URL:=https://www.libelektra.org/ftp/elektra/releases/
 
 # Use this to test versions still under development
 #PKG_SOURCE_PROTO:=git
@@ -313,7 +313,7 @@ CMAKE_HOST_OPTIONS = \
 	-DINSTALL_SYSTEM_FILES=OFF \
 	-DFORCE_IN_SOURCE_BUILD=ON \
 	-DBUILD_TESTING=OFF \
-	-DPLUGINS="ALL;-python2;-python" \
+	-DPLUGINS="ALL;-python2;-python;-ruby" \
 	-DTOOLS="gen;kdb"
 
 define Package/libelektra-core/install
