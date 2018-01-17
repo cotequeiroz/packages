@@ -222,6 +222,7 @@ CONFIGURE_VARS+= \
 	CFLAGS="$$$$CFLAGS $(FPIC)" \
 	LDFLAGS="$$$$LDFLAGS -lm -lz" \
 	KERNEL_DIR="$(LINUX_DIR)" \
+	JAVAC='' \
 
 CONFIGURE_PLUGIN= \
 	$(foreach m, $(1), \
