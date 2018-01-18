@@ -108,6 +108,8 @@ endef
 define Build/Compile
 	$(call Build/Compile/Default,)
 	$(MAKE_VARS) $(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR)/libmilter $(MAKE_FLAGS) all
+	# avoid 'Permission denied' on rebuild:
+	-chmod u+w $(PKG_INSTALL_DIR)/etc/mail/*
 	$(MAKE_VARS) $(MAKE) -C $(PKG_BUILD_DIR)/libmilter $(MAKE_FLAGS) DESTDIR="$(PKG_INSTALL_DIR)" install
 	$(MAKE_VARS) $(MAKE) -C $(PKG_BUILD_DIR)/cf/cf $(MAKE_FLAGS) DESTDIR="$(PKG_INSTALL_DIR)" install-cf
 endef
