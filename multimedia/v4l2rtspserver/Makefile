@@ -24,6 +24,8 @@ CMAKE_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
+CMAKE_OPTIONS += \
+        -DALSA_LIBRARY=FALSE
 
 define Package/v4l2rtspserver
 	SECTION:=multimedia
