@@ -54,6 +54,8 @@ CONFIGURE_ARGS += \
 	--without-gssapi \
 	--without-libpcsclite \
 	--without-stoken \
+	--without-libpskc \
+	--without-gssapi \
 	--without-lz4
 
 ifeq ($(CONFIG_OPENCONNECT_OPENSSL),y)
