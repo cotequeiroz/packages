@@ -97,6 +97,25 @@ define Package/libwebsockets/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libwebsockets.so* $(1)/usr/lib/
 endef
 
+define Package/libwebsockets/InstallDev
+	$(INSTALL_DIR) $(1)
+	$(CP) $(PKG_INSTALL_DIR)/. $(1)/
+endef
+
+ifeq ($(BUILD_VARIANT),openssl)
+define Build/InstallDev
+	$(call Package/libwebsockets/InstallDev,$(1))
+endef
+else ifeq ($(BUILD_VARIANT),mbedtls)
+define Build/InstallDev
+	$(if $(CONFIG_PACKAGE_libwebsockets-openssl),,$(call Package/libwebsockets/InstallDev))
+endef
+else ifeq ($(BUILD_VARIANT),full)
+define Build/InstallDev
+	$(if $(or $(CONFIG_PACKAGE_libwebsockets-openssl),$(CONFIG_PACKAGE_libwebsockets-mbedtls)),,$(call Package/libwebsockets/InstallDev))
+endef
+endif
+
 Package/libwebsockets-mbedtls/install = $(Package/libwebsockets/install)
 Package/libwebsockets-openssl/install = $(Package/libwebsockets/install)
 Package/libwebsockets-full/install = $(Package/libwebsockets/install)
