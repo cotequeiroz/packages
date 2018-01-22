@@ -40,6 +40,7 @@ CONFIGURE_ARGS += \
 	--disable-threads \
 	--without-cfitsio \
 	--without-fftw \
+	--without-giflib \
 	--without-lcms \
 	--without-magick \
 	--without-matio \
