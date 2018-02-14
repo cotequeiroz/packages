@@ -1,0 +1,20 @@
+--- a/tools/get_libfmt
++++ b/tools/get_libfmt
+@@ -1,9 +1,14 @@
+ #!/bin/bash
+ echo using CC=$CC
+ echo using CXX=$CXX
++CFLAGS="${CFLAGS} -DFMT_USE_CONSTEXPR=0"
+ set -ex
+-test -d libfmt || git clone https://github.com/fmtlib/fmt libfmt
++test -d libfmt || git clone --branch 4.0.0 https://github.com/fmtlib/fmt libfmt
+ cd libfmt
+-git pull
+-cmake .
++cmake	-DFMT_USE_CONSTEXPR=0 \
++	-DCMAKE_SYSTEM_NAME=Linux \
++	-DCMAKE_SYSTEM_VERSION=1 \
++	-DCMAKE_SYSTEM_PROCESSOR="${ARCH}" \
++	-DCMAKE_CROSSCOMPILING=TRUE \
++	.
+ make fmt
