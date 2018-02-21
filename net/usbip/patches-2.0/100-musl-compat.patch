@@ -1,6 +1,6 @@
 --- a/src/usbipd.c
 +++ b/src/usbipd.c
-@@ -453,7 +453,7 @@ static void set_signal(void)
+@@ -463,7 +463,7 @@ static void set_signal(void)
  	sigaction(SIGTERM, &act, NULL);
  	sigaction(SIGINT, &act, NULL);
  	act.sa_handler = SIG_IGN;

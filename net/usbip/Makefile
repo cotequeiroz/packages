@@ -70,7 +70,7 @@ endef
 CONFIGURE_PATH:=.
 MAKE_PATH:=.
 LIBTOOL_PATHS:=.
-MAKE_FLAGS+=CFLAGS="-Wno-implicit-function-declaration"
+MAKE_FLAGS+=CFLAGS='-Wno-implicit-function-declaration -Dudev_device_get_devpath=udev_device_get_syspath'
 
 define Build/Configure
 	(cd $(PKG_BUILD_DIR); ./autogen.sh );
