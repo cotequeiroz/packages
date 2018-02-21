@@ -1,0 +1,11 @@
+--- a/src/main.c
++++ b/src/main.c
+@@ -63,7 +63,7 @@ int main_run(void)
+ 
+ 	// Setup port-forwarding
+ #ifdef FWD
+-	rc |= fwd_setup();
++	fwd_setup();
+ #endif
+ 
+ 	// Setup the Kademlia DHT
