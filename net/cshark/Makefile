@@ -37,6 +37,8 @@ CMAKE_OPTIONS = \
 	-DCMAKE_INSTALL_PREFIX=/usr \
 	-DWITH_DEBUG=OFF \
 
+TARGET_CFLAGS += -Wno-error=format-truncation
+
 define Package/cshark/conffiles
 /etc/config/cshark
 endef
