@@ -68,7 +68,7 @@ define Package/librtlsdr/description
   This package contains the librtlsdr shared library.
 endef
 
-TARGET_CFLAGS += $(FPIC)
+TARGET_CFLAGS += $(FPIC) -fgnu89-inline
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
