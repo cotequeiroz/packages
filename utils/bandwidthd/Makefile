@@ -140,7 +140,7 @@ CONFIGURE_ARGS += \
 	ac_cv_lib_sqlite3_sqlite3_open=no
 endif
 
-EXTRA_CFLAGS+= $(TARGET_CPPFLAGS)
+EXTRA_CFLAGS+= $(TARGET_CPPFLAGS) -fgnu89-inline
 EXTRA_LDFLAGS+= $(TARGET_LDFLAGS) -Wl,-rpath-link,$(STAGING_DIR)/usr/lib
 
 define Package/bandwidthd/install

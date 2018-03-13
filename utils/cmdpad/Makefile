@@ -45,6 +45,8 @@ MAKE_FLAGS += \
 	$(TARGET_CONFIGURE_OPTS) \
 	$(1)
 
+TARGET_CFLAGS += -fgnu89-inline
+
 define Package/cmdpad/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_DIR) $(1)/etc
