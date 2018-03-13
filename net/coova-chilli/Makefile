@@ -78,7 +78,8 @@ endef
 
 DISABLE_NLS=
 
-TARGET_CFLAGS += $(FPIC)
+TARGET_CFLAGS += $(FPIC) \
+	-Wno-error=misleading-indentation
 
 CONFIGURE_VARS += \
        ARCH="$(LINUX_KARCH)" \
