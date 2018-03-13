@@ -38,6 +38,8 @@ define Package/addrwatch/description
   addresses of hosts using IPv6 privacy extensions (RFC4941).
 endef
 
+TARGET_CFLAGS += -fgnu89-inline
+
 define Package/addrwatch/conffiles
 	/etc/config/addrwatch
 endef
