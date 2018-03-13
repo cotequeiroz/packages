@@ -50,6 +50,8 @@ define Download/antlr
 endef
 $(eval $(call Download,antlr))
 
+TARGET_CFLAGS += -Wno-error=implicit-fallthrough
+
 CONFIGURE_ARGS += \
 	--with-gmp="$(STAGING_DIR)/usr" \
 	--without-x \
