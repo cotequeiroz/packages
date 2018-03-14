@@ -22,6 +22,7 @@ include $(INCLUDE_DIR)/package.mk
 TARGET_LANGUAGES:="c,c++"
 BUGURL=https://dev.openwrt.org/
 PKGVERSION=OpenWrt GCC $(PKG_VERSION)
+TARGET_CPPFLAGS += -D_GLIBCXX_INCLUDE_NEXT_C_HEADERS
 
 # not using sstrip here as this fucks up the .so's somehow
 STRIP:=$(TOOLCHAIN_DIR)/bin/$(TARGET_CROSS)strip
@@ -92,6 +93,8 @@ define Build/Prepare
 	cp $(PKG_BUILD_DIR)/config.sub $(PKG_BUILD_DIR)/mpc/
 endef
 
+TARGET_CXX += -std=gnu++03
+CONFIGURE_ARGS += CXX_FOR_TARGET="$(TARGET_CXX)" CXXFLAGS_FOR_TARGET="-g -O2 -D_GLIBCXX_INCLUDE_NEXT_C_HEADERS"
 
 define Build/Configure
 	(cd $(PKG_BUILD_DIR); rm -f config.cache; \
@@ -135,6 +138,7 @@ define Build/Compile
 	export SHELL="$(BASH)"; $(MAKE_VARS) $(MAKE) -C $(PKG_BUILD_DIR) \
 			DESTDIR="$(PKG_INSTALL_DIR)" $(MAKE_ARGS) all install
 endef
+
 
 ENVCFLAGS:="$(TARGET_OPTIMIZATION) $(EXTRA_OPTIMIZATION)
 ifeq ($(CONFIG_SOFT_FLOAT),y)
