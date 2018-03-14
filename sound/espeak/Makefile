@@ -35,6 +35,8 @@ define Package/espeak/description
  other languages.
 endef
 
+TARGET_CFLAGS += -Wno-error=narrowing
+
 MAKE_FLAGS+= \
 	AUDIO="portaudio" \
 	DATADIR="/usr/share/espeak" \
