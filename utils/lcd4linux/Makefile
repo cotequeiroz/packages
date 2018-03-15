@@ -202,7 +202,7 @@ $(call Package/lcd4linux/Default/description)
  drivers and plugins.
 endef
 
-
+TARGET_CFLAGS += -fgnu89-inline
 CONFIGURE_ARGS+= \
 	--disable-rpath \
 
