@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libmraa
-PKG_VERSION:=0.8.1
+PKG_VERSION:=0.9.0
 
 PKG_RELEASE=$(PKG_SOURCE_VERSION)
 
@@ -33,7 +33,7 @@ CMAKE_OPTIONS=-DBUILDARCH=$(CONFIG_ARCH) \
 	-DSWIG_DIR=$(STAGING_DIR_HOSTPKG)/bin
 
 TARGET_CFLAGS+=-I$(STAGING_DIR)/usr/include/node
-TARGET_CXXFLAGS +=-I$(STAGING_DIR)/usr/include/node $(if $(CONFIG_GCC_VERSION_4_8),-std=gnu++11,-std=gnu++14)
+EXTRA_CXXFLAGS +=-I$(STAGING_DIR)/usr/include/node -std=gnu++14
 
 define Package/libmraa
   SECTION:=libs
