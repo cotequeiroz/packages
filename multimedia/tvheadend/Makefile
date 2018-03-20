@@ -72,7 +72,7 @@ CONFIGURE_ARGS += \
 	--disable-libav \
 	--enable-bundle
 
-TARGET_CFLAGS += -Wno-error=pointer-compare
+TARGET_CFLAGS += -Wno-error=pointer-compare -Wno-error=misleading-indentation
 
 define Build/Prepare
 	$(call Build/Prepare/Default)
