@@ -20,7 +20,6 @@ PKG_LICENSE:=GPLv3
 PKG_MAINTAINER:=Hannu Nyman <hannu.nyman@iki.fi>
 
 PKG_BUILD_PARALLEL:=1
-PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
 
