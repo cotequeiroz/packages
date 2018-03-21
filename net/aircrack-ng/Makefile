@@ -58,7 +58,6 @@ MAKE_FLAGS += prefix=/usr \
 	sqlite=false \
 	unstable=false \
 	OSNAME=Linux
-TARGET_CFLAGS += -fgnu89-inline
 
 define Package/aircrack-ng/install
 	$(INSTALL_DIR) $(1)/usr/bin
