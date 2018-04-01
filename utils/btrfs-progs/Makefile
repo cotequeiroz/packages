@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=btrfs-progs
 PKG_VERSION:=4.15.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-v$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@KERNEL/linux/kernel/people/kdave/btrfs-progs/
@@ -22,7 +22,6 @@ PKG_LICENSE_FILES:=COPYING
 
 PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
-PKG_BUILD_DEPENDS:=acl
 
 PKG_FIXUP:=autoreconf
 
@@ -53,7 +52,8 @@ CONFIGURE_ARGS += \
 	--disable-documentation \
 	--disable-zstd
 
-EXTRA_CFLAGS=$(TARGET_CPPFLAGS)
+TARGET_CFLAGS += -ffunction-sections -fdata-sections -DBTRFS_FLAT_INCLUDES
+TARGET_LDFLAGS += -Wl,--gc-sections
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include $(1)/usr/lib
