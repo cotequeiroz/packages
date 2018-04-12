@@ -56,4 +56,15 @@ define Build/InstallDev
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/libtirpc.pc $(1)/usr/lib/pkgconfig/libtirpc.pc
 endef
 
+define Package/libtirpc/install
+	$(INSTALL_DIR) $(1)/etc
+	$(CP) $(PKG_BUILD_DIR)/doc/netconfig $(1)/etc
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libtirpc.so.* $(1)/usr/lib/
+endef
+
+define Package/libtirpc/conffiles
+/etc/netconfig
+endef
+
 $(eval $(call BuildPackage,libtirpc))
