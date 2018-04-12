@@ -265,7 +265,7 @@ endif
 
 ifneq ($(SDK)$(CONFIG_PACKAGE_php7-mod-intl),)
   CONFIGURE_ARGS+= --enable-intl=shared
-  TARGET_CXXFLAGS+= -std=c++0x
+  TARGET_CXXFLAGS+= -std=c++0x -DU_USING_ICU_NAMESPACE
 else
   CONFIGURE_ARGS+= --disable-intl
 endif
