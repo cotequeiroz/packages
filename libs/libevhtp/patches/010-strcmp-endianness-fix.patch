@@ -1,7 +1,6 @@
-diff -rupN libevhtp-1.2.9.orig/htparse/htparse.c libevhtp-1.2.9/htparse/htparse.c
---- libevhtp-1.2.9.orig/htparse/htparse.c	2014-03-23 12:50:50.000000000 +0100
-+++ libevhtp-1.2.9/htparse/htparse.c	2014-12-09 01:12:22.242001241 +0100
-@@ -197,6 +197,7 @@ static const char * method_strmap[] = {
+--- a/htparse/htparse.c
++++ b/htparse/htparse.c
+@@ -190,6 +190,7 @@ static const char * method_strmap[] = {
  
  #define _MIN_READ(a, b) ((a) < (b) ? (a) : (b))
  
@@ -9,7 +8,7 @@ diff -rupN libevhtp-1.2.9.orig/htparse/htparse.c libevhtp-1.2.9/htparse/htparse.
  #define _str3_cmp(m, c0, c1, c2, c3) \
      *(uint32_t *)m == ((c3 << 24) | (c2 << 16) | (c1 << 8) | c0)
  
-@@ -226,6 +227,37 @@ static const char * method_strmap[] = {
+@@ -219,6 +220,37 @@ static const char * method_strmap[] = {
      *(uint32_t *)m == ((c3 << 24) | (c2 << 16) | (c1 << 8) | c0)        \
      && ((uint32_t *)m)[1] == ((c7 << 24) | (c6 << 16) | (c5 << 8) | c4) \
      && m[8] == c8
