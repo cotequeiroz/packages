@@ -20,6 +20,7 @@ PKG_LICENSE_FILES:=LICENSE LICENSE.Sendmail
 
 PKG_INSTALL:=1
 PKG_BUILD_DEPENDS:=openssl
+PKG_FIXUP:=autoreconf
 
 include $(INCLUDE_DIR)/package.mk
 
