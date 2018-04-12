@@ -82,7 +82,8 @@ define Package/openldap-server/conffiles
 /etc/openldap/slapd.conf
 endef
 
-TARGET_CFLAGS += $(FPIC) -lpthread
+TARGET_CFLAGS += $(FPIC) -lpthread \
+	-DURANDOM_DEVICE=\\\"/dev/urandom\\\"
 
 CONFIGURE_ARGS += \
 	--enable-shared \
