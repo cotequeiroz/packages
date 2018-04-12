@@ -19,8 +19,8 @@ PKG_SOURCE_VERSION:=v0.7.2
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 PKG_MIRROR_HASH:=ede801a26a23290ab76d64ab636c3c3e2788030bb830af7006d37444c2a7b2c4
 
-PKG_BUILD_DEPENDS:=node/host libudev-fbsd
-PKG_NODE_VERSION:=8.10.0
+PKG_BUILD_DEPENDS:=node/host
+PKG_NODE_VERSION:=6.11.2
 
 PKG_MAINTAINER:=John Crispin <blogic@openwrt.org>
 PKG_LICENSE:=Custom
@@ -34,7 +34,7 @@ define Package/node-hid
   CATEGORY:=Languages
   TITLE:=Node.js package to access HID devices
   URL:=https://github.com/node-hid/node-hid
-  DEPENDS:=+node +node-npm +libusb-1.0 +hidapi +libstdcpp
+  DEPENDS:=+node +node-npm +libusb-1.0 +hidapi +libstdcpp +libudev-fbsd
 endef
 
 define Package/node-hid/description

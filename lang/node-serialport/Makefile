@@ -17,7 +17,7 @@ PKG_SOURCE_URL:=http://registry.npmjs.org/$(PKG_NPM_NAME)/-/
 PKG_HASH:=b58c326d217fb0af1639e4ea834d9fca4be16934c486499e2ddac6e52b8dd560
 
 PKG_BUILD_DEPENDS:=node/host
-PKG_NODE_VERSION:=8.10.0
+PKG_NODE_VERSION:=6.11.2
 
 PKG_MAINTAINER:=John Crispin <blogic@openwrt.org>
 PKG_LICENSE:=Custom
