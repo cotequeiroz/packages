@@ -1,0 +1,260 @@
+--- a/ibrcommon/ssl/HMacStream.cpp
++++ b/ibrcommon/ssl/HMacStream.cpp
+@@ -26,23 +26,23 @@ namespace ibrcommon
+ 	HMacStream::HMacStream(const unsigned char * const key, const int key_size)
+ 	 : HashStream(EVP_MAX_MD_SIZE, BUFF_SIZE), key_(key), key_size_(key_size)
+ 	{
+-		HMAC_CTX_init(&ctx_);
+-		HMAC_Init_ex(&ctx_, key_, key_size_, EVP_sha1(), NULL);
++		ctx_ = HMAC_CTX_new();
++		HMAC_Init_ex(ctx_, key_, key_size_, EVP_sha1(), NULL);
+ 	}
+ 
+ 	HMacStream::~HMacStream()
+ 	{
+-		HMAC_CTX_cleanup(&ctx_);
++		HMAC_CTX_free(ctx_);
+ 	}
+ 
+ 	void HMacStream::update(char *buf, const size_t size)
+ 	{
+ 		// hashing
+-		HMAC_Update(&ctx_, (unsigned char*)buf, size);
++		HMAC_Update(ctx_, (unsigned char*)buf, size);
+ 	}
+ 
+ 	void HMacStream::finalize(char * hash, unsigned int &size)
+ 	{
+-		HMAC_Final(&ctx_, (unsigned char*)hash, &size);
++		HMAC_Final(ctx_, (unsigned char*)hash, &size);
+ 	}
+ }
+--- a/ibrcommon/ssl/HMacStream.h
++++ b/ibrcommon/ssl/HMacStream.h
+@@ -44,7 +44,7 @@ namespace ibrcommon
+ 		const unsigned char * const key_;
+ 		const int key_size_;
+ 
+-		HMAC_CTX ctx_;
++		HMAC_CTX* ctx_;
+ 	};
+ }
+ 
+--- a/ibrcommon/ssl/RSASHA256Stream.cpp
++++ b/ibrcommon/ssl/RSASHA256Stream.cpp
+@@ -30,11 +30,11 @@ namespace ibrcommon
+ 	{
+ 		// Initialize get pointer.  This should be zero so that underflow is called upon first read.
+ 		setp(&out_buf_[0], &out_buf_[BUFF_SIZE - 1]);
+-		EVP_MD_CTX_init(&_ctx);
++		_ctx = EVP_MD_CTX_new();
+ 
+ 		if (!_verify)
+ 		{
+-			if (!EVP_SignInit_ex(&_ctx, EVP_sha256(), NULL))
++			if (!EVP_SignInit_ex(_ctx, EVP_sha256(), NULL))
+ 			{
+ 				IBRCOMMON_LOGGER_TAG("RSASHA256Stream", critical) << "failed to initialize the signature function" << IBRCOMMON_LOGGER_ENDL;
+ 				ERR_print_errors_fp(stderr);
+@@ -42,7 +42,7 @@ namespace ibrcommon
+ 		}
+ 		else
+ 		{
+-			if (!EVP_VerifyInit_ex(&_ctx, EVP_sha256(), NULL))
++			if (!EVP_VerifyInit_ex(_ctx, EVP_sha256(), NULL))
+ 			{
+ 				IBRCOMMON_LOGGER_TAG("RSASHA256Stream", critical) << "failed to initialize the verification function" << IBRCOMMON_LOGGER_ENDL;
+ 				ERR_print_errors_fp(stderr);
+@@ -52,18 +52,19 @@ namespace ibrcommon
+ 
+ 	RSASHA256Stream::~RSASHA256Stream()
+ 	{
+-		EVP_MD_CTX_cleanup(&_ctx);
++		EVP_MD_CTX_free(_ctx);
+ 	}
+ 
+ 	void RSASHA256Stream::reset()
+ 	{
+-		EVP_MD_CTX_cleanup(&_ctx);
+-
+-		EVP_MD_CTX_init(&_ctx);
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
++		EVP_MD_CTX_cleanup(_ctx);
++#endif
++		EVP_MD_CTX_init(_ctx);
+ 
+ 		if (!_verify)
+ 		{
+-			if (!EVP_SignInit_ex(&_ctx, EVP_sha256(), NULL))
++			if (!EVP_SignInit_ex(_ctx, EVP_sha256(), NULL))
+ 			{
+ 				IBRCOMMON_LOGGER_TAG("RSASHA256Stream", critical) << "failed to initialize the signature function" << IBRCOMMON_LOGGER_ENDL;
+ 				ERR_print_errors_fp(stderr);
+@@ -71,7 +72,7 @@ namespace ibrcommon
+ 		}
+ 		else
+ 		{
+-			if (!EVP_VerifyInit_ex(&_ctx, EVP_sha256(), NULL))
++			if (!EVP_VerifyInit_ex(_ctx, EVP_sha256(), NULL))
+ 			{
+ 				IBRCOMMON_LOGGER_TAG("RSASHA256Stream", critical) << "failed to initialize the verfication function" << IBRCOMMON_LOGGER_ENDL;
+ 				ERR_print_errors_fp(stderr);
+@@ -91,7 +92,7 @@ namespace ibrcommon
+ 			std::vector<unsigned char> sign(EVP_PKEY_size(_pkey));
+ 			unsigned int size = EVP_PKEY_size(_pkey);
+ 
+-			_return_code = EVP_SignFinal(&_ctx, &sign[0], &size, _pkey);
++			_return_code = EVP_SignFinal(_ctx, &sign[0], &size, _pkey);
+ 
+ 			_sign = std::string((const char*)&sign[0], size);
+ 
+@@ -107,7 +108,7 @@ namespace ibrcommon
+ 		if (!_sign_valid)
+ 		{
+ 			sync();
+-			_return_code = EVP_VerifyFinal(&_ctx, reinterpret_cast<const unsigned char *>(their_sign.c_str()), static_cast<unsigned int>(their_sign.size()), _pkey);
++			_return_code = EVP_VerifyFinal(_ctx, reinterpret_cast<const unsigned char *>(their_sign.c_str()), static_cast<unsigned int>(their_sign.size()), _pkey);
+ 			_sign_valid = true;
+ 		}
+ 		return _return_code;
+@@ -145,7 +146,7 @@ namespace ibrcommon
+ 		if (!_verify)
+ 			// hashing
+ 		{
+-			if (!EVP_SignUpdate(&_ctx, &out_buf_[0], iend - ibegin))
++			if (!EVP_SignUpdate(_ctx, &out_buf_[0], iend - ibegin))
+ 			{
+ 				IBRCOMMON_LOGGER_TAG("RSASHA256Stream", critical) << "failed to feed data into the signature function" << IBRCOMMON_LOGGER_ENDL;
+ 				ERR_print_errors_fp(stderr);
+@@ -153,7 +154,7 @@ namespace ibrcommon
+ 		}
+ 		else
+ 		{
+-			if (!EVP_VerifyUpdate(&_ctx, &out_buf_[0], iend - ibegin))
++			if (!EVP_VerifyUpdate(_ctx, &out_buf_[0], iend - ibegin))
+ 			{
+ 				IBRCOMMON_LOGGER_TAG("RSASHA256Stream", critical) << "failed to feed data into the verification function" << IBRCOMMON_LOGGER_ENDL;
+ 				ERR_print_errors_fp(stderr);
+--- a/ibrcommon/ssl/RSASHA256Stream.h
++++ b/ibrcommon/ssl/RSASHA256Stream.h
+@@ -106,7 +106,7 @@ namespace ibrcommon
+ 
+ 		/** the context in which the streamed data will be feed into for
+ 		calculation of the hash/signature */
+-		EVP_MD_CTX _ctx;
++		EVP_MD_CTX * _ctx;
+ 
+ 		/** tells if the context needs to be finalized to get a valid signature or
+ 		verification */
+--- a/ibrcommon/ssl/iostreamBIO.cpp
++++ b/ibrcommon/ssl/iostreamBIO.cpp
+@@ -42,7 +42,20 @@ static int create(BIO *bio);
+ //static int destroy(BIO *bio);
+ //static long (*callback_ctrl)(BIO *, int, bio_info_cb *);
+ 
+-
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++BIO_METHOD * BIO_iostream_method() 
++{
++	static BIO_METHOD *iostream_method = NULL;
++	if (iostream_method) {
++		iostream_method = BIO_meth_new(iostreamBIO::type, iostreamBIO::name);
++		BIO_meth_set_write(iostream_method, bwrite);
++		BIO_meth_set_read(iostream_method, bread);
++		BIO_meth_set_ctrl(iostream_method, ctrl);
++		BIO_meth_set_create(iostream_method, create);
++	}
++	return iostream_method;
++}
++#else
+ static BIO_METHOD iostream_method =
+ {
+ 		iostreamBIO::type,
+@@ -56,12 +69,17 @@ static BIO_METHOD iostream_method =
+ 		NULL,//destroy,
+ 		NULL//callback_ctrl
+ };
++#endif
+ 
+ iostreamBIO::iostreamBIO(iostream *stream)
+ 	:	_stream(stream)
+ {
+ 	/* create BIO */
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	_bio = BIO_new(BIO_iostream_method());
++#else
+ 	_bio = BIO_new(&iostream_method);
++#endif
+ 	if(!_bio){
+ 		/* creation failed, throw exception */
+ 		char err_buf[ERR_BUF_SIZE];
+@@ -72,7 +90,11 @@ iostreamBIO::iostreamBIO(iostream *strea
+ 	}
+ 
+ 	/* save the iostream in the bio object */
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	BIO_set_data(_bio, (void *) stream);
++#else
+ 	_bio->ptr = stream;
++#endif
+ }
+ 
+ BIO * iostreamBIO::getBIO(){
+@@ -81,6 +103,11 @@ BIO * iostreamBIO::getBIO(){
+ 
+ static int create(BIO *bio)
+ {
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	BIO_set_data(bio, NULL);
++	BIO_set_shutdown(bio, 1);
++	BIO_set_init(bio, 1);
++#else
+ 	bio->ptr = NULL;
+ 	/* (from openssl memory bio) */
+ 	bio->shutdown=1;
+@@ -93,6 +120,7 @@ static int create(BIO *bio)
+ 	 * it is set to 0 since the underlying stream is blocking
+ 	 */
+ 	bio->num= 0;
++#endif
+ 
+ 	return 1;
+ }
+@@ -102,7 +130,11 @@ static int create(BIO *bio)
+ static long ctrl(BIO *bio, int cmd, long  num, void *)
+ {
+ 	long ret;
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	iostream *stream = reinterpret_cast<iostream*>(BIO_get_data(bio));
++#else
+ 	iostream *stream = reinterpret_cast<iostream*>(bio->ptr);
++#endif
+ 
+ 	IBRCOMMON_LOGGER_DEBUG_TAG("iostreamBIO", 90) << "ctrl called, cmd: " << cmd << ", num: " << num << "." << IBRCOMMON_LOGGER_ENDL;
+ 
+@@ -147,8 +179,13 @@ static long ctrl(BIO *bio, int cmd, long
+ 
+ static int bread(BIO *bio, char *buf, int len)
+ {
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	iostream *stream = reinterpret_cast<iostream*>(BIO_get_data(bio));
++	int num_bytes = 0;
++#else
+ 	iostream *stream = reinterpret_cast<iostream*>(bio->ptr);
+ 	int num_bytes = bio->num;
++#endif
+ 
+ 	try{
+ 		/* make sure to read at least 1 byte and then read as much as we can */
+@@ -170,7 +207,11 @@ static int bwrite(BIO *bio, const char *
+ 	if(len == 0){
+ 		return 0;
+ 	}
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	iostream *stream = reinterpret_cast<iostream*>(BIO_get_data(bio));
++#else
+ 	iostream *stream = reinterpret_cast<iostream*>(bio->ptr);
++#endif
+ 
+ 	/* write the data */
+ 	try{
