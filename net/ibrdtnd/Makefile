@@ -44,6 +44,8 @@ CONFIGURE_ARGS += \
 	--without-vmime \
 	--disable-libdaemon
 
+TARGET_CXXFLAGS += -std=gnu++03
+
 define Package/ibrdtnd/install
 	$(INSTALL_DIR) $(1)/usr/sbin/
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/dtnd $(1)/usr/sbin/

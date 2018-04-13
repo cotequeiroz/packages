@@ -1,0 +1,56 @@
+--- a/src/security/exchange/DHProtocol.cpp
++++ b/src/security/exchange/DHProtocol.cpp
+@@ -158,11 +158,19 @@ namespace dtn
+ 
+ 			// prepare request
+ 			KeyExchangeData request(KeyExchangeData::REQUEST, session);
+-
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
+ 			write(request, state.dh->pub_key);
+ 			write(request, state.dh->p);
+ 			write(request, state.dh->g);
+-
++#else
++			const BIGNUM *pub_key, *priv_key;
++			const BIGNUM *p, *g;
++			DH_get0_pqg (state.dh, &p, NULL, &g);
++			DH_get0_key(state.dh, &pub_key, NULL);
++			write(request, pub_key);
++			write(request, p);
++			write(request, g);
++#endif
+ 			manager.submit(session, request);
+ 		}
+ 
+@@ -184,9 +192,17 @@ namespace dtn
+ 						state.dh = DH_new();
+ 
+ 						// read p and g paramter from message
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
+ 						read(data, &state.dh->p);
+ 						read(data, &state.dh->g);
+-
++#else
++						BIGNUM *p;
++						BIGNUM *g;
++						BIGNUM *pkey;
++						DH_get0_pqg(state.dh, (const BIGNUM **)&p, NULL, (const BIGNUM **)&g);
++						read(data, &p);
++						read(data, &g);
++#endif
+ 						int codes;
+ 						if (!DH_check(state.dh, &codes))
+ 						{
+@@ -213,7 +229,12 @@ namespace dtn
+ 						state.secret.assign((const char*)secret, length);
+ 
+ 						KeyExchangeData response(KeyExchangeData::RESPONSE, session);
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
+ 						write(response, state.dh->pub_key);
++#else
++						DH_get0_key(state.dh, (const BIGNUM **)&pkey, NULL);
++						write(response, pkey);
++#endif
+ 
+ 						manager.submit(session, response);
+ 
