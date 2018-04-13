@@ -1,0 +1,704 @@
+--- a/src/racoon/eaytest.c
++++ b/src/racoon/eaytest.c
+@@ -103,7 +103,11 @@ rsa_verify_with_pubkey(src, sig, pubkey_
+ 		printf ("PEM_read_PUBKEY(): %s\n", eay_strerror());
+ 		return -1;
+ 	}
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
+ 	error = eay_check_rsasign(src, sig, evp->pkey.rsa);
++#else
++	error = eay_check_rsasign(src, sig, EVP_PKEY_get0_RSA(evp));
++#endif
+ 
+ 	return error;
+ }
+@@ -698,7 +702,7 @@ ciphertest(ac, av)
+ 			  eay_cast_encrypt, eay_cast_decrypt) < 0)
+ 	  return -1;
+ 	
+-#ifdef HAVE_OPENSSL_IDEA_H
++#if defined(HAVE_OPENSSL_IDEA_H) && ! defined(OPENSSL_NO_IDEA)
+ 	if (ciphertest_1 ("IDEA",
+ 			  &data, 8,
+ 			  &key, key.l,
+@@ -715,7 +719,7 @@ ciphertest(ac, av)
+ 			  eay_rc5_encrypt, eay_rc5_decrypt) < 0)
+ 	  return -1;
+ #endif
+-#if defined(HAVE_OPENSSL_CAMELLIA_H)
++#if defined(HAVE_OPENSSL_CAMELLIA_H) && ! defined(OPENSSL_NO_CAMELLIA)
+ 	if (ciphertest_1 ("CAMELLIA",
+ 			  &data, 16,
+ 			  &key, key.l,
+--- a/src/racoon/crypto_openssl.c
++++ b/src/racoon/crypto_openssl.c
+@@ -316,9 +316,18 @@ eay_cmp_asn1dn(n1, n2)
+ 			i = idx+1;
+ 			goto end;
+ 		}
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++		ASN1_STRING *sa, *sb;
++		sa = X509_NAME_ENTRY_get_data(ea);
++		sb = X509_NAME_ENTRY_get_data(eb);
++		if ((ASN1_STRING_length(sa) == 1 && ASN1_STRING_get0_data(sa)[0] == '*') ||
++		    (ASN1_STRING_length(sb) == 1 && ASN1_STRING_get0_data(sb)[0] == '*')) {
++	    		if (OBJ_cmp(X509_NAME_ENTRY_get_object(ea), X509_NAME_ENTRY_get_object(eb))) {
++#else
+ 		if ((ea->value->length == 1 && ea->value->data[0] == '*') ||
+ 		    (eb->value->length == 1 && eb->value->data[0] == '*')) {
+ 	    		if (OBJ_cmp(ea->object,eb->object)) {
++#endif
+ 				i = idx+1;
+ 				goto end;
+ 	    		}
+@@ -430,7 +439,11 @@ cb_check_cert_local(ok, ctx)
+ 
+ 	if (!ok) {
+ 		X509_NAME_oneline(
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++				X509_get_subject_name(X509_STORE_CTX_get_current_cert(ctx)),
++#else
+ 				X509_get_subject_name(ctx->current_cert),
++#endif
+ 				buf,
+ 				256);
+ 		/*
+@@ -438,7 +451,11 @@ cb_check_cert_local(ok, ctx)
+ 		 * ok if they are self signed. But we should still warn
+ 		 * the user.
+  		 */
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++		switch (X509_STORE_CTX_get_error(ctx)) {
++#else
+ 		switch (ctx->error) {
++#endif
+ 		case X509_V_ERR_CERT_HAS_EXPIRED:
+ 		case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+ 		case X509_V_ERR_INVALID_CA:
+@@ -453,9 +470,15 @@ cb_check_cert_local(ok, ctx)
+ 		}
+ 		plog(log_tag, LOCATION, NULL,
+ 			"%s(%d) at depth:%d SubjectName:%s\n",
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++			X509_verify_cert_error_string(X509_STORE_CTX_get_error(ctx)),
++			X509_STORE_CTX_get_error(ctx),
++			X509_STORE_CTX_get_error_depth(ctx),
++#else
+ 			X509_verify_cert_error_string(ctx->error),
+ 			ctx->error,
+ 			ctx->error_depth,
++#endif
+ 			buf);
+ 	}
+ 	ERR_clear_error();
+@@ -477,10 +500,18 @@ cb_check_cert_remote(ok, ctx)
+ 
+ 	if (!ok) {
+ 		X509_NAME_oneline(
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++				X509_get_subject_name(X509_STORE_CTX_get_current_cert(ctx)),
++#else
+ 				X509_get_subject_name(ctx->current_cert),
++#endif
+ 				buf,
+ 				256);
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++		switch (X509_STORE_CTX_get_error(ctx)) {
++#else
+ 		switch (ctx->error) {
++#endif
+ 		case X509_V_ERR_UNABLE_TO_GET_CRL:
+ 			ok = 1;
+ 			log_tag = LLV_WARNING;
+@@ -490,9 +521,15 @@ cb_check_cert_remote(ok, ctx)
+ 		}
+ 		plog(log_tag, LOCATION, NULL,
+ 			"%s(%d) at depth:%d SubjectName:%s\n",
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++			X509_verify_cert_error_string(X509_STORE_CTX_get_error(ctx)),
++			X509_STORE_CTX_get_error(ctx),
++			X509_STORE_CTX_get_error_depth(ctx),
++#else
+ 			X509_verify_cert_error_string(ctx->error),
+ 			ctx->error,
+ 			ctx->error_depth,
++#endif
+ 			buf);
+ 	}
+ 	ERR_clear_error();
+@@ -517,13 +554,21 @@ eay_get_x509asn1subjectname(cert)
+ 		goto error;
+ 
+ 	/* get the length of the name */
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	len = i2d_X509_NAME(X509_get_subject_name(x509), NULL);
++#else
+ 	len = i2d_X509_NAME(x509->cert_info->subject, NULL);
++#endif
+ 	name = vmalloc(len);
+ 	if (!name)
+ 		goto error;
+ 	/* get the name */
+ 	bp = (unsigned char *) name->v;
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	len = i2d_X509_NAME(X509_get_subject_name(x509), &bp);
++#else
+ 	len = i2d_X509_NAME(x509->cert_info->subject, &bp);
++#endif
+ 
+ 	X509_free(x509);
+ 
+@@ -662,14 +707,22 @@ eay_get_x509asn1issuername(cert)
+ 		goto error;
+ 
+ 	/* get the length of the name */
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	len = i2d_X509_NAME(X509_get_issuer_name(x509), NULL);
++#else
+ 	len = i2d_X509_NAME(x509->cert_info->issuer, NULL);
++#endif
+ 	name = vmalloc(len);
+ 	if (name == NULL)
+ 		goto error;
+ 
+ 	/* get the name */
+ 	bp = (unsigned char *) name->v;
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	len = i2d_X509_NAME(X509_get_issuer_name(x509), &bp);
++#else
+ 	len = i2d_X509_NAME(x509->cert_info->issuer, &bp);
++#endif
+ 
+ 	X509_free(x509);
+ 
+@@ -850,7 +903,11 @@ eay_check_x509sign(source, sig, cert)
+ 		return -1;
+ 	}
+ 
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	res = eay_rsa_verify(source, sig, EVP_PKEY_get0_RSA(evp));
++#else
+ 	res = eay_rsa_verify(source, sig, evp->pkey.rsa);
++#endif
+ 
+ 	EVP_PKEY_free(evp);
+ 	X509_free(x509);
+@@ -992,7 +1049,11 @@ eay_get_x509sign(src, privkey)
+ 	if (evp == NULL)
+ 		return NULL;
+ 
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	sig = eay_rsa_sign(src, EVP_PKEY_get0_RSA(evp));
++#else
+ 	sig = eay_rsa_sign(src, evp->pkey.rsa);
++#endif
+ 
+ 	EVP_PKEY_free(evp);
+ 
+@@ -1079,7 +1140,11 @@ eay_strerror()
+ 	int line, flags;
+ 	unsigned long es;
+ 
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	es = 0; /* even when allowed by OPENSSL_API_COMPAT, it is defined as 0 */
++#else
+ 	es = CRYPTO_thread_id();
++#endif
+ 
+ 	while ((l = ERR_get_error_line_data(&file, &line, &data, &flags)) != 0){
+ 		n = snprintf(ebuf + len, sizeof(ebuf) - len,
+@@ -1100,7 +1165,7 @@ vchar_t *
+ evp_crypt(vchar_t *data, vchar_t *key, vchar_t *iv, const EVP_CIPHER *e, int enc)
+ {
+ 	vchar_t *res;
+-	EVP_CIPHER_CTX ctx;
++	EVP_CIPHER_CTX *ctx;
+ 
+ 	if (!e)
+ 		return NULL;
+@@ -1111,7 +1176,7 @@ evp_crypt(vchar_t *data, vchar_t *key, v
+ 	if ((res = vmalloc(data->l)) == NULL)
+ 		return NULL;
+ 
+-	EVP_CIPHER_CTX_init(&ctx);
++	ctx = EVP_CIPHER_CTX_new();
+ 
+ 	switch(EVP_CIPHER_nid(e)){
+ 	case NID_bf_cbc:
+@@ -1126,7 +1191,7 @@ evp_crypt(vchar_t *data, vchar_t *key, v
+ 		 */
+ 		/* init context without key/iv
+          */
+-        if (!EVP_CipherInit(&ctx, e, NULL, NULL, enc))
++        if (!EVP_CipherInit(ctx, e, NULL, NULL, enc))
+         {
+             OpenSSL_BUG();
+             vfree(res);
+@@ -1135,7 +1200,7 @@ evp_crypt(vchar_t *data, vchar_t *key, v
+ 		
+         /* update key size
+          */
+-        if (!EVP_CIPHER_CTX_set_key_length(&ctx, key->l))
++        if (!EVP_CIPHER_CTX_set_key_length(ctx, key->l))
+         {
+             OpenSSL_BUG();
+             vfree(res);
+@@ -1144,7 +1209,7 @@ evp_crypt(vchar_t *data, vchar_t *key, v
+ 
+         /* finalize context init with desired key size
+          */
+-        if (!EVP_CipherInit(&ctx, NULL, (u_char *) key->v,
++        if (!EVP_CipherInit(ctx, NULL, (u_char *) key->v,
+ 							(u_char *) iv->v, enc))
+         {
+             OpenSSL_BUG();
+@@ -1153,7 +1218,7 @@ evp_crypt(vchar_t *data, vchar_t *key, v
+ 		}
+ 		break;
+ 	default:
+-		if (!EVP_CipherInit(&ctx, e, (u_char *) key->v, 
++		if (!EVP_CipherInit(ctx, e, (u_char *) key->v,
+ 							(u_char *) iv->v, enc)) {
+ 			OpenSSL_BUG();
+ 			vfree(res);
+@@ -1162,15 +1227,15 @@ evp_crypt(vchar_t *data, vchar_t *key, v
+ 	}
+ 
+ 	/* disable openssl padding */
+-	EVP_CIPHER_CTX_set_padding(&ctx, 0); 
++	EVP_CIPHER_CTX_set_padding(ctx, 0);
+ 	
+-	if (!EVP_Cipher(&ctx, (u_char *) res->v, (u_char *) data->v, data->l)) {
++	if (!EVP_Cipher(ctx, (u_char *) res->v, (u_char *) data->v, data->l)) {
+ 		OpenSSL_BUG();
+ 		vfree(res);
+ 		return NULL;
+ 	}
+ 
+-	EVP_CIPHER_CTX_cleanup(&ctx);
++	EVP_CIPHER_CTX_free(ctx);
+ 
+ 	return res;
+ }
+@@ -1230,7 +1295,7 @@ eay_des_keylen(len)
+ 	return evp_keylen(len, EVP_des_cbc());
+ }
+ 
+-#ifdef HAVE_OPENSSL_IDEA_H
++#if defined(HAVE_OPENSSL_IDEA_H) && ! defined(OPENSSL_NO_IDEA)
+ /*
+  * IDEA-CBC
+  */
+@@ -1587,7 +1652,7 @@ eay_aes_keylen(len)
+ 	return len;
+ }
+ 
+-#if defined(HAVE_OPENSSL_CAMELLIA_H)
++#if defined(HAVE_OPENSSL_CAMELLIA_H) && ! defined(OPENSSL_NO_CAMELLIA)
+ /*
+  * CAMELLIA-CBC
+  */
+@@ -1680,9 +1745,13 @@ eay_hmac_init(key, md)
+ 	vchar_t *key;
+ 	const EVP_MD *md;
+ {
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	HMAC_CTX *c = HMAC_CTX_new();
++#else
+ 	HMAC_CTX *c = racoon_malloc(sizeof(*c));
++#endif
+ 
+-	HMAC_Init(c, key->v, key->l, md);
++	HMAC_Init_ex(c, key->v, key->l, md, NULL);
+ 
+ 	return (caddr_t)c;
+ }
+@@ -1761,8 +1830,12 @@ eay_hmacsha2_512_final(c)
+ 
+ 	HMAC_Final((HMAC_CTX *)c, (unsigned char *) res->v, &l);
+ 	res->l = l;
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	HMAC_CTX_free((HMAC_CTX *)c);
++#else
+ 	HMAC_cleanup((HMAC_CTX *)c);
+ 	(void)racoon_free(c);
++#endif
+ 
+ 	if (SHA512_DIGEST_LENGTH != res->l) {
+ 		plog(LLV_ERROR, LOCATION, NULL,
+@@ -1811,8 +1884,12 @@ eay_hmacsha2_384_final(c)
+ 
+ 	HMAC_Final((HMAC_CTX *)c, (unsigned char *) res->v, &l);
+ 	res->l = l;
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	HMAC_CTX_free((HMAC_CTX *)c);
++#else
+ 	HMAC_cleanup((HMAC_CTX *)c);
+ 	(void)racoon_free(c);
++#endif
+ 
+ 	if (SHA384_DIGEST_LENGTH != res->l) {
+ 		plog(LLV_ERROR, LOCATION, NULL,
+@@ -1861,8 +1938,12 @@ eay_hmacsha2_256_final(c)
+ 
+ 	HMAC_Final((HMAC_CTX *)c, (unsigned char *) res->v, &l);
+ 	res->l = l;
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	HMAC_CTX_free((HMAC_CTX *)c);
++#else
+ 	HMAC_cleanup((HMAC_CTX *)c);
+ 	(void)racoon_free(c);
++#endif
+ 
+ 	if (SHA256_DIGEST_LENGTH != res->l) {
+ 		plog(LLV_ERROR, LOCATION, NULL,
+@@ -1912,8 +1993,12 @@ eay_hmacsha1_final(c)
+ 
+ 	HMAC_Final((HMAC_CTX *)c, (unsigned char *) res->v, &l);
+ 	res->l = l;
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	HMAC_CTX_free((HMAC_CTX *)c);
++#else
+ 	HMAC_cleanup((HMAC_CTX *)c);
+ 	(void)racoon_free(c);
++#endif
+ 
+ 	if (SHA_DIGEST_LENGTH != res->l) {
+ 		plog(LLV_ERROR, LOCATION, NULL,
+@@ -1962,8 +2047,12 @@ eay_hmacmd5_final(c)
+ 
+ 	HMAC_Final((HMAC_CTX *)c, (unsigned char *) res->v, &l);
+ 	res->l = l;
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	HMAC_CTX_free((HMAC_CTX *)c);
++#else
+ 	HMAC_cleanup((HMAC_CTX *)c);
+ 	(void)racoon_free(c);
++#endif
+ 
+ 	if (MD5_DIGEST_LENGTH != res->l) {
+ 		plog(LLV_ERROR, LOCATION, NULL,
+@@ -2266,6 +2355,7 @@ eay_dh_generate(prime, g, publen, pub, p
+ 	u_int32_t g;
+ {
+ 	BIGNUM *p = NULL;
++	BIGNUM *BNg = NULL;
+ 	DH *dh = NULL;
+ 	int error = -1;
+ 
+@@ -2276,6 +2366,32 @@ eay_dh_generate(prime, g, publen, pub, p
+ 
+ 	if ((dh = DH_new()) == NULL)
+ 		goto end;
++#if OPENSSL_VERSION_NUMBER > 0x10100000L
++	if ((BNg = BN_new()) == NULL)
++		goto end;
++	if (! DH_set0_pqg(dh, p, NULL, BNg)) {
++		BN_free(BNg);
++		goto end;
++	}
++	p = NULL;	/* p is now part of dh structure */
++	if (!BN_set_word(BNg, g))
++		goto end;
++	if (publen != 0)
++		DH_set_length(dh, publen);
++
++	/* generate public and private number */
++	if (!DH_generate_key(dh))
++		goto end;
++	/* copy results to buffers */
++	BIGNUM *pub_key, *priv_key;
++	DH_get0_key(dh, (const BIGNUM**) &pub_key, (const BIGNUM**) &priv_key);
++	if (eay_bn2v(pub, pub_key) < 0)
++		goto end;
++	if (eay_bn2v(priv, priv_key) < 0) {
++		vfree(*pub);
++		goto end;
++	}
++#else
+ 	dh->p = p;
+ 	p = NULL;	/* p is now part of dh structure */
+ 	dh->g = NULL;
+@@ -2298,6 +2414,7 @@ eay_dh_generate(prime, g, publen, pub, p
+ 		vfree(*pub);
+ 		goto end;
+ 	}
++#endif
+ 
+ 	error = 0;
+ 
+@@ -2327,6 +2444,24 @@ eay_dh_compute(prime, g, pub, priv, pub2
+ 	/* make DH structure */
+ 	if ((dh = DH_new()) == NULL)
+ 		goto end;
++#if OPENSSL_VERSION_NUMBER > 0x10100000L
++	BIGNUM *p, *BNg, *pub_key, *priv_key;
++	if (eay_v2bn(&p, prime) < 0)
++		goto end;
++	if (eay_v2bn(&pub_key, pub) < 0)
++		goto end;
++	if (eay_v2bn(&priv_key, priv) < 0)
++		goto end;
++	if ((BNg = BN_new()) == NULL)
++		goto end;
++	DH_set0_key(dh, pub_key, priv_key);
++	DH_set_length(dh, pub2->l * 8);
++	if (!BN_set_word(BNg, g)) {
++		BN_free(BNg);
++		goto end;
++	}
++	DH_set0_pqg(dh, p, NULL, BNg);
++#else
+ 	if (eay_v2bn(&dh->p, prime) < 0)
+ 		goto end;
+ 	if (eay_v2bn(&dh->pub_key, pub) < 0)
+@@ -2340,6 +2475,7 @@ eay_dh_compute(prime, g, pub, priv, pub2
+ 		goto end;
+ 	if (!BN_set_word(dh->g, g))
+ 		goto end;
++#endif
+ 
+ 	if ((v = racoon_calloc(prime->l, sizeof(u_char))) == NULL)
+ 		goto end;
+@@ -2504,8 +2640,12 @@ binbuf_pubkey2rsa(vchar_t *binbuf)
+ 		goto out;
+ 	}
+ 	
++#if OPENSSL_VERSION_NUMBER > 0x10100000L
++	RSA_set0_key(rsa_pub, mod, exp, NULL);
++#else
+ 	rsa_pub->n = mod;
+ 	rsa_pub->e = exp;
++#endif
+ 
+ out:
+ 	return rsa_pub;
+@@ -2582,5 +2722,9 @@ eay_random()
+ const char *
+ eay_version()
+ {
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	return OpenSSL_version(OPENSSL_VERSION);
++#else
+ 	return SSLeay_version(SSLEAY_VERSION);
++#endif
+ }
+--- a/src/racoon/algorithm.c
++++ b/src/racoon/algorithm.c
+@@ -128,7 +128,7 @@ static struct enc_algorithm oakley_encde
+ { "aes",	algtype_aes,	OAKLEY_ATTR_ENC_ALG_AES,	16,
+ 		eay_aes_encrypt,	eay_aes_decrypt,
+ 		eay_aes_weakkey,	eay_aes_keylen, },
+-#ifdef HAVE_OPENSSL_CAMELLIA_H
++#if defined(HAVE_OPENSSL_CAMELLIA_H) && ! defined(OPENSSL_NO_CAMELLIA)
+ { "camellia",	algtype_camellia,	OAKLEY_ATTR_ENC_ALG_CAMELLIA,	16,
+ 		eay_camellia_encrypt,	eay_camellia_decrypt,
+ 		eay_camellia_weakkey,	eay_camellia_keylen, },
+@@ -168,7 +168,7 @@ static struct enc_algorithm ipsec_encdef
+ { "twofish",	algtype_twofish,	IPSECDOI_ESP_TWOFISH,		16,
+ 		NULL,			NULL,
+ 		NULL,			eay_twofish_keylen, },
+-#ifdef HAVE_OPENSSL_IDEA_H
++#if defined(HAVE_OPENSSL_IDEA_H) && ! defined(OPENSSL_NO_IDEA)
+ { "3idea",	algtype_3idea,		IPSECDOI_ESP_3IDEA,		8,
+ 		NULL,			NULL,
+ 		NULL,			NULL, },
+@@ -179,7 +179,7 @@ static struct enc_algorithm ipsec_encdef
+ { "rc4",	algtype_rc4,		IPSECDOI_ESP_RC4,		8,
+ 		NULL,			NULL,
+ 		NULL,			NULL, },
+-#ifdef HAVE_OPENSSL_CAMELLIA_H
++#if defined(HAVE_OPENSSL_CAMELLIA_H) && ! defined(OPENSSL_NO_CAMELLIA)
+ { "camellia",	algtype_camellia,	IPSECDOI_ESP_CAMELLIA,		16,
+ 		NULL,			NULL,
+ 		NULL,			eay_camellia_keylen, },
+--- a/src/racoon/cfparse.y
++++ b/src/racoon/cfparse.y
+@@ -2564,7 +2564,7 @@ set_isakmp_proposal(rmconf)
+ 		plog(LLV_DEBUG2, LOCATION, NULL,
+ 			"encklen=%d\n", s->encklen);
+ 
+-		memset(types, 0, ARRAYLEN(types));
++		memset(types, 0, sizeof types);
+ 		types[algclass_isakmp_enc] = s->algclass[algclass_isakmp_enc];
+ 		types[algclass_isakmp_hash] = s->algclass[algclass_isakmp_hash];
+ 		types[algclass_isakmp_dh] = s->algclass[algclass_isakmp_dh];
+--- a/src/racoon/crypto_openssl.h
++++ b/src/racoon/crypto_openssl.h
+@@ -124,7 +124,7 @@ extern vchar_t *eay_aes_decrypt __P((vch
+ extern int eay_aes_weakkey __P((vchar_t *));
+ extern int eay_aes_keylen __P((int));
+ 
+-#if defined(HAVE_OPENSSL_CAMELLIA_H)
++#if defined(HAVE_OPENSSL_CAMELLIA_H) && ! defined(OPENSSL_NO_CAMELLIA)
+ /* Camellia */
+ extern vchar_t *eay_camellia_encrypt __P((vchar_t *, vchar_t *, vchar_t *));
+ extern vchar_t *eay_camellia_decrypt __P((vchar_t *, vchar_t *, vchar_t *));
+--- a/src/racoon/ipsec_doi.c
++++ b/src/racoon/ipsec_doi.c
+@@ -715,7 +715,7 @@ out:
+ 	/* key length must not be specified on some algorithms */
+ 	if (keylen) {
+ 		if (sa->enctype == OAKLEY_ATTR_ENC_ALG_DES
+-#ifdef HAVE_OPENSSL_IDEA_H
++#if defined(HAVE_OPENSSL_IDEA_H) && ! defined(OPENSSL_NO_IDEA)
+ 		 || sa->enctype == OAKLEY_ATTR_ENC_ALG_IDEA
+ #endif
+ 		 || sa->enctype == OAKLEY_ATTR_ENC_ALG_3DES) {
+--- a/src/racoon/plainrsa-gen.c
++++ b/src/racoon/plainrsa-gen.c
+@@ -90,12 +90,18 @@ mix_b64_pubkey(const RSA *key)
+ 	char *binbuf;
+ 	long binlen, ret;
+ 	vchar_t *res;
+-	
+-	binlen = 1 + BN_num_bytes(key->e) + BN_num_bytes(key->n);
++	const BIGNUM *e, *n;
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	RSA_get0_key(key, &n, &e, NULL);
++#else
++	e = key->e;
++	n = key->n;
++#endif
++	binlen = 1 + BN_num_bytes(e) + BN_num_bytes(n);
+ 	binbuf = malloc(binlen);
+ 	memset(binbuf, 0, binlen);
+-	binbuf[0] = BN_bn2bin(key->e, (unsigned char *) &binbuf[1]);
+-	ret = BN_bn2bin(key->n, (unsigned char *) (&binbuf[binbuf[0] + 1]));
++	binbuf[0] = BN_bn2bin(e, (unsigned char *) &binbuf[1]);
++	ret = BN_bn2bin(n, (unsigned char *) (&binbuf[binbuf[0] + 1]));
+ 	if (1 + binbuf[0] + ret != binlen) {
+ 		plog(LLV_ERROR, LOCATION, NULL,
+ 		     "Pubkey generation failed. This is really strange...\n");
+@@ -131,8 +137,26 @@ print_rsa_key(FILE *fp, const RSA *key)
+ 	
+ 	fprintf(fp, "# : PUB 0s%s\n", pubkey64->v);
+ 	fprintf(fp, ": RSA\t{\n");
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	const BIGNUM *n, *e, *d, *p, *q, *dmp1, *dmq1, *iqmp;
++	RSA_get0_key(key, &n, &e, &d);
++	RSA_get0_factors(key, &p, &q);
++	RSA_get0_crt_params(key, &dmp1, &dmq1, &iqmp);
++	fprintf(fp, "\t# RSA %d bits\n", BN_num_bits(n));
++#else
+ 	fprintf(fp, "\t# RSA %d bits\n", BN_num_bits(key->n));
++#endif
+ 	fprintf(fp, "\t# pubkey=0s%s\n", pubkey64->v);
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	fprintf(fp, "\tModulus: 0x%s\n", lowercase(BN_bn2hex(n)));
++	fprintf(fp, "\tPublicExponent: 0x%s\n", lowercase(BN_bn2hex(e)));
++	fprintf(fp, "\tPrivateExponent: 0x%s\n", lowercase(BN_bn2hex(d)));
++	fprintf(fp, "\tPrime1: 0x%s\n", lowercase(BN_bn2hex(p)));
++	fprintf(fp, "\tPrime2: 0x%s\n", lowercase(BN_bn2hex(q)));
++	fprintf(fp, "\tExponent1: 0x%s\n", lowercase(BN_bn2hex(dmp1)));
++	fprintf(fp, "\tExponent2: 0x%s\n", lowercase(BN_bn2hex(dmq1)));
++	fprintf(fp, "\tCoefficient: 0x%s\n", lowercase(BN_bn2hex(iqmp)));
++#else
+ 	fprintf(fp, "\tModulus: 0x%s\n", lowercase(BN_bn2hex(key->n)));
+ 	fprintf(fp, "\tPublicExponent: 0x%s\n", lowercase(BN_bn2hex(key->e)));
+ 	fprintf(fp, "\tPrivateExponent: 0x%s\n", lowercase(BN_bn2hex(key->d)));
+@@ -141,6 +165,7 @@ print_rsa_key(FILE *fp, const RSA *key)
+ 	fprintf(fp, "\tExponent1: 0x%s\n", lowercase(BN_bn2hex(key->dmp1)));
+ 	fprintf(fp, "\tExponent2: 0x%s\n", lowercase(BN_bn2hex(key->dmq1)));
+ 	fprintf(fp, "\tCoefficient: 0x%s\n", lowercase(BN_bn2hex(key->iqmp)));
++#endif
+ 	fprintf(fp, "  }\n");
+ 
+ 	vfree(pubkey64);
+@@ -203,11 +228,13 @@ int
+ gen_rsa_key(FILE *fp, size_t bits, unsigned long exp)
+ {
+ 	int ret;
+-	RSA *key;
++	RSA *key = RSA_new();
++	BIGNUM *e = BN_new();
+ 
+-	key = RSA_generate_key(bits, exp, NULL, NULL);
+-	if (!key) {
++	BN_set_word(e, exp);
++	if (! RSA_generate_key_ex(key, bits, e, NULL)) {
+ 		fprintf(stderr, "RSA_generate_key(): %s\n", eay_strerror());
++		RSA_free(key);
+ 		return -1;
+ 	}
+ 	
+--- a/src/racoon/prsa_par.y
++++ b/src/racoon/prsa_par.y
+@@ -85,7 +85,22 @@ char *prsa_cur_fname = NULL;
+ struct genlist *prsa_cur_list = NULL;
+ enum rsa_key_type prsa_cur_type = RSA_TYPE_ANY;
+ 
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++struct my_rsa_st {
++	BIGNUM *n;
++	BIGNUM *e;
++	BIGNUM *d;
++	BIGNUM *p;
++	BIGNUM *q;
++	BIGNUM *dmp1;
++	BIGNUM *dmq1;
++	BIGNUM *iqmp;
++};
++
++static struct my_rsa_st *rsa_cur;
++#else
+ static RSA *rsa_cur;
++#endif
+ 
+ void
+ prsaerror(const char *s, ...)
+@@ -201,8 +216,17 @@ rsa_statement:
+ 				rsa_cur->iqmp = NULL;
+ 			}
+ 		}
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++		RSA * rsa_tmp = RSA_new();
++		RSA_set0_key(rsa_tmp, rsa_cur->n, rsa_cur->e, rsa_cur->d);
++		RSA_set0_factors(rsa_tmp, rsa_cur->p, rsa_cur->q);
++		RSA_set0_crt_params(rsa_tmp, rsa_cur->dmp1, rsa_cur->dmq1, rsa_cur->iqmp);
++		$$ = rsa_tmp;
++		memset(rsa_cur, 0, sizeof(struct my_rsa_st));
++#else
+ 		$$ = rsa_cur;
+ 		rsa_cur = RSA_new();
++#endif
+ 	}
+ 	| TAG_PUB BASE64
+ 	{
+@@ -351,10 +375,20 @@ prsa_parse_file(struct genlist *list, ch
+ 	prsa_cur_fname = fname;
+ 	prsa_cur_list = list;
+ 	prsa_cur_type = type;
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	rsa_cur = malloc(sizeof(struct my_rsa_st));
++	memset(rsa_cur, 0, sizeof(struct my_rsa_st));
++#else
+ 	rsa_cur = RSA_new();
++#endif
+ 	ret = prsaparse();
+ 	if (rsa_cur) {
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++		memset(rsa_cur, 0, sizeof(struct my_rsa_st));
++		free(rsa_cur);
++#else
+ 		RSA_free(rsa_cur);
++#endif
+ 		rsa_cur = NULL;
+ 	}
+ 	fclose (fp);
+--- a/src/racoon/rsalist.c
++++ b/src/racoon/rsalist.c
+@@ -98,7 +98,13 @@ rsa_key_dup(struct rsa_key *key)
+ 		return NULL;
+ 
+ 	if (key->rsa) {
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++		const BIGNUM *d;
++		RSA_get0_key(key->rsa, NULL, NULL, &d);
++		new->rsa = (d != NULL ? RSAPrivateKey_dup(key->rsa) : RSAPublicKey_dup(key->rsa));
++#else
+ 		new->rsa = key->rsa->d != NULL ? RSAPrivateKey_dup(key->rsa) : RSAPublicKey_dup(key->rsa);
++#endif
+ 		if (new->rsa == NULL)
+ 			goto dup_error;
+ 	}
