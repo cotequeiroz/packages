@@ -514,6 +514,9 @@ CONFIGURE_ARGS += \
 	--with-user=root \
 	--with-group=root
 
+CONFIGURE_VARS += \
+	ac_cv_func_SSL_library_init=yes
+
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include $(1)/usr/lib/pkgconfig
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib*.so* $(1)/usr/lib/
