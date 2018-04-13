@@ -1,8 +1,6 @@
-diff --git a/radsecproxy.c b/radsecproxy.c
-index 563c4a8..9fa076d 100644
 --- a/radsecproxy.c
 +++ b/radsecproxy.c
-@@ -3382,18 +3382,16 @@ int radsecproxy_main(int argc, char **argv) {
+@@ -3435,18 +3435,16 @@ int radsecproxy_main(int argc, char **ar
  	options.loglevel = loglevel;
      else if (options.loglevel)
  	debug_set_level(options.loglevel);
