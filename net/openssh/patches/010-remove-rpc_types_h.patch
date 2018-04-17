@@ -1,6 +1,6 @@
 --- a/configure
 +++ b/configure
-@@ -6701,7 +6701,6 @@ for ac_header in  \
+@@ -6924,7 +6924,6 @@ for ac_header in  \
  	poll.h \
  	pty.h \
  	readpassphrase.h \
@@ -10,7 +10,7 @@
  	shadow.h \
 --- a/configure.ac
 +++ b/configure.ac
-@@ -386,7 +386,6 @@ AC_CHECK_HEADERS([ \
+@@ -393,7 +393,6 @@ AC_CHECK_HEADERS([ \
  	poll.h \
  	pty.h \
  	readpassphrase.h \
