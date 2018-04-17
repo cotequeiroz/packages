@@ -78,6 +78,7 @@ define Build/Configure
 endef
 
 CFLAGS+="$(TARGET_CFLAGS) -I$(STAGING_DIR)/usr/include"
+EXTRA_CFLAGS+=-DSIGCLD=SIGCHLD
 
 USB_IDS_REV:=0a6be488b4c1485d30c9efee1cc895af5d4a1383
 USB_IDS_FILE:=usb.ids.$(USB_IDS_REV)
