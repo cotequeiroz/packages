@@ -56,10 +56,11 @@ endef
 $(eval $(call Download,ursa))
 
 define Build/Prepare
-	$(call Build/Prepare/Default)
+	$(PKG_UNPACK)
 	$(RM) -f "$(PKG_BUILD_DIR)/$(URSA_SUBDIR)"
 	$(INSTALL_DIR) "$(PKG_BUILD_DIR)/$(URSA_SUBDIR)"
 	$(TAR) -C "$(PKG_BUILD_DIR)/$(URSA_SUBDIR)" -xzf "$(DL_DIR)/$(URSA_SOURCE)"
+	$(Build/Patch)
 endef
 
 EXTRA_CFLAGS += -Wno-error=format-security
