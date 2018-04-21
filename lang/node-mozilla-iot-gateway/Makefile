@@ -12,6 +12,10 @@ PKG_NAME:=node-$(PKG_NPM_NAME)
 PKG_VERSION:=0.3.1
 PKG_RELEASE:=1
 
+URSA_VERSION:=0.9.4
+URSA_SOURCE:=ursa-$(URSA_VERSION).tgz
+URSA_SUBDIR:=ursa
+
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/mozilla-iot/gateway.git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
@@ -44,6 +48,21 @@ define Package/node-mozilla-iot-gateway/description
   and defining a standard data model and APIs to make them interoperable.
 endef
 
+define Download/ursa
+  FILE:=$(URSA_SOURCE)
+  URL:=https://registry.yarnpkg.com/ursa/-/$(FILE)
+  HASH:=65516fc99958011572ef26ef02a3c84a004e47aabfd5b8aa46abb10481ae7153
+endef
+$(eval $(call Download,ursa))
+
+define Build/Prepare
+	$(call Build/Prepare/Default)
+	$(RM) -f "$(PKG_BUILD_DIR)/$(URSA_SUBDIR)"
+	$(INSTALL_DIR) "$(PKG_BUILD_DIR)/$(URSA_SUBDIR)"
+	$(TAR) -C "$(PKG_BUILD_DIR)/$(URSA_SUBDIR)" -xzf "$(DL_DIR)/$(URSA_SOURCE)"
+endef
+
+EXTRA_CFLAGS += -Wno-error=format-security
 CPU:=$(subst powerpc,ppc,$(subst aarch64,arm64,$(subst x86_64,x64,$(subst i386,ia32,$(ARCH)))))
 
 define Build/Compile
@@ -54,7 +73,7 @@ define Build/Compile
 	npm_config_cache=$(TMP_DIR)/npm-cache \
 	npm_config_tmp=$(TMP_DIR)/npm-tmp \
 	PREFIX="$(PKG_INSTALL_DIR)/usr/" \
-	$(STAGING_DIR_HOSTPKG)/bin/npm install --build-from-source --target_arch=$(CPU) -g $(DL_DIR)/$(PKG_SOURCE)
+	$(STAGING_DIR_HOSTPKG)/bin/npm install --build-from-source --target_arch=$(CPU) -g $(PKG_BUILD_DIR)
 endef
 
 define Package/node-mozilla-iot-gateway/install
