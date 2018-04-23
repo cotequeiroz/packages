@@ -1,6 +1,5 @@
-diff --recurs -u a/ursa/package/src/ursaNative.cc b/ursa/package/src/ursaNative.cc
---- a/ursa/package/src/ursaNative.cc	2016-05-09 21:28:14.000000000 -0300
-+++ b/ursa/package/src/ursaNative.cc	2018-04-20 17:18:48.000000000 -0300
+--- a/src/ursaNative.cc	2016-05-09 21:28:14.000000000 -0300
++++ b/src/ursaNative.cc	2018-04-20 17:18:48.000000000 -0300
 @@ -386,8 +386,12 @@
          obj->rsa = RSA_new();
      }

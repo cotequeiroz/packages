@@ -20,7 +20,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_SOURCE_VERSION).tar.gz
 PKG_MIRROR_HASH:=dceb75539d32f402db0a5f68f2c7e2b52e5547a5ac2dec875d34fd3cc95cce00
 
 PKG_BUILD_DEPENDS:=node/host
-PKG_NODE_VERSION:=6.11.2
+PKG_NODE_VERSION:=8.10.0
 
 PKG_MAINTAINER:=John Crispin <blogic@openwrt.org>
 PKG_LICENSE:=Apache-2.0
@@ -65,12 +65,13 @@ endef
 EXTRA_LDFLAGS="-L$(TOOLCHAIN_DIR)/lib/ -Wl,-rpath-link $(TOOLCHAIN_DIR)/lib/" \
 
 define Build/Compile
-	$(MAKE_FLAGS) \
-	npm_config_arch=$(CONFIG_ARCH) \
-	npm_config_nodedir=$(BUILD_DIR)/node-v$(PKG_NODE_VERSION)/ \
-	npm_config_cache=$(BUILD_DIR)/node-v$(PKG_NODE_VERSION)/npm-cache \
-	PREFIX="$(PKG_INSTALL_DIR)/usr/" \
-	npm install -g $(PKG_BUILD_DIR)
+	  cd $(PKG_BUILD_DIR) ; \
+	  $(MAKE_FLAGS) \
+	  npm_config_arch=$(CONFIG_ARCH) \
+	  npm_config_nodedir=$(BUILD_DIR)/node-v$(PKG_NODE_VERSION)/ \
+	  npm_config_cache=$(BUILD_DIR)/node-v$(PKG_NODE_VERSION)/npm-cache \
+	  PREFIX="$(PKG_INSTALL_DIR)/usr/" \
+	  npm install -g `npm pack $(PKG_BUILD_DIR) | tail -n 1`
 endef
 
 define Package/node-cylon/install
