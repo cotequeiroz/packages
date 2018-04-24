@@ -66,7 +66,7 @@ define Build/Configure
 		--sysconfdir=/etc/clamav/ \
 		--prefix=/usr/ \
 		--exec-prefix=/usr/ \
-		--disable-xml \
+		--with-xml=no \
 		--disable-bzip2 \
 		--with-user nobody \
 		--with-group nogroup \
