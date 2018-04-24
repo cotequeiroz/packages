@@ -46,7 +46,7 @@ CONFIGURE_ARGS += \
 	--without-libiconv-prefix \
 	--without-libintl-prefix \
 	--without-gnutls \
-	--without-libidn \
+	--without-libidn2 \
 	--without-libresolv \
 	--with-openssl="$(STAGING_DIR)/usr" \
 	--with-readline="$(STAGING_DIR)/usr" \
