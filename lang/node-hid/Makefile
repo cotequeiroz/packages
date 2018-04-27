@@ -61,6 +61,11 @@ endef
 define Package/node-hid/install
 	mkdir -p $(1)/usr/lib/node/node-hid/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/. $(1)/usr/lib/node/
+	$(RM) -rf $(1)/usr/lib/node/node-hid/patches \
+		  $(1)/usr/lib/node/node-hid/.p* \
+		  $(1)/usr/lib/node/node-hid/.quilt* \
+		  $(1)/usr/lib/node/node-hid/.built* \
+		  $(1)/usr/lib/node/node-hid/.config*
 endef
 
 $(eval $(call BuildPackage,node-hid))
