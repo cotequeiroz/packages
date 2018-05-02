@@ -19,9 +19,11 @@ Signed-off-by: Paul Eggleton <paul.eggleton@linux.intel.com>
  Lib/javascript/v8/javascriptrun.swg     | 40 ++++++++++++++++++++++++++++-----
  4 files changed, 95 insertions(+), 17 deletions(-)
 
+diff --git a/Lib/javascript/v8/javascriptcode.swg b/Lib/javascript/v8/javascriptcode.swg
+index fb7d55c..b8c5089 100644
 --- a/Lib/javascript/v8/javascriptcode.swg
 +++ b/Lib/javascript/v8/javascriptcode.swg
-@@ -133,10 +133,13 @@ static void $jswrapper(v8::Isolate *isol
+@@ -133,10 +133,13 @@ static void $jswrapper(v8::Isolate *isolate, v8::Persistent<v8::Value> object, v
    SWIGV8_Proxy *proxy = static_cast<SWIGV8_Proxy *>(parameter);
  #elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < SWIGV8_SETWEAK_VERSION)
  static void $jswrapper(v8::Isolate *isolate, v8::Persistent<v8::Object> *object, SWIGV8_Proxy *proxy) {
@@ -36,7 +38,7 @@ Signed-off-by: Paul Eggleton <paul.eggleton@linux.intel.com>
  #endif
  
    if(proxy->swigCMemOwn && proxy->swigCObject) {
-@@ -147,7 +150,9 @@ static void $jswrapper(const v8::WeakCal
+@@ -147,7 +150,9 @@ static void $jswrapper(const v8::WeakCallbackData<v8::Object, SWIGV8_Proxy> &dat
    }
    delete proxy;
  
@@ -46,7 +48,7 @@ Signed-off-by: Paul Eggleton <paul.eggleton@linux.intel.com>
    
  #if (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031710)
    object.Dispose();
-@@ -155,7 +160,7 @@ static void $jswrapper(const v8::WeakCal
+@@ -155,7 +160,7 @@ static void $jswrapper(const v8::WeakCallbackData<v8::Object, SWIGV8_Proxy> &dat
    object.Dispose(isolate);
  #elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x032100)
    object->Dispose(isolate);
@@ -55,7 +57,7 @@ Signed-off-by: Paul Eggleton <paul.eggleton@linux.intel.com>
    object->Dispose();
  #endif
  }
-@@ -177,10 +182,13 @@ static void $jswrapper(v8::Isolate *isol
+@@ -177,10 +182,13 @@ static void $jswrapper(v8::Isolate *isolate, v8::Persistent<v8::Value> object, v
    SWIGV8_Proxy *proxy = static_cast<SWIGV8_Proxy *>(parameter);
  #elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < SWIGV8_SETWEAK_VERSION)
  static void $jswrapper(v8::Isolate *isolate, v8::Persistent< v8::Object> *object, SWIGV8_Proxy *proxy) {
@@ -70,7 +72,7 @@ Signed-off-by: Paul Eggleton <paul.eggleton@linux.intel.com>
  #endif
  
    if(proxy->swigCMemOwn && proxy->swigCObject) {
-@@ -197,7 +205,7 @@ static void $jswrapper(const v8::WeakCal
+@@ -197,7 +205,7 @@ static void $jswrapper(const v8::WeakCallbackData<v8::Object, SWIGV8_Proxy> &dat
    object->Dispose(isolate);
  #elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < SWIGV8_SETWEAK_VERSION)
    object->Dispose();
@@ -79,7 +81,7 @@ Signed-off-by: Paul Eggleton <paul.eggleton@linux.intel.com>
    object.Clear();
  #endif
  }
-@@ -211,7 +219,11 @@ static void $jswrapper(const v8::WeakCal
+@@ -211,7 +219,11 @@ static void $jswrapper(const v8::WeakCallbackData<v8::Object, SWIGV8_Proxy> &dat
   * ----------------------------------------------------------------------------- */
  %fragment("js_getter", "templates")
  %{
@@ -105,9 +107,11 @@ Signed-off-by: Paul Eggleton <paul.eggleton@linux.intel.com>
    SWIGV8_HANDLESCOPE();
    
    $jslocals
+diff --git a/Lib/javascript/v8/javascripthelpers.swg b/Lib/javascript/v8/javascripthelpers.swg
+index 091467d..7461079 100644
 --- a/Lib/javascript/v8/javascripthelpers.swg
 +++ b/Lib/javascript/v8/javascripthelpers.swg
-@@ -6,11 +6,16 @@ typedef v8::InvocationCallback  SwigV8Fu
+@@ -6,11 +6,16 @@ typedef v8::InvocationCallback  SwigV8FunctionCallback;
  typedef v8::AccessorGetter      SwigV8AccessorGetterCallback;
  typedef v8::AccessorSetter      SwigV8AccessorSetterCallback;
  typedef v8::AccessorInfo        SwigV8PropertyCallbackInfoVoid;
@@ -125,7 +129,7 @@ Signed-off-by: Paul Eggleton <paul.eggleton@linux.intel.com>
  #endif
  
  /**
-@@ -65,18 +70,36 @@ SWIGRUNTIME void SWIGV8_AddStaticFunctio
+@@ -65,18 +70,36 @@ SWIGRUNTIME void SWIGV8_AddStaticFunction(v8::Handle<v8::Object> obj, const char
   */
  SWIGRUNTIME void SWIGV8_AddStaticVariable(v8::Handle<v8::Object> obj, const char* symbol,
    SwigV8AccessorGetterCallback getter, SwigV8AccessorSetterCallback setter) {
@@ -164,9 +168,11 @@ Signed-off-by: Paul Eggleton <paul.eggleton@linux.intel.com>
  
      if(res<0) {
        SWIG_exception(SWIG_ERROR, "Tried to write read-only variable.");
+diff --git a/Lib/javascript/v8/javascriptinit.swg b/Lib/javascript/v8/javascriptinit.swg
+index 34befa7..86008d9 100644
 --- a/Lib/javascript/v8/javascriptinit.swg
 +++ b/Lib/javascript/v8/javascriptinit.swg
-@@ -7,15 +7,27 @@ SWIG_V8_SetModule(void *, swig_module_in
+@@ -7,15 +7,27 @@ SWIG_V8_SetModule(void *, swig_module_info *swig_module) {
    v8::Local<v8::Object> global_obj = SWIGV8_CURRENT_CONTEXT()->Global();
    v8::Local<v8::External> mod = SWIGV8_EXTERNAL_NEW(swig_module);
    assert(!mod.IsEmpty());
@@ -204,6 +210,8 @@ Signed-off-by: Paul Eggleton <paul.eggleton@linux.intel.com>
    {
      // Something's not right
      return 0;
+diff --git a/Lib/javascript/v8/javascriptrun.swg b/Lib/javascript/v8/javascriptrun.swg
+index 5ac52a5..30002c0 100644
 --- a/Lib/javascript/v8/javascriptrun.swg
 +++ b/Lib/javascript/v8/javascriptrun.swg
 @@ -193,8 +193,10 @@ public:
@@ -218,7 +226,7 @@ Signed-off-by: Paul Eggleton <paul.eggleton@linux.intel.com>
  #endif
  };
  
-@@ -241,9 +243,12 @@ SWIGRUNTIME void SWIGV8_Proxy_DefaultDto
+@@ -241,9 +243,12 @@ SWIGRUNTIME void SWIGV8_Proxy_DefaultDtor(v8::Isolate *, v8::Persistent< v8::Val
    SWIGV8_Proxy *proxy = static_cast<SWIGV8_Proxy *>(parameter);
  #elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < SWIGV8_SETWEAK_VERSION)
  SWIGRUNTIME void SWIGV8_Proxy_DefaultDtor(v8::Isolate *, v8::Persistent< v8::Object > *object, SWIGV8_Proxy *proxy) {
@@ -232,7 +240,7 @@ Signed-off-by: Paul Eggleton <paul.eggleton@linux.intel.com>
  #endif
  
    delete proxy;
-@@ -312,12 +317,18 @@ SWIGRUNTIME void SWIGV8_SetPrivateData(v
+@@ -312,12 +317,18 @@ SWIGRUNTIME void SWIGV8_SetPrivateData(v8::Handle<v8::Object> obj, void *ptr, sw
    } else {
      cdata->handle.MakeWeak(cdata, SWIGV8_Proxy_DefaultDtor);
    }
@@ -252,7 +260,7 @@ Signed-off-by: Paul Eggleton <paul.eggleton@linux.intel.com>
  #endif
  
  #if (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031710)
-@@ -470,7 +481,14 @@ int SwigV8Packed_Check(v8::Handle<v8::Va
+@@ -470,7 +481,14 @@ int SwigV8Packed_Check(v8::Handle<v8::Value> valRef) {
    
    v8::Handle<v8::Object> objRef = valRef->ToObject();
    if(objRef->InternalFieldCount() < 1) return false;
@@ -267,7 +275,7 @@ Signed-off-by: Paul Eggleton <paul.eggleton@linux.intel.com>
    return (flag->IsBoolean() && flag->BooleanValue());
  }
  
-@@ -519,10 +537,13 @@ SWIGRUNTIME void _wrap_SwigV8PackedData_
+@@ -519,10 +537,13 @@ SWIGRUNTIME void _wrap_SwigV8PackedData_delete(v8::Isolate *isolate, v8::Persist
    SwigV8PackedData *cdata = static_cast<SwigV8PackedData *>(parameter);
  #elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < SWIGV8_SETWEAK_VERSION)
  SWIGRUNTIME void _wrap_SwigV8PackedData_delete(v8::Isolate *isolate, v8::Persistent<v8::Object> *object, SwigV8PackedData *cdata) {
@@ -282,7 +290,7 @@ Signed-off-by: Paul Eggleton <paul.eggleton@linux.intel.com>
  #endif
  
    delete cdata;
-@@ -537,7 +558,7 @@ SWIGRUNTIME void _wrap_SwigV8PackedData_
+@@ -537,7 +558,7 @@ SWIGRUNTIME void _wrap_SwigV8PackedData_delete(const v8::WeakCallbackData<v8::Ob
    object->Dispose(isolate);
  #elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < SWIGV8_SETWEAK_VERSION)
    object->Dispose();
@@ -291,7 +299,7 @@ Signed-off-by: Paul Eggleton <paul.eggleton@linux.intel.com>
    object.Clear();
  #endif
  }
-@@ -550,7 +571,12 @@ v8::Handle<v8::Value> SWIGV8_NewPackedOb
+@@ -550,7 +571,12 @@ v8::Handle<v8::Value> SWIGV8_NewPackedObj(void *data, size_t size, swig_type_inf
  //  v8::Handle<v8::Object> obj = SWIGV8_OBJECT_NEW();
    v8::Local<v8::Object> obj = SWIGV8_OBJECT_NEW();
  
@@ -304,7 +312,7 @@ Signed-off-by: Paul Eggleton <paul.eggleton@linux.intel.com>
  
  #if (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031511)
    obj->SetPointerInInternalField(0, cdata);
-@@ -573,9 +599,11 @@ v8::Handle<v8::Value> SWIGV8_NewPackedOb
+@@ -573,9 +599,11 @@ v8::Handle<v8::Value> SWIGV8_NewPackedObj(void *data, size_t size, swig_type_inf
    cdata->handle.MakeWeak(v8::Isolate::GetCurrent(), cdata, _wrap_SwigV8PackedData_delete);
  #elif (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < SWIGV8_SETWEAK_VERSION)
    cdata->handle.MakeWeak(cdata, _wrap_SwigV8PackedData_delete);
@@ -317,3 +325,6 @@ Signed-off-by: Paul Eggleton <paul.eggleton@linux.intel.com>
  #endif
  
  #if (V8_MAJOR_VERSION-0) < 4 && (SWIG_V8_VERSION < 0x031710)
+-- 
+2.9.5
+
