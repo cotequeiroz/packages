@@ -30,6 +30,8 @@ DEBUG:=1
 EXTRA_CFLAGS += \
 	$(if $(DEBUG),-DAUC_DEBUG=ON)
 
+TARGET_LDFLAGS += $(if $(CONFIG_USE_GLIBC),-ldl)
+
 define Package/auc/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/auc $(1)/usr/sbin/
