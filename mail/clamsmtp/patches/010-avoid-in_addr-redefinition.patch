@@ -1,12 +1,22 @@
---- a/common/sock_any.h
-+++ b/common/sock_any.h
-@@ -41,7 +41,9 @@
+--- a/common/smtppass.c
++++ b/common/smtppass.c
+@@ -60,15 +60,15 @@
  
- #include <sys/socket.h>
- #include <sys/un.h>
-+#ifndef _LINUX_IN_H
- #include <netinet/in.h>
+ #include "usuals.h"
+ 
+-#ifdef LINUX_TRANSPARENT_PROXY
+-#include <linux/netfilter_ipv4.h>
+-#endif
+-
+ #include "compat.h"
+ #include "sock_any.h"
+ #include "stringx.h"
+ #include "sppriv.h"
+ 
++#ifdef LINUX_TRANSPARENT_PROXY
++#include <linux/netfilter_ipv4.h>
 +#endif
- 
- struct sockaddr_any
- {
++
+ /* -----------------------------------------------------------------------
+  *  STRUCTURES
+  */
