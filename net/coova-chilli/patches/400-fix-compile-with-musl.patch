@@ -12,19 +12,21 @@
  #ifdef HAVE_TIME_H
  #include <time.h>
  #endif
-@@ -123,6 +118,11 @@
+@@ -123,6 +118,13 @@
  #include <signal.h>
  #endif
  
 +#ifdef HAVE_SYS_SYSINFO_H
++#ifndef __GLIBC__
 +#define _LINUX_SYSINFO_H
++#endif
 +#include <sys/sysinfo.h>
 +#endif
 +
  #if defined(__linux__)
  #include <asm/types.h>
  #include <linux/if.h>
-@@ -135,10 +135,6 @@
+@@ -135,10 +137,6 @@
  #include <linux/un.h>
  #endif
  
@@ -35,7 +37,7 @@
  #elif defined (__FreeBSD__)  || defined (__APPLE__) || defined (__OpenBSD__) || defined (__NetBSD__) 
  #include <net/if.h>
  #include <net/bpf.h>
-@@ -170,10 +166,6 @@
+@@ -170,10 +168,6 @@
  #include <net/if_tun.h>
  #endif
  
