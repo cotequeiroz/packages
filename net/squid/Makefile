@@ -35,7 +35,7 @@ endef
 
 define Package/squid
   $(call Package/squid/Default)
-  DEPENDS:=+libopenssl +libpthread +librt +libltdl +libstdcpp +libatomic
+  DEPENDS:=+libopenssl +libpthread +librt +libltdl +libstdcpp +libatomic +USE_GLIBC:libbsd
   TITLE:=full-featured Web proxy cache
 endef
 
@@ -94,6 +94,8 @@ CONFIGURE_ARGS += \
 CONFIGURE_VARS += \
 	ac_cv_header_linux_netfilter_ipv4_h=yes \
 	ac_cv_epoll_works=yes
+
+EXTRA_CFLAGS += -Wno-error
 
 define Build/Compile
 	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR)/lib all
