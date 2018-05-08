@@ -43,6 +43,8 @@ ifdef CONFIG_FDM_WITH_PCRE
 	EXTRA_LDFLAGS += -lpcre
 endif
 
+EXTRA_LDFLAGS += $(if $(CONFIG_USE_GLIBC),-lbsd)
+
 MAKE_FLAGS += \
 	PREFIX="/usr" \
 	$(if $(CONFIG_FDM_WITH_PCRE),PCRE=1)
