@@ -48,6 +48,7 @@ CONFIGURE_ARGS += \
 	--without-gnutls \
 	--without-libidn2 \
 	--without-libresolv \
+	--with-expat="$(STAGING_DIR)/usr" \
 	--with-openssl="$(STAGING_DIR)/usr" \
 	--with-readline="$(STAGING_DIR)/usr" \
 	--with-zlib="$(STAGING_DIR)/usr" \
