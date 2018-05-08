@@ -84,6 +84,7 @@ CONFIGURE_ARGS += \
 	--sysconfdir=/etc/kismet \
 
 CONFIGURE_VARS += \
+	$(if $(CONFIG_USE_LIBSTDCXX),ac_cv_lib_uClibcpp_main=no) \
 	CXXFLAGS="$$$$CXXFLAGS -fno-rtti"  \
 	LIBS="-lm" \
 	CLIENTCLIBS="-lm"
