@@ -488,6 +488,8 @@ else
   CONFIGURE_ARGS+= --without-rlm_ldap
 endif
 
+CONFIGURE_LIBS+= $(if $(CONFIG_USE_GLIBC),-lbsd)
+
 CONFIGURE_VARS+= \
 	LDFLAGS="$$$$LDFLAGS" \
 	LIBS="$(CONFIGURE_LIBS)" \
