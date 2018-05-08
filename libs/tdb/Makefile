@@ -32,6 +32,7 @@ define Package/tdb
   TITLE:=Trivial Database
   URL:=http://sourceforge.net/projects/tdb/
   MAINTAINER:=Dmitry V. Zimin <pfzim@mail.ru>
+  DEPENDS:=+USE_GLIBC:libbsd
 endef
 
 define Package/tdb/description
