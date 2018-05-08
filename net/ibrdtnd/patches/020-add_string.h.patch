@@ -1,0 +1,10 @@
+--- a/src/security/SecurityCertificateManager.h
++++ b/src/security/SecurityCertificateManager.h
+@@ -33,6 +33,7 @@
+ 
+ #include <openssl/ssl.h>
+ #include <string>
++#include <string.h>
+ 
+ namespace dtn
+ {
