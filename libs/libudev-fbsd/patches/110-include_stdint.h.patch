@@ -1,0 +1,10 @@
+--- a/include/linux/input.h
++++ b/include/linux/input.h
+@@ -1,6 +1,7 @@
+ #ifndef _LINUX_INPUT_H
+ #define _LINUX_INPUT_H
+ 
++#include <stdint.h>
+ #include <linux/autogen/input.h>
+ 
+ /* FreeBSD specific changes follow */
