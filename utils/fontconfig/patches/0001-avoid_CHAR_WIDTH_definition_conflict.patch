@@ -1,0 +1,12 @@
+--- a/src/fcobjs.h
++++ b/src/fcobjs.h
+@@ -22,6 +22,9 @@
+  * PERFORMANCE OF THIS SOFTWARE.
+  */
+ /* DON'T REORDER!  The order is part of the cache signature. */
++#ifdef CHAR_WIDTH
++#undef CHAR_WIDTH /* avoid possible conflict */
++#endif
+ FC_OBJECT (FAMILY,		FcTypeString,	FcCompareFamily)
+ FC_OBJECT (FAMILYLANG,		FcTypeString,	NULL)
+ FC_OBJECT (STYLE,		FcTypeString,	FcCompareString)
