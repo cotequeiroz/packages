@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=freeradius3
 PKG_VERSION:=release_3_0_16
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/FreeRADIUS/freeradius-server/archive
@@ -488,7 +488,9 @@ else
   CONFIGURE_ARGS+= --without-rlm_ldap
 endif
 
-CONFIGURE_LIBS+= $(if $(CONFIG_USE_GLIBC),-lbsd)
+ifeq ($(CONFIG_USE_GLIBC),y)
+  CONFIGURE_LIBS+= -Wl,--push-state,--as-needed -lbsd -Wl,--pop-state
+endif
 
 CONFIGURE_VARS+= \
 	LDFLAGS="$$$$LDFLAGS" \
