@@ -23,6 +23,10 @@ include $(INCLUDE_DIR)/package.mk
 
 TARGET_CFLAGS+= -std=gnu99
 
+ifeq ($(CONFIG_USE_GLIBC),y)
+  TARGET_LDFLAGS+= -Wl,--push-state,--as-needed -lbsd -Wl,--pop-state
+endif
+
 CONFIGURE_ARGS += --disable-libwacom --disable-tests --disable-documentation
 
 define Package/libinput
@@ -30,7 +34,7 @@ define Package/libinput
   CATEGORY:=Libraries
   TITLE:=a library to handle input devices
   URL:=http://freedesktop.org/wiki/Software/libinput/
-  DEPENDS:=+libevdev +mtdev +libudev-fbsd
+  DEPENDS:=+libevdev +mtdev +libudev-fbsd +USE_GLIBC:libbsd
 endef
 
 define Package/libinput/description
