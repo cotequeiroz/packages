@@ -76,7 +76,7 @@ define Package/vala/install
 		$(PKG_INSTALL_DIR)/usr/share/vala-0.34/vapi/* \
 		$(1)/usr/share/vala-0.34/vapi
 
-	$(INSTALL_DATA) \
+	$(CP) \
 		$(PKG_INSTALL_DIR)/usr/lib/libvala-0.34.{so*,la} \
 		$(1)/usr/lib
 
