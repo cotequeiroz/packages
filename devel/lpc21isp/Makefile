@@ -34,6 +34,10 @@ define Package/lpc21isp/description
  and Analog Devices ADUC70xx.
 endef
 
+ifeq ($(CONFIG_USE_GLIBC),y)
+  TARGET_CFLAGS+= -lpthread -lc -lgcc_eh
+endif
+
 define Package/lpc21isp/install
 		$(INSTALL_DIR) $(1)/usr/sbin
 		$(INSTALL_BIN) $(PKG_BUILD_DIR)/lpc21isp $(1)/usr/sbin/
