@@ -1,0 +1,11 @@
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -12,7 +12,7 @@ find_package(Lua)
+ 
+ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${LIBUBOX_INCLUDE_DIR} ${LUA_INCLUDE_DIR})
+ 
+-set(EXTRA_LIBS ${LIBUBOX_LIBRARY} dl ${LUA_LIBRARY})
++set(EXTRA_LIBS ${LIBUBOX_LIBRARY} dl ${LUA_LIBRARY} ${LUA_MATH_LIBRARY})
+ set(SOURCE_FILES uhttpd.c client.c log.c utils.c file.c action.c)
+ 
+ set(UHTTPD_SSL_SUPPORT_CONFIG 1)

@@ -68,7 +68,7 @@ endif
 
 define Package/libuhttpd/default/install
 	$(INSTALL_DIR) $(1)/usr/lib/
-	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/libuhttpd.so* $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libuhttpd.so* $(1)/usr/lib/
 endef
 
 Package/libuhttpd-nossl/install = $(Package/libuhttpd/default/install)
