@@ -113,7 +113,7 @@ endef
 
 define Package/libsensors/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/lib/libsensors.so* $(1)/usr/lib
+	$(CP) $(PKG_BUILD_DIR)/lib/libsensors.so* $(1)/usr/lib
 endef
 
 $(eval $(call BuildPackage,lm-sensors))
