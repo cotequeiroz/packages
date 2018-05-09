@@ -38,7 +38,7 @@ endef
 
 define Package/libeventlog/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/libevtlog.so* $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libevtlog.so* $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,libeventlog))
