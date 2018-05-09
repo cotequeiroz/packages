@@ -16,11 +16,10 @@
  #include "windows.hpp"
 --- a/src/raw_encoder.cpp
 +++ b/src/raw_encoder.cpp
-@@ -27,6 +27,11 @@
+@@ -27,6 +27,10 @@
      along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-+#include <basic_definitions>
 +#include <exception>
 +#include <cstddef>
 +#include <algorithm>
@@ -56,11 +55,10 @@
  #include "msg.hpp"
 --- a/src/v1_encoder.cpp
 +++ b/src/v1_encoder.cpp
-@@ -27,6 +27,11 @@
+@@ -27,6 +27,10 @@
      along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-+#include <basic_definitions>
 +#include <exception>
 +#include <cstddef>
 +#include <algorithm>
@@ -70,11 +68,10 @@
  #include "likely.hpp"
 --- a/src/v2_encoder.cpp
 +++ b/src/v2_encoder.cpp
-@@ -27,6 +27,11 @@
+@@ -27,6 +27,10 @@
      along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-+#include <basic_definitions>
 +#include <exception>
 +#include <cstddef>
 +#include <algorithm>
