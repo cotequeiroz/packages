@@ -21,21 +21,27 @@
  
 --- a/src/stream_engine.cpp
 +++ b/src/stream_engine.cpp
-@@ -208,7 +208,7 @@ void zmq::stream_engine_t::plug (io_thre
+@@ -208,7 +208,11 @@ void zmq::stream_engine_t::plug (io_thre
              //  Compile metadata.
              typedef metadata_t::dict_t properties_t;
              properties_t properties;
--            properties.insert(std::make_pair("Peer-Address", peer_address));
++#ifdef __UCLIBCXX_MAJOR__
 +            properties.insert(std::make_pair<std::string, std::string>("Peer-Address", peer_address));
++#else
+             properties.insert(std::make_pair("Peer-Address", peer_address));
++#endif
              zmq_assert (metadata == NULL);
              metadata = new (std::nothrow) metadata_t (properties);
          }
-@@ -815,7 +815,7 @@ void zmq::stream_engine_t::mechanism_rea
+@@ -815,7 +819,11 @@ void zmq::stream_engine_t::mechanism_rea
  
      //  If we have a peer_address, add it to metadata
      if (!peer_address.empty()) {
--        properties.insert(std::make_pair("Peer-Address", peer_address));
++#ifdef __UCLIBCXX_MAJOR__
 +        properties.insert(std::make_pair<std::string, std::string>("Peer-Address", peer_address));
++#else
+         properties.insert(std::make_pair("Peer-Address", peer_address));
++#endif
      }
  
      //  Add ZAP properties.

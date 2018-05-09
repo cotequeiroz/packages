@@ -65,6 +65,10 @@ CONFIGURE_ARGS += \
 	--enable-static \
 	--enable-shared
 
+ifeq ($(CONFIG_USE_UCLIBCXX),y)
+  TARGET_CXXFLAGS+= -include basic_definitions
+endif
+
 ifeq ($(BUILD_VARIANT),curve)
   CONFIGURE_ARGS+= --with-libsodium
 else
