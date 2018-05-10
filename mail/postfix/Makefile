@@ -165,6 +165,10 @@ else
   smtputf8_conf = no
 endif
 
+ifeq ($(CONFIG_USE_GLIBC),y)
+  AUXLIBS+= -Wl,--push-state,--as-needed -lresolv -Wl,--pop-state
+endif
+
 CCARGS+=-DDEF_DB_TYPE=\"$(default_database_type)\"
 
 # prevent postfix-install from executing postconf at build time
