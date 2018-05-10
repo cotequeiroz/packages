@@ -128,6 +128,10 @@ ifeq ($(BUILD_VARIANT),full)
     TARGET_LDFLAGS+= -lvorbis -logg
 endif
 
+ifeq ($(CONFIG_USE_GLIBC),y)
+    TARGET_CFLAGS+= -include stdint.h
+endif
+
 define Package/squeezelite/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/squeezelite $(1)/usr/bin
