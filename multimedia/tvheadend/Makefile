@@ -76,7 +76,7 @@ CONFIGURE_ARGS += \
 	--disable-libav \
 	--enable-bundle
 
-TARGET_CFLAGS += -Wno-error=pointer-compare
+TARGET_CFLAGS += -Wno-error=pointer-compare -Wno-error=format-truncation
 
 define Build/Prepare
 	$(call Build/Prepare/Default)
