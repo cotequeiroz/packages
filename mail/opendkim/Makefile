@@ -40,7 +40,7 @@ endef
 define Package/libopendkim
   SECTION:=mail
   CATEGORY:=Libraries
-  DEPENDS:=+libopenssl +libmilter-sendmail
+  DEPENDS:=+libopenssl +libmilter-sendmail +USE_GLIBC:libbsd
   TITLE:=Library for signing and verifying DKIM signatures
   URL:=http://opendkim.org/
 endef
