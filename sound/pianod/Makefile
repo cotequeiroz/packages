@@ -28,7 +28,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/pianod
   SECTION:=sound
   CATEGORY:=Sound
-  DEPENDS:=+libao +libfaad2 +libmpg123 +libmbedtls +libjson-c +libgcrypt +libpthread
+  DEPENDS:=+libao +libfaad2 +libmpg123 +libmbedtls +libjson-c +libgcrypt +libpthread +USE_GLIBC:libbsd
   TITLE:=Pandora radio daemon
   USERID:=pianod=88:pianod=88
   URL:=http://deviousfish.com/pianod1/
