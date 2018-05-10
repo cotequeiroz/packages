@@ -52,7 +52,7 @@ endef
 define Package/usbip
   $(call Package/usbip/Default)
   TITLE+= (common)
-  DEPENDS+= +libwrap +kmod-usbip +libudev-fbsd
+  DEPENDS+= +libwrap +kmod-usbip +libudev-fbsd +USE_GLIBC:libbsd
 endef
 
 define Package/usbip-client
@@ -77,6 +77,7 @@ define Build/Configure
 	$(call Build/Configure/Default)
 endef
 
+CONFIGURE_VARS+= $(if $(CONFIG_USE_GLIBC),LIBS='-lbsd -lpthread')
 CFLAGS+="$(TARGET_CFLAGS) -I$(STAGING_DIR)/usr/include"
 EXTRA_CFLAGS+=-DSIGCLD=SIGCHLD
 
