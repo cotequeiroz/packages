@@ -58,6 +58,8 @@ CMAKE_OPTIONS += \
 MAKE_FLAGS += \
 	openobex openobex-apps \
 
+EXTRA_CFLAGS += -D_GNU_SOURCE
+
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/openobex $(1)/usr/include/
