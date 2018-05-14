@@ -100,7 +100,7 @@
  #endif /* HAVE_YASSL */
 --- a/sql/mysqld.cc
 +++ b/sql/mysqld.cc
-@@ -8061,7 +8061,7 @@ static int show_ssl_get_cipher_list(THD
+@@ -8081,7 +8081,7 @@ static int show_ssl_get_cipher_list(THD
  #ifdef HAVE_YASSL
  
  static char *
@@ -109,7 +109,7 @@
  {
    return yaSSL_ASN1_TIME_to_string(time, buf, len);
  }
-@@ -8069,7 +8069,7 @@ my_asn1_time_to_string(ASN1_TIME *time,
+@@ -8089,7 +8089,7 @@ my_asn1_time_to_string(ASN1_TIME *time,
  #else /* openssl */
  
  static char *
@@ -118,7 +118,7 @@
  {
    int n_read;
    char *res= NULL;
-@@ -8117,7 +8117,7 @@ show_ssl_get_server_not_before(THD *thd,
+@@ -8137,7 +8137,7 @@ show_ssl_get_server_not_before(THD *thd,
    {
      SSL *ssl= (SSL*) thd->net.vio->ssl_arg;
      X509 *cert= SSL_get_certificate(ssl);
@@ -127,7 +127,7 @@
  
      var->value= my_asn1_time_to_string(not_before, buff,
                                         SHOW_VAR_FUNC_BUFF_SIZE);
-@@ -8151,7 +8151,7 @@ show_ssl_get_server_not_after(THD *thd,
+@@ -8171,7 +8171,7 @@ show_ssl_get_server_not_after(THD *thd,
    {
      SSL *ssl= (SSL*) thd->net.vio->ssl_arg;
      X509 *cert= SSL_get_certificate(ssl);

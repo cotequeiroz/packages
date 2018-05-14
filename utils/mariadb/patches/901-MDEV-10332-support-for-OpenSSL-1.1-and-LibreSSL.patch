@@ -562,7 +562,7 @@ when using different tls libraries or versions for client and server.
  #include "client_settings.h"
  #include <sql_common.h>
  #include <mysql/client_plugin.h>
-@@ -1844,7 +1848,7 @@ static int ssl_verify_server_cert(Vio *v
+@@ -1853,7 +1857,7 @@ static int ssl_verify_server_cert(Vio *v
      goto error;
    }
  
@@ -576,7 +576,7 @@ when using different tls libraries or versions for client and server.
 @@ -112,6 +112,7 @@
  #endif
  
- #include <my_systemd.h>
+ #include <my_service_manager.h>
 +#include <my_crypt.h>
  
  #define mysqld_charset &my_charset_latin1
@@ -618,7 +618,7 @@ when using different tls libraries or versions for client and server.
  #endif /* HAVE_YASSL */
  #endif /* HAVE_OPENSSL */
  #ifdef HAVE_REPLICATION
-@@ -4585,6 +4592,7 @@ static int init_thread_environment()
+@@ -4605,6 +4612,7 @@ static int init_thread_environment()
    mysql_mutex_init(key_LOCK_des_key_file,
                     &LOCK_des_key_file, MY_MUTEX_INIT_FAST);
  #ifndef HAVE_YASSL
@@ -626,7 +626,7 @@ when using different tls libraries or versions for client and server.
    openssl_stdlocks= (openssl_lock_t*) OPENSSL_malloc(CRYPTO_num_locks() *
                                                       sizeof(openssl_lock_t));
    for (int i= 0; i < CRYPTO_num_locks(); ++i)
-@@ -4595,6 +4603,7 @@ static int init_thread_environment()
+@@ -4615,6 +4623,7 @@ static int init_thread_environment()
    CRYPTO_set_locking_callback(openssl_lock_function);
  #endif
  #endif
@@ -634,7 +634,7 @@ when using different tls libraries or versions for client and server.
    mysql_rwlock_init(key_rwlock_LOCK_sys_init_connect, &LOCK_sys_init_connect);
    mysql_rwlock_init(key_rwlock_LOCK_sys_init_slave, &LOCK_sys_init_slave);
    mysql_rwlock_init(key_rwlock_LOCK_grant, &LOCK_grant);
-@@ -4628,6 +4637,7 @@ static int init_thread_environment()
+@@ -4648,6 +4657,7 @@ static int init_thread_environment()
  
  
  #if defined(HAVE_OPENSSL) && !defined(HAVE_YASSL)
@@ -642,7 +642,7 @@ when using different tls libraries or versions for client and server.
  static openssl_lock_t *openssl_dynlock_create(const char *file, int line)
  {
    openssl_lock_t *lock= new openssl_lock_t;
-@@ -4687,6 +4697,7 @@ static void openssl_lock(int mode, opens
+@@ -4707,6 +4717,7 @@ static void openssl_lock(int mode, opens
      abort();
    }
  }
@@ -650,7 +650,7 @@ when using different tls libraries or versions for client and server.
  #endif /* HAVE_OPENSSL */
  
  
-@@ -4716,8 +4727,9 @@ static void init_ssl()
+@@ -4736,8 +4747,9 @@ static void init_ssl()
        while ((err= ERR_get_error()))
          sql_print_warning("SSL error: %s", ERR_error_string(err, NULL));
      }

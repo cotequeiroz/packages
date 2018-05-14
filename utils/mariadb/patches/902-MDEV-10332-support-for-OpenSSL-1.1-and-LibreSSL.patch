@@ -735,7 +735,7 @@ post-review fixes:
  #include <sql_common.h>
  #include <mysql/client_plugin.h>
  #include <my_context.h>
-@@ -1774,9 +1771,8 @@ mysql_get_ssl_cipher(MYSQL *mysql __attr
+@@ -1782,9 +1779,8 @@ mysql_get_ssl_cipher(MYSQL *mysql __attr
  
  #if defined(HAVE_OPENSSL)
  
@@ -751,7 +751,7 @@ post-review fixes:
 @@ -112,7 +112,6 @@
  #endif
  
- #include <my_systemd.h>
+ #include <my_service_manager.h>
 -#include <my_crypt.h>
  
  #define mysqld_charset &my_charset_latin1
@@ -840,7 +840,7 @@ post-review fixes:
    if (init_thread_environment() ||
        mysql_init_variables())
      return 1;
-@@ -4591,8 +4596,7 @@ static int init_thread_environment()
+@@ -4611,8 +4616,7 @@ static int init_thread_environment()
  #ifdef HAVE_OPENSSL
    mysql_mutex_init(key_LOCK_des_key_file,
                     &LOCK_des_key_file, MY_MUTEX_INIT_FAST);
@@ -850,7 +850,7 @@ post-review fixes:
    openssl_stdlocks= (openssl_lock_t*) OPENSSL_malloc(CRYPTO_num_locks() *
                                                       sizeof(openssl_lock_t));
    for (int i= 0; i < CRYPTO_num_locks(); ++i)
-@@ -4601,9 +4605,8 @@ static int init_thread_environment()
+@@ -4621,9 +4625,8 @@ static int init_thread_environment()
    CRYPTO_set_dynlock_destroy_callback(openssl_dynlock_destroy);
    CRYPTO_set_dynlock_lock_callback(openssl_lock);
    CRYPTO_set_locking_callback(openssl_lock_function);
@@ -862,7 +862,7 @@ post-review fixes:
    mysql_rwlock_init(key_rwlock_LOCK_sys_init_connect, &LOCK_sys_init_connect);
    mysql_rwlock_init(key_rwlock_LOCK_sys_init_slave, &LOCK_sys_init_slave);
    mysql_rwlock_init(key_rwlock_LOCK_grant, &LOCK_grant);
-@@ -4636,8 +4639,7 @@ static int init_thread_environment()
+@@ -4656,8 +4659,7 @@ static int init_thread_environment()
  }
  
  
@@ -872,7 +872,7 @@ post-review fixes:
  static openssl_lock_t *openssl_dynlock_create(const char *file, int line)
  {
    openssl_lock_t *lock= new openssl_lock_t;
-@@ -4697,9 +4699,7 @@ static void openssl_lock(int mode, opens
+@@ -4717,9 +4719,7 @@ static void openssl_lock(int mode, opens
      abort();
    }
  }
@@ -883,7 +883,7 @@ post-review fixes:
  
  static void init_ssl()
  {
-@@ -4727,9 +4727,8 @@ static void init_ssl()
+@@ -4747,9 +4747,8 @@ static void init_ssl()
        while ((err= ERR_get_error()))
          sql_print_warning("SSL error: %s", ERR_error_string(err, NULL));
      }
