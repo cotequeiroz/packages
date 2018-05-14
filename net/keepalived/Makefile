@@ -59,6 +59,10 @@ CONFIGURE_ARGS+= \
 MAKE_FLAGS += \
 		STRIP="/bin/true" \
 
+EXTRA_CFLAGS += \
+	$(if $(CONFIG_USE_GLIBC),-D_HAVE_NET_LINUX_IF_H_COLLISION_=1 \
+				 -D_HAVE_IF_H_LINK_H_COLLISION_=1)
+
 define Package/keepalived/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/keepalived $(1)/usr/sbin/
