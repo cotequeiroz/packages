@@ -28,8 +28,7 @@ include $(INCLUDE_DIR)/package.mk
 include flashrom.mk
 
 TARGET_CFLAGS+= \
-	-std=gnu89 \
-	-Wno-error=deprecated-declarations
+	-std=gnu89
 
 MAKE_FLAGS+= \
 	PREFIX="/usr"
