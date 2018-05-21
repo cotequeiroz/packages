@@ -1,6 +1,17 @@
 --- a/src/plugins/lanplus/lanplus_crypt_impl.c
 +++ b/src/plugins/lanplus/lanplus_crypt_impl.c
-@@ -164,11 +164,14 @@ lanplus_encrypt_aes_cbc_128(const uint8_
+@@ -40,6 +40,10 @@
+ #include <openssl/err.h>
+ #include <assert.h>
+ 
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
++#define EVP_CIPHER_CTX_new() OPENSSL_malloc(sizeof(EVP_CIPHER_CTX))
++#define EVP_CIPHER_CTX_free(x) EVP_CIPHER_CTX_cleanup(x); OPENSSL_free(x)
++#endif
+ 
+ 
+ /*
+@@ -164,16 +168,19 @@ lanplus_encrypt_aes_cbc_128(const uint8_
  							uint8_t       * output,
  							uint32_t        * bytes_written)
  {
@@ -20,7 +31,13 @@
  
  	*bytes_written = 0;
  
-@@ -191,7 +194,7 @@ lanplus_encrypt_aes_cbc_128(const uint8_
+ 	if (input_length == 0)
+-		return;
++		goto cleanup;
+ 
+ 	if (verbose >= 5)
+ 	{
+@@ -191,28 +198,30 @@ lanplus_encrypt_aes_cbc_128(const uint8_
  	assert((input_length % IPMI_CRYPT_AES_CBC_128_BLOCK_SIZE) == 0);
  
  
@@ -29,7 +46,10 @@
  	{
  		/* Error */
  		*bytes_written = 0;
-@@ -201,7 +204,7 @@ lanplus_encrypt_aes_cbc_128(const uint8_
+-		return;
++		goto cleanup;
+ 	}
+ 	else
  	{
  		uint32_t tmplen;
  
@@ -37,17 +57,23 @@
 +		if(!EVP_EncryptFinal_ex(ctx, output + *bytes_written, (int *)&tmplen))
  		{
  			*bytes_written = 0;
- 			return; /* Error */
-@@ -210,7 +213,7 @@ lanplus_encrypt_aes_cbc_128(const uint8_
+-			return; /* Error */
++			goto cleanup; /* Error */
+ 		}
+ 		else
  		{
  			/* Success */
  			*bytes_written += tmplen;
 -			EVP_CIPHER_CTX_cleanup(&ctx);
-+			EVP_CIPHER_CTX_cleanup(ctx);
  		}
  	}
++cleanup:
++	EVP_CIPHER_CTX_free(ctx);
++	return;
  }
-@@ -239,11 +242,14 @@ lanplus_decrypt_aes_cbc_128(const uint8_
+ 
+ 
+@@ -239,11 +248,14 @@ lanplus_decrypt_aes_cbc_128(const uint8_
  							uint8_t       * output,
  							uint32_t        * bytes_written)
  {
@@ -67,7 +93,16 @@
  
  	if (verbose >= 5)
  	{
-@@ -266,7 +272,7 @@ lanplus_decrypt_aes_cbc_128(const uint8_
+@@ -256,7 +268,7 @@ lanplus_decrypt_aes_cbc_128(const uint8_
+ 	*bytes_written = 0;
+ 
+ 	if (input_length == 0)
+-		return;
++		goto cleanup;
+ 
+ 	/*
+ 	 * The default implementation adds a whole block of padding if the input
+@@ -266,31 +278,30 @@ lanplus_decrypt_aes_cbc_128(const uint8_
  	assert((input_length % IPMI_CRYPT_AES_CBC_128_BLOCK_SIZE) == 0);
  
  
@@ -76,7 +111,11 @@
  	{
  		/* Error */
  		lprintf(LOG_DEBUG, "ERROR: decrypt update failed");
-@@ -277,7 +283,7 @@ lanplus_decrypt_aes_cbc_128(const uint8_
+ 		*bytes_written = 0;
+-		return;
++		goto cleanup;
+ 	}
+ 	else
  	{
  		uint32_t tmplen;
  
@@ -85,12 +124,25 @@
  		{
  			char buffer[1000];
  			ERR_error_string(ERR_get_error(), buffer);
-@@ -290,7 +296,7 @@ lanplus_decrypt_aes_cbc_128(const uint8_
+ 			lprintf(LOG_DEBUG, "the ERR error %s", buffer);
+ 			lprintf(LOG_DEBUG, "ERROR: decrypt final failed");
+ 			*bytes_written = 0;
+-			return; /* Error */
++			goto cleanup; /* Error */
+ 		}
+ 		else
  		{
  			/* Success */
  			*bytes_written += tmplen;
 -			EVP_CIPHER_CTX_cleanup(&ctx);
-+			EVP_CIPHER_CTX_cleanup(ctx);
  		}
  	}
  
+@@ -299,4 +310,7 @@ lanplus_decrypt_aes_cbc_128(const uint8_
+ 		lprintf(LOG_DEBUG, "Decrypted %d encrypted bytes", input_length);
+ 		printbuf(output, *bytes_written, "Decrypted this data");
+ 	}
++cleanup:
++	EVP_CIPHER_CTX_free(ctx);
++	return;
+ }
