@@ -1,10 +1,12 @@
 --- a/src/tls.c
 +++ b/src/tls.c
-@@ -65,8 +65,10 @@ static inline int tls_setup(shout_tls_t
+@@ -63,10 +63,12 @@ static inline int tls_setup(shout_tls_t
+ {
+ 	SSL_METHOD *meth;
  
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
  	SSL_library_init();
  	SSL_load_error_strings();
-+#if OPENSSL_VERSION_NUMBER < 0x10100000L
  	SSLeay_add_all_algorithms();
   	SSLeay_add_ssl_algorithms();
 +#endif
