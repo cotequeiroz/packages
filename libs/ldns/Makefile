@@ -58,6 +58,7 @@ define Package/drill/description
 endef
 
 CONFIGURE_ARGS += \
+	--disable-dane-ta-usage \
 	--disable-ecdsa \
 	--disable-gost \
 	--with-drill \
