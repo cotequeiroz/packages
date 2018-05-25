@@ -63,7 +63,7 @@ define Build/Configure
 		$(SED) 's,^TOOLCHAIN_BASE[[:space:]]*=.*,TOOLCHAIN_BASE=$(TS_BASE),' \
 			-e 's,^TOOLCHAIN_PREFIX[[:space:]]*=.*,TOOLCHAIN_PREFIX=$(TARGET_CROSS),' \
 			-e 's,^CCOMPILER[[:space:]]*=.*,CCOMPILER=$(TARGET_CC),' \
-			-e 's,^CXXCOMPILER[[:space:]]*=.*,CXXCOMPILER=$(TARGET_CXX),' \
+			-e 's,^CXXCOMPILER[[:space:]]*=.*,CXXCOMPILER=$(TARGET_CXX) -std=gnu++03,' \
 			-e 's,^OPTIMIZATIONS[[:space:]]*=.*,OPTIMIZATIONS=-O2,' \
 			-e 's,^SSL_BASE[[:space:]]*=.*,SSL_BASE=$(STAGING_DIR)/usr,' \
 			linux-openwrt-uclibc.mk)
