@@ -1,8 +1,23 @@
+From 37545103d76381a8d4d7f38704e122029cb5afa2 Mon Sep 17 00:00:00 2001
+From: Eneas U de Queiroz <cote2004-github@yahoo.com>
+Date: Fri, 25 May 2018 16:24:56 -0300
+Subject: [PATCH 10/11] Add openssl 1.1 compatibility
+
+This patch adds openssl 1.1 compatibility.
+Openssl 1.1 does not enable anonymous ciphers by default, and that
+default is not changed here, so it wont pass the tests.
+
+Signed-off-by: Eneas U de Queiroz <cote2004-github@yahoo.com>
+---
+ conserver/main.c  | 111 ++++++++++++++++++++++++++++++++++--------------------
+ console/console.c |  12 +++++-
+ 2 files changed, 80 insertions(+), 43 deletions(-)
+
 diff --git a/conserver/main.c b/conserver/main.c
-index cb9af46..71b59c4 100644
+index cb9af46..59cfeeb 100644
 --- a/conserver/main.c
 +++ b/conserver/main.c
-@@ -86,12 +86,78 @@ unsigned long dmallocMarkMain = 0;
+@@ -86,12 +86,75 @@ unsigned long dmallocMarkMain = 0;
  #endif
  
  #if HAVE_OPENSSL
@@ -36,9 +51,6 @@ index cb9af46..71b59c4 100644
 +    return 1;
 +}
 +#define TLS_method SSLv23_method
-+#define CIPHER_SEC0
-+#else
-+#define CIPHER_SEC0 ":@SECLEVEL=0"
 +#endif /* OPENSSL_VERSION_NUMBER < 0x10100000L */
 +
  SSL_CTX *ctx = (SSL_CTX *)0;
@@ -81,7 +93,7 @@ index cb9af46..71b59c4 100644
  
  DH *
  GetDH512(void)
-@@ -108,17 +174,8 @@ GetDH512(void)
+@@ -108,17 +171,8 @@ GetDH512(void)
      static unsigned char dh512_g[] = {
  	0x02,
      };
@@ -100,7 +112,7 @@ index cb9af46..71b59c4 100644
  }
  
  DH *
-@@ -142,17 +199,8 @@ GetDH1024(void)
+@@ -142,17 +196,8 @@ GetDH1024(void)
      static unsigned char dh1024_g[] = {
  	0x02,
      };
@@ -119,7 +131,7 @@ index cb9af46..71b59c4 100644
  }
  
  DH *
-@@ -189,17 +237,8 @@ GetDH2048(void)
+@@ -189,17 +234,8 @@ GetDH2048(void)
      static unsigned char dh2048_g[] = {
  	0x02,
      };
@@ -138,7 +150,7 @@ index cb9af46..71b59c4 100644
  }
  
  DH *
-@@ -262,17 +301,8 @@ GetDH4096(void)
+@@ -262,17 +298,8 @@ GetDH4096(void)
      static unsigned char dh4096_g[] = {
  	0x02,
      };
@@ -157,7 +169,7 @@ index cb9af46..71b59c4 100644
  }
  
  DH *
-@@ -306,12 +336,14 @@ SetupSSL(void)
+@@ -306,12 +333,14 @@ SetupSSL(void)
      if (ctx == (SSL_CTX *)0) {
  	char *ciphers;
  	int verifymode;
@@ -173,36 +185,24 @@ index cb9af46..71b59c4 100644
  	    Error("SetupSSL(): SSL_CTX_new() failed");
  	    Bye(EX_SOFTWARE);
  	}
-@@ -337,7 +369,7 @@ SetupSSL(void)
- 	    }
- 	    ciphers = "ALL:!LOW:!EXP:!MD5:!aNULL:@STRENGTH";
- 	} else {
--	    ciphers = "ALL:!LOW:!EXP:!MD5:@STRENGTH";
-+	    ciphers = "ALL:aNULL:!LOW:!EXP:!MD5:@STRENGTH" CIPHER_SEC0;
- 	}
- 	if (config->sslcacertificatefile != (char *)0) {
- 	    STACK_OF(X509_NAME) * cert_names;
 diff --git a/console/console.c b/console/console.c
-index 1b05f43..418f2ed 100644
+index 1b05f43..3d9ddee 100644
 --- a/console/console.c
 +++ b/console/console.c
-@@ -71,6 +71,15 @@ struct winsize ws;
+@@ -71,6 +71,12 @@ struct winsize ws;
  #endif
  
  #if HAVE_OPENSSL
 +
 +#if OPENSSL_VERSION_NUMBER < 0x10100000L
 +#define TLS_method SSLv23_method
-+#define CIPHER_SEC0
-+#else
-+#define CIPHER_SEC0 ":@SECLEVEL=0"
 +#endif /* OPENSSL_VERSION_NUMBER < 0x10100000L */
 +
 +
  SSL_CTX *ctx = (SSL_CTX *)0;
  
  void
-@@ -78,12 +87,14 @@ SetupSSL(void)
+@@ -78,12 +84,14 @@ SetupSSL(void)
  {
      if (ctx == (SSL_CTX *)0) {
  	char *ciphers;
@@ -218,12 +218,15 @@ index 1b05f43..418f2ed 100644
  	    Error("Creating SSL context failed");
  	    Bye(EX_UNAVAILABLE);
  	}
-@@ -123,7 +134,7 @@ SetupSSL(void)
+@@ -123,7 +131,7 @@ SetupSSL(void)
  # if defined(REQ_SERVER_CERT)
  	    ciphers = "ALL:!LOW:!EXP:!MD5:!aNULL:@STRENGTH";
  # else
 -	    ciphers = "ALL:!LOW:!EXP:!MD5:@STRENGTH";
-+	    ciphers = "ALL:aNULL:!LOW:!EXP:!MD5:@STRENGTH" CIPHER_SEC0;
++	    ciphers = "ALL:!LOW:!EXP:!MD5:@STRENGTH"
  # endif
  	}
  	SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, SSLVerifyCallback);
+-- 
+2.16.1
+
