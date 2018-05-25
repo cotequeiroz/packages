@@ -1,3 +1,14 @@
+From c842faae63b562acc7d989a9cdc815def9ee2ed6 Mon Sep 17 00:00:00 2001
+From: Sven-Haegar Koch <haegar@sdinet.de>
+Date: Wed, 2 Nov 2016 23:08:24 +0100
+Subject: [PATCH] OpenSSL 1.1.0 compile fix.
+
+---
+ crypto.c | 53 +++++++++++++++++++++++++++++++++++------------------
+ 1 file changed, 35 insertions(+), 18 deletions(-)
+
+diff --git a/crypto.c b/crypto.c
+index e476611..e8b72d3 100644
 --- a/crypto.c
 +++ b/crypto.c
 @@ -46,6 +46,10 @@ openssl dgst \
@@ -11,7 +22,7 @@
  EVP_PKEY *
  crypto_load_key(const char *key, const bool is_private)
  {
-@@ -80,7 +84,7 @@ crypto_rsa_verify_signature(struct strin
+@@ -80,7 +84,7 @@ crypto_rsa_verify_signature(struct string *databuffer, struct string *signature,
  {
  	int err;
  	bool retval;
@@ -20,7 +31,7 @@
  	EVP_PKEY *pkey;
  
  	/* load public key into openssl structure */
-@@ -89,15 +93,22 @@ crypto_rsa_verify_signature(struct strin
+@@ -89,15 +93,22 @@ crypto_rsa_verify_signature(struct string *databuffer, struct string *signature,
              log_err("crypto_verify_signature: key loading failed\n");
              return false;
          }
@@ -47,7 +58,7 @@
          EVP_PKEY_free(pkey);
          
          if (err != 1) {
-@@ -110,7 +121,7 @@ crypto_rsa_verify_signature(struct strin
+@@ -110,7 +121,7 @@ crypto_rsa_verify_signature(struct string *databuffer, struct string *signature,
          retval = true;
  
  bailout_ctx_cleanup:
@@ -56,7 +67,7 @@
  
          //log_info("Signature Verified Ok.\n");
  	return retval;
-@@ -146,7 +157,7 @@ crypto_rsa_decrypt(struct string *cipher
+@@ -146,7 +157,7 @@ crypto_rsa_decrypt(struct string *ciphertext, const char *privkey, struct string
          len = RSA_private_decrypt(string_length(ciphertext),
              (unsigned char*)string_get(ciphertext),
              (unsigned char*)string_get(decrypted),
@@ -107,7 +118,7 @@
          goto bail_out;
      }
  
-@@ -201,7 +217,7 @@ crypto_aes_decrypt(struct string *cipher
+@@ -201,7 +217,7 @@ crypto_aes_decrypt(struct string *ciphertext, struct string *aes_key, struct str
          goto bail_out;
      }
      
@@ -116,7 +127,7 @@
              &decryptdone, (unsigned char*)string_get(ciphertext),
              string_length(ciphertext))) {
          /* TODO: need cleaner way: */
-@@ -212,7 +228,7 @@ crypto_aes_decrypt(struct string *cipher
+@@ -212,7 +228,7 @@ crypto_aes_decrypt(struct string *ciphertext, struct string *aes_key, struct str
          goto bail_out;
      }
      
@@ -125,7 +136,7 @@
              (unsigned char*)string_get(decrypted)+string_length(decrypted),
              &decryptdone)) {
          /* TODO: need cleaner way: */
-@@ -226,7 +242,8 @@ crypto_aes_decrypt(struct string *cipher
+@@ -226,7 +242,8 @@ crypto_aes_decrypt(struct string *ciphertext, struct string *aes_key, struct str
      retval = true;
  
  bail_out:
