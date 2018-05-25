@@ -61,7 +61,7 @@
  
 --- a/src/libudev.h
 +++ b/src/libudev.h
-@@ -35,6 +35,8 @@ struct udev_device *udev_device_new_from
+@@ -30,6 +30,8 @@ struct udev_device *udev_device_new_from
      struct udev *udev, char const *syspath);
  struct udev_device *udev_device_new_from_devnum(
      struct udev *udev, char type, dev_t devnum);
