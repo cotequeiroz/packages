@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nut
 PKG_VERSION:=2.7.4
-PKG_RELEASE:=4
+PKG_RELEASE:=5
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://www.networkupstools.org/source/2.7/
@@ -513,9 +513,6 @@ CONFIGURE_ARGS += \
 	--with-drvpath=/lib/nut \
 	--with-user=root \
 	--with-group=root
-
-CONFIGURE_VARS += \
-	ac_cv_func_SSL_library_init=yes
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include $(1)/usr/lib/pkgconfig
