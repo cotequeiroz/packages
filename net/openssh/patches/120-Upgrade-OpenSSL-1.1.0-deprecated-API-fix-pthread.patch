@@ -1,0 +1,428 @@
+From e96299292e5a132df2d133bbe23a7b03f9de9e33 Mon Sep 17 00:00:00 2001
+From: Eneas U de Queiroz <cote2004-github@yahoo.com>
+Date: Sun, 3 Jun 2018 23:21:14 -0300
+Subject: [PATCH 2/2] Upgrade OpenSSL 1.1.0 deprecated API, fix pthread
+
+This patch updates the calls that were deprecated in OpenSSL 1.1.0, and
+fixed a pthread declaration problem.
+
+Signed-off-by: Eneas U de Queiroz <cote2004-github@yahoo.com>
+---
+ auth-pam.c                       |  4 ++++
+ configure.ac                     | 16 +++++++++++++---
+ entropy.c                        |  4 ++--
+ libcrypto-compat.c               | 22 ++++++++++++++++++++++
+ libcrypto-compat.h               | 17 +++++++++++++++++
+ openbsd-compat/openssl-compat.c  | 25 -------------------------
+ openbsd-compat/openssl-compat.h  | 32 ++++++++++++--------------------
+ regress/unittests/sshkey/tests.c |  2 ++
+ ssh-add.c                        |  2 +-
+ ssh-agent.c                      |  2 +-
+ ssh-keygen.c                     |  2 +-
+ ssh-keysign.c                    |  2 ++
+ ssh.c                            |  8 ++++----
+ ssh_api.c                        |  4 ++--
+ sshd.c                           |  6 +++---
+ 15 files changed, 86 insertions(+), 62 deletions(-)
+
+diff --git a/auth-pam.c b/auth-pam.c
+index 00ba8777..88d3fd12 100644
+--- a/auth-pam.c
++++ b/auth-pam.c
+@@ -128,6 +128,10 @@ extern u_int utmp_len;
+ typedef pthread_t sp_pthread_t;
+ #else
+ typedef pid_t sp_pthread_t;
++# define pthread_create(a, b, c, d)    _ssh_compat_pthread_create(a, b, c, d)
++# define pthread_exit(a)               _ssh_compat_pthread_exit(a)
++# define pthread_cancel(a)             _ssh_compat_pthread_cancel(a)
++# define pthread_join(a, b)            _ssh_compat_pthread_join(a, b)
+ #endif
+ 
+ struct pam_ctxt {
+diff --git a/configure.ac b/configure.ac
+index 663062be..3ec3a276 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -2626,8 +2626,13 @@ if test "x$openssl" = "xyes" ; then
+ 		if(fd == NULL)
+ 			exit(1);
+ 
++	#if OPENSSL_VERSION_NUMBER < 0x10100000L
+ 		if ((rc = fprintf(fd, "%08lx (%s)\n", (unsigned long)SSLeay(),
+ 		    SSLeay_version(SSLEAY_VERSION))) < 0)
++	#else
++		if ((rc = fprintf(fd, "%08lx (%s)\n", (unsigned long)OpenSSL_version_num(),
++		    OpenSSL_version(OPENSSL_VERSION))) < 0)
++	#endif
+ 			exit(1);
+ 
+ 		exit(0);
+@@ -2640,9 +2645,10 @@ if test "x$openssl" = "xyes" ; then
+ 					AC_MSG_ERROR([OpenSSL >= 1.0.1 required (have "$ssl_library_ver")])
+ 			                ;;
+ 				100*)   ;; # 1.0.x
++				101*)   ;; # 1.1.x
+ 				200*)   ;; # LibreSSL
+ 			        *)
+-					AC_MSG_ERROR([OpenSSL >= 1.1.0 is not yet supported (have "$ssl_library_ver")])
++					AC_MSG_ERROR([OpenSSL version is not yet supported (have "$ssl_library_ver")])
+ 			                ;;
+ 			esac
+ 			AC_MSG_RESULT([$ssl_library_ver])
+@@ -2664,7 +2670,11 @@ if test "x$openssl" = "xyes" ; then
+ 	#include <openssl/opensslv.h>
+ 	#include <openssl/crypto.h>
+ 		]], [[
++	#if OPENSSL_VERSION_NUMBER < 0x10100000L
+ 		exit(SSLeay() == OPENSSL_VERSION_NUMBER ? 0 : 1);
++	#else
++		exit(OpenSSL_version_num() == OPENSSL_VERSION_NUMBER ? 0 : 1);
++	#endif
+ 		]])],
+ 		[
+ 			AC_MSG_RESULT([yes])
+@@ -2692,7 +2702,7 @@ if test "x$openssl" = "xyes" ; then
+ 	AC_MSG_CHECKING([if programs using OpenSSL functions will link])
+ 	AC_LINK_IFELSE(
+ 		[AC_LANG_PROGRAM([[ #include <openssl/evp.h> ]],
+-		[[ SSLeay_add_all_algorithms(); ]])],
++		[[ EVP_CIPHER_CTX_new(); ]])],
+ 		[
+ 			AC_MSG_RESULT([yes])
+ 		],
+@@ -2703,7 +2713,7 @@ if test "x$openssl" = "xyes" ; then
+ 			AC_MSG_CHECKING([if programs using OpenSSL need -ldl])
+ 			AC_LINK_IFELSE(
+ 				[AC_LANG_PROGRAM([[ #include <openssl/evp.h> ]],
+-				[[ SSLeay_add_all_algorithms(); ]])],
++				[[ EVP_CIPHER_CTX_new(); ]])],
+ 				[
+ 					AC_MSG_RESULT([yes])
+ 				],
+diff --git a/entropy.c b/entropy.c
+index 14b98f18..f64bddd6 100644
+--- a/entropy.c
++++ b/entropy.c
+@@ -213,9 +213,9 @@ seed_rng(void)
+ #ifndef OPENSSL_PRNG_ONLY
+ 	unsigned char buf[RANDOM_SEED_SIZE];
+ #endif
+-	if (!ssh_compatible_openssl(OPENSSL_VERSION_NUMBER, SSLeay()))
++	if (!ssh_compatible_openssl(OPENSSL_VERSION_NUMBER, OpenSSL_version_num()))
+ 		fatal("OpenSSL version mismatch. Built against %lx, you "
+-		    "have %lx", (u_long)OPENSSL_VERSION_NUMBER, SSLeay());
++		    "have %lx", (u_long)OPENSSL_VERSION_NUMBER, OpenSSL_version_num());
+ 
+ #ifndef OPENSSL_PRNG_ONLY
+ 	if (RAND_status() == 1) {
+diff --git a/libcrypto-compat.c b/libcrypto-compat.c
+index 0e5b8e8d..dce27f04 100644
+--- a/libcrypto-compat.c
++++ b/libcrypto-compat.c
+@@ -13,6 +13,7 @@
+ 
+ #include <string.h>
+ #include <openssl/engine.h>
++#include <openssl/conf.h>
+ 
+ static void *OPENSSL_zalloc(size_t num)
+ {
+@@ -23,6 +24,27 @@ static void *OPENSSL_zalloc(size_t num)
+     return ret;
+ }
+ 
++int OPENSSL_init_crypto(uint64_t opts, void *not_implemented)
++{
++	/* the opts implemented here are not complete.
++	 * Only options necessary for openssh are implemented.
++	 * OPENSSL_INIT_LOAD_CRYPTO_STRINGS is not treated as default here.
++	 */
++	OpenSSL_add_all_algorithms();
++
++	if (opts & OPENSSL_INIT_LOAD_CRYPTO_STRINGS) {
++		ERR_load_crypto_strings();
++	}
++	if (opts & OPENSSL_INIT_ENGINE_ALL_BUILTIN) {
++		ENGINE_load_builtin_engines();
++		ENGINE_register_all_complete();
++	}
++	if (opts & OPENSSL_INIT_LOAD_CONFIG) {
++		OPENSSL_config(NULL);
++	}
++	return 1;
++}
++
+ int RSA_set0_key(RSA *r, BIGNUM *n, BIGNUM *e, BIGNUM *d)
+ {
+     /* If the fields n and e in r are NULL, the corresponding input
+diff --git a/libcrypto-compat.h b/libcrypto-compat.h
+index 5ef87a65..1e5cccc5 100644
+--- a/libcrypto-compat.h
++++ b/libcrypto-compat.h
+@@ -9,6 +9,23 @@
+ #include <openssl/dh.h>
+ #include <openssl/evp.h>
+ 
++#define OpenSSL_version_num SSLeay
++#define OpenSSL_version SSLeay_version
++#define OPENSSL_VERSION SSLEAY_VERSION
++
++#define OPENSSL_INIT_LOAD_CRYPTO_STRINGS	0x00000002L
++#define OPENSSL_INIT_LOAD_CONFIG		0x00000040L
++#define OPENSSL_INIT_ENGINE_RDRAND		0x00000200L
++#define OPENSSL_INIT_ENGINE_DYNAMIC		0x00000400L
++#define OPENSSL_INIT_ENGINE_CRYPTODEV		0x00001000L
++#define OPENSSL_INIT_ENGINE_CAPI		0x00002000L
++#define OPENSSL_INIT_ENGINE_PADLOCK		0x00004000L
++#define OPENSSL_INIT_ENGINE_ALL_BUILTIN		\
++		(OPENSSL_INIT_ENGINE_RDRAND | OPENSSL_INIT_ENGINE_DYNAMIC \
++		 | OPENSSL_INIT_ENGINE_CRYPTODEV | OPENSSL_INIT_ENGINE_CAPI | \
++		 OPENSSL_INIT_ENGINE_PADLOCK)
++int OPENSSL_init_crypto(uint64_t opts, void *not_implemented);
++
+ int RSA_set0_key(RSA *r, BIGNUM *n, BIGNUM *e, BIGNUM *d);
+ int RSA_set0_factors(RSA *r, BIGNUM *p, BIGNUM *q);
+ int RSA_set0_crt_params(RSA *r, BIGNUM *dmp1, BIGNUM *dmq1, BIGNUM *iqmp);
+diff --git a/openbsd-compat/openssl-compat.c b/openbsd-compat/openssl-compat.c
+index 74f65f87..be03405a 100644
+--- a/openbsd-compat/openssl-compat.c
++++ b/openbsd-compat/openssl-compat.c
+@@ -22,11 +22,6 @@
+ #include <stdarg.h>
+ #include <string.h>
+ 
+-#ifdef USE_OPENSSL_ENGINE
+-# include <openssl/engine.h>
+-# include <openssl/conf.h>
+-#endif
+-
+ #include "log.h"
+ 
+ #include "openssl-compat.h"
+@@ -66,24 +61,4 @@ ssh_compatible_openssl(long headerver, long libver)
+ 	return 0;
+ }
+ 
+-#ifdef	USE_OPENSSL_ENGINE
+-void
+-ssh_OpenSSL_add_all_algorithms(void)
+-{
+-#if OPENSSL_VERSION_NUMBER < 0x10100000L
+-	OpenSSL_add_all_algorithms();
+-
+-	/* Enable use of crypto hardware */
+-	ENGINE_load_builtin_engines();
+-#if OPENSSL_VERSION_NUMBER < 0x10001000L
+-	ENGINE_register_all_complete();
+-#endif
+-	OPENSSL_config(NULL);
+-#else
+-	OPENSSL_init_crypto(OPENSSL_INIT_ADD_ALL_DIGESTS |
+-	    OPENSSL_INIT_ADD_ALL_DIGESTS | OPENSSL_INIT_LOAD_CONFIG, NULL);
+-#endif
+-}
+-#endif
+-
+ #endif /* WITH_OPENSSL */
+diff --git a/openbsd-compat/openssl-compat.h b/openbsd-compat/openssl-compat.h
+index 2ae42bac..7899467e 100644
+--- a/openbsd-compat/openssl-compat.h
++++ b/openbsd-compat/openssl-compat.h
+@@ -25,6 +25,11 @@
+ #include <openssl/rsa.h>
+ #include <openssl/dsa.h>
+ 
++#ifdef USE_OPENSSL_ENGINE
++# include <openssl/engine.h>
++# include <openssl/conf.h>
++#endif
++
+ int ssh_compatible_openssl(long, long);
+ 
+ #if (OPENSSL_VERSION_NUMBER <= 0x0090805fL)
+@@ -75,26 +80,13 @@ void ssh_aes_ctr_iv(EVP_CIPHER_CTX *, int, u_char *, size_t);
+ # endif
+ #endif
+ 
+-/*
+- * We overload some of the OpenSSL crypto functions with ssh_* equivalents
+- * to automatically handle OpenSSL engine initialisation.
+- *
+- * In order for the compat library to call the real functions, it must
+- * define SSH_DONT_OVERLOAD_OPENSSL_FUNCS before including this file and
+- * implement the ssh_* equivalents.
+- */
+-#ifndef SSH_DONT_OVERLOAD_OPENSSL_FUNCS
+-
+-# ifdef USE_OPENSSL_ENGINE
+-#  ifdef OpenSSL_add_all_algorithms
+-#   undef OpenSSL_add_all_algorithms
+-#  endif
+-#  define OpenSSL_add_all_algorithms()  ssh_OpenSSL_add_all_algorithms()
+-# endif
+-
+-void ssh_OpenSSL_add_all_algorithms(void);
+-
+-#endif	/* SSH_DONT_OVERLOAD_OPENSSL_FUNCS */
++#ifdef USE_OPENSSL_ENGINE
++# define OPENSSH_OPENSSL_INIT_OPTS \
++				OPENSSL_INIT_LOAD_CONFIG | \
++				OPENSSL_INIT_ENGINE_ALL_BUILTIN
++#else
++# define OPENSSH_OPENSSL_INIT_OPTS 0
++#endif
+ 
+ #endif /* WITH_OPENSSL */
+ #endif /* _OPENSSL_COMPAT_H */
+diff --git a/regress/unittests/sshkey/tests.c b/regress/unittests/sshkey/tests.c
+index 13f265cd..de53287b 100644
+--- a/regress/unittests/sshkey/tests.c
++++ b/regress/unittests/sshkey/tests.c
+@@ -18,8 +18,10 @@ void sshkey_fuzz_tests(void);
+ void
+ tests(void)
+ {
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
+ 	OpenSSL_add_all_algorithms();
+ 	ERR_load_CRYPTO_strings();
++#endif
+ 
+ 	sshkey_tests();
+ 	sshkey_file_tests();
+diff --git a/ssh-add.c b/ssh-add.c
+index adcc4599..5b4510e7 100644
+--- a/ssh-add.c
++++ b/ssh-add.c
+@@ -530,7 +530,7 @@ main(int argc, char **argv)
+ 	seed_rng();
+ 
+ #ifdef WITH_OPENSSL
+-	OpenSSL_add_all_algorithms();
++	OPENSSL_init_crypto(OPENSSH_OPENSSL_INIT_OPTS, NULL);
+ #endif
+ 
+ 	setvbuf(stdout, NULL, _IOLBF, 0);
+diff --git a/ssh-agent.c b/ssh-agent.c
+index 2a4578b0..7c3d96c2 100644
+--- a/ssh-agent.c
++++ b/ssh-agent.c
+@@ -1071,7 +1071,7 @@ main(int ac, char **av)
+ 	platform_disable_tracing(0);	/* strict=no */
+ 
+ #ifdef WITH_OPENSSL
+-	OpenSSL_add_all_algorithms();
++	OPENSSL_init_crypto(OPENSSH_OPENSSL_INIT_OPTS, NULL);
+ #endif
+ 
+ 	__progname = ssh_get_progname(av[0]);
+diff --git a/ssh-keygen.c b/ssh-keygen.c
+index c84bdfcd..2acb9b24 100644
+--- a/ssh-keygen.c
++++ b/ssh-keygen.c
+@@ -2383,7 +2383,7 @@ main(int argc, char **argv)
+ 
+ 	__progname = ssh_get_progname(argv[0]);
+ 
+-#ifdef WITH_OPENSSL
++#if defined(WITH_OPENSSL) && OPENSSL_VERSION_NUMBER < 0x10100000L
+ 	OpenSSL_add_all_algorithms();
+ #endif
+ 	log_init(argv[0], SYSLOG_LEVEL_INFO, SYSLOG_FACILITY_USER, 1);
+diff --git a/ssh-keysign.c b/ssh-keysign.c
+index 78bb66b0..4106e155 100644
+--- a/ssh-keysign.c
++++ b/ssh-keysign.c
+@@ -230,7 +230,9 @@ main(int argc, char **argv)
+ 		fatal("could not open any host key");
+ 
+ #ifdef WITH_OPENSSL
++# if OPENSSL_VERSION_NUMBER < 0x10100000L
+ 	OpenSSL_add_all_algorithms();
++# endif
+ 	arc4random_buf(rnd, sizeof(rnd));
+ 	RAND_seed(rnd, sizeof(rnd));
+ #endif
+diff --git a/ssh.c b/ssh.c
+index d3619fe2..a182742b 100644
+--- a/ssh.c
++++ b/ssh.c
+@@ -816,7 +816,7 @@ main(int ac, char **av)
+ 			fprintf(stderr, "%s, %s\n",
+ 			    SSH_RELEASE,
+ #ifdef WITH_OPENSSL
+-			    SSLeay_version(SSLEAY_VERSION)
++			    OpenSSL_version(OPENSSL_VERSION)
+ #else
+ 			    "without OpenSSL"
+ #endif
+@@ -1037,8 +1037,8 @@ main(int ac, char **av)
+ 	host_arg = xstrdup(host);
+ 
+ #ifdef WITH_OPENSSL
+-	OpenSSL_add_all_algorithms();
+-	ERR_load_crypto_strings();
++	OPENSSL_init_crypto(OPENSSH_OPENSSL_INIT_OPTS |
++			    OPENSSL_INIT_LOAD_CRYPTO_STRINGS, NULL);
+ #endif
+ 
+ 	/* Initialize the command to execute on remote host. */
+@@ -1083,7 +1083,7 @@ main(int ac, char **av)
+ 	if (debug_flag)
+ 		logit("%s, %s", SSH_RELEASE,
+ #ifdef WITH_OPENSSL
+-		    SSLeay_version(SSLEAY_VERSION)
++		    OpenSSL_version(OPENSSL_VERSION)
+ #else
+ 		    "without OpenSSL"
+ #endif
+diff --git a/ssh_api.c b/ssh_api.c
+index c84b4e71..a6485562 100644
+--- a/ssh_api.c
++++ b/ssh_api.c
+@@ -79,9 +79,9 @@ ssh_init(struct ssh **sshp, int is_server, struct kex_params *kex_params)
+ 	int r;
+ 
+ 	if (!called) {
+-#ifdef WITH_OPENSSL
++#if defined(WITH_OPENSSL) && OPENSSL_VERSION_NUMBER < 0x10100000L
+ 		OpenSSL_add_all_algorithms();
+-#endif /* WITH_OPENSSL */
++#endif /* WITH_OPENSSL && OPENSSL_VERSION_NUMBER < 0x10100000L */
+ 		called = 1;
+ 	}
+ 
+diff --git a/sshd.c b/sshd.c
+index fd95b681..55e0725e 100644
+--- a/sshd.c
++++ b/sshd.c
+@@ -908,7 +908,7 @@ usage(void)
+ 	fprintf(stderr, "%s, %s\n",
+ 	    SSH_RELEASE,
+ #ifdef WITH_OPENSSL
+-	    SSLeay_version(SSLEAY_VERSION)
++	    OpenSSL_version(OPENSSL_VERSION)
+ #else
+ 	    "without OpenSSL"
+ #endif
+@@ -1585,7 +1585,7 @@ main(int ac, char **av)
+ 		closefrom(REEXEC_DEVCRYPTO_RESERVED_FD);
+ 
+ #ifdef WITH_OPENSSL
+-	OpenSSL_add_all_algorithms();
++	OPENSSL_init_crypto(OPENSSH_OPENSSL_INIT_OPTS, NULL);
+ #endif
+ 
+ 	/* If requested, redirect the logs to the specified logfile. */
+@@ -1675,7 +1675,7 @@ main(int ac, char **av)
+ 
+ 	debug("sshd version %s, %s", SSH_VERSION,
+ #ifdef WITH_OPENSSL
+-	    SSLeay_version(SSLEAY_VERSION)
++	    OpenSSL_version(OPENSSL_VERSION)
+ #else
+ 	    "without OpenSSL"
+ #endif
+-- 
+2.16.1
+
