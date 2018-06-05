@@ -1,0 +1,83 @@
+From 5aed182f5ac0e939417ffea5ae2587b11943cb4f Mon Sep 17 00:00:00 2001
+From: Mark Wright <gienah@gentoo.org>
+Date: Tue, 10 Oct 2017 23:37:41 +1100
+Subject: [PATCH 1/4] bpo-30008: OpenSSL 1.1 compatibility without using
+ deprecated API Note: RAND_pseudo_bytes() is deprecated so RAND_bytes() is
+ used when pseudo is requested.
+
+---
+ Modules/_hashopenssl.c |  2 +-
+ Modules/_ssl.c         | 31 +++++++++++++++++++++++--------
+ 2 files changed, 24 insertions(+), 9 deletions(-)
+
+--- a/Modules/_hashopenssl.c
++++ b/Modules/_hashopenssl.c
+@@ -899,7 +899,7 @@ init_hashlib(void)
+ {
+     PyObject *m, *openssl_md_meth_names;
+ 
+-#ifndef OPENSSL_VERSION_1_1
++#if (OPENSSL_VERSION_NUMBER < 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER)
+     /* Load all digest algorithms and initialize cpuid */
+     OPENSSL_add_all_algorithms_noconf();
+     ERR_load_crypto_strings();
+--- a/Modules/_ssl.c
++++ b/Modules/_ssl.c
+@@ -159,8 +159,17 @@ struct py_ssl_library_code {
+ #ifndef PY_OPENSSL_1_1_API
+ /* OpenSSL 1.1 API shims for OpenSSL < 1.1.0 and LibreSSL < 2.7.0 */
+ 
++#ifndef OPENSSL_VERSION_1_1
+ #define ASN1_STRING_get0_data ASN1_STRING_data
+ #define TLS_method SSLv23_method
++#define TLS_client_method SSLv23_client_method
++#define TLS_server_method SSLv23_server_method
++#define X509_get0_notBefore X509_get_notBefore
++#define X509_get0_notAfter X509_get_notAfter
++#define OpenSSL_version_num SSLeay
++#define OpenSSL_version SSLeay_version
++#define OPENSSL_VERSION SSLEAY_VERSION
++#endif
+ 
+ static int X509_NAME_ENTRY_set(const X509_NAME_ENTRY *ne)
+ {
+@@ -1322,7 +1331,7 @@ _decode_certificate(X509 *certificate) {
+     Py_DECREF(sn_obj);
+ 
+     (void) BIO_reset(biobuf);
+-    notBefore = X509_get_notBefore(certificate);
++    notBefore = X509_get0_notBefore(certificate);
+     ASN1_TIME_print(biobuf, notBefore);
+     len = BIO_gets(biobuf, buf, sizeof(buf)-1);
+     if (len < 0) {
+@@ -1339,7 +1348,7 @@ _decode_certificate(X509 *certificate) {
+     Py_DECREF(pnotBefore);
+ 
+     (void) BIO_reset(biobuf);
+-    notAfter = X509_get_notAfter(certificate);
++    notAfter = X509_get0_notAfter(certificate);
+     ASN1_TIME_print(biobuf, notAfter);
+     len = BIO_gets(biobuf, buf, sizeof(buf)-1);
+     if (len < 0) {
+@@ -4542,10 +4551,10 @@ init_ssl(void)
+         return;
+ 
+     /* OpenSSL version */
+-    /* SSLeay() gives us the version of the library linked against,
++    /* OPENSSL_version_num() gives us the version of the library linked against,
+        which could be different from the headers version.
+     */
+-    libver = SSLeay();
++    libver = OpenSSL_version_num();
+     r = PyLong_FromUnsignedLong(libver);
+     if (r == NULL)
+         return;
+@@ -4555,7 +4564,7 @@ init_ssl(void)
+     r = Py_BuildValue("IIIII", major, minor, fix, patch, status);
+     if (r == NULL || PyModule_AddObject(m, "OPENSSL_VERSION_INFO", r))
+         return;
+-    r = PyString_FromString(SSLeay_version(SSLEAY_VERSION));
++    r = PyString_FromString(OpenSSL_version(OPENSSL_VERSION));
+     if (r == NULL || PyModule_AddObject(m, "OPENSSL_VERSION", r))
+         return;
+ 
