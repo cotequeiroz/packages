@@ -189,3 +189,16 @@
 +#endif /* OPENSSL_VERSION_NUMBER >= 0x10100000L */
 +    return dh;
 +}
+--- a/lib/stream-ssl.c
++++ b/lib/stream-ssl.c
+@@ -951,8 +951,10 @@ do_ssl_init(void)
+     /* The following call is needed if we "#include <openssl/applink.c>". */
+     CRYPTO_malloc_init();
+ #endif
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
+     SSL_library_init();
+     SSL_load_error_strings();
++#endif
+ 
+     if (!RAND_status()) {
+         /* We occasionally see OpenSSL fail to seed its random number generator
