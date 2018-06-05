@@ -1,0 +1,68 @@
+From 5aed182f5ac0e939417ffea5ae2587b11943cb4f Mon Sep 17 00:00:00 2001
+From: Mark Wright <gienah@gentoo.org>
+Date: Tue, 10 Oct 2017 23:37:41 +1100
+Subject: [PATCH 1/4] bpo-30008: OpenSSL 1.1 compatibility without using
+ deprecated API Note: RAND_pseudo_bytes() is deprecated so RAND_bytes() is
+ used when pseudo is requested.
+
+---
+ Modules/_hashopenssl.c |  2 +-
+ Modules/_ssl.c         | 31 +++++++++++++++++++++++--------
+ 2 files changed, 24 insertions(+), 9 deletions(-)
+
+--- a/Modules/_hashopenssl.c
++++ b/Modules/_hashopenssl.c
+@@ -1022,7 +1022,7 @@ PyInit__hashlib(void)
+ {
+     PyObject *m, *openssl_md_meth_names;
+ 
+-#ifndef OPENSSL_VERSION_1_1
++#if (OPENSSL_VERSION_NUMBER < 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER)
+     /* Load all digest algorithms and initialize cpuid */
+     OPENSSL_add_all_algorithms_noconf();
+     ERR_load_crypto_strings();
+--- a/Modules/_ssl.c
++++ b/Modules/_ssl.c
+@@ -155,10 +155,18 @@ struct py_ssl_library_code {
+ #define HAVE_OPENSSL_CRYPTO_LOCK
+ #endif
+ 
++#ifndef OPENSSL_VERSION_1_1
+ #define ASN1_STRING_get0_data ASN1_STRING_data
+ #define TLS_method SSLv23_method
+ #define TLS_client_method SSLv23_client_method
+ #define TLS_server_method SSLv23_server_method
++#define X509_get0_notBefore X509_get_notBefore
++#define X509_get0_notAfter X509_get_notAfter
++#define ASN1_STRING_get0_data ASN1_STRING_data
++#define OpenSSL_version_num SSLeay
++#define OpenSSL_version SSLeay_version
++#define OPENSSL_VERSION SSLEAY_VERSION
++#endif
+ 
+ static int X509_NAME_ENTRY_set(const X509_NAME_ENTRY *ne)
+ {
+@@ -4703,7 +4711,11 @@ PySSL_RAND(int len, int pseudo)
+     if (bytes == NULL)
+         return NULL;
+     if (pseudo) {
+-        ok = RAND_bytes((unsigned char*)PyBytes_AS_STRING(bytes), len);
++#ifdef OPENSSL_VERSION_1_1
++        ok = (_PyOS_URandom((unsigned char*)PyBytes_AS_STRING(bytes), len) == 0 ? 1 : 0);
++#else
++        ok = RAND_pseudo_bytes((unsigned char*)PyBytes_AS_STRING(bytes), len);
++#endif
+         if (ok == 0 || ok == 1)
+             return Py_BuildValue("NO", bytes, ok == 1 ? Py_True : Py_False);
+     }
+@@ -5343,9 +5355,7 @@ PyInit__ssl(void)
+         return NULL;
+     PySocketModule = *socket_api;
+ 
+-#ifdef OPENSSL_VERSION_1_1
+-    OPENSSL_init_ssl(0, NULL);
+-#else
++#ifndef OPENSSL_VERSION_1_1
+     /* Load all algorithms and initialize cpuid */
+     OPENSSL_add_all_algorithms_noconf();
+     /* Init OpenSSL */

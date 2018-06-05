@@ -1,0 +1,277 @@
+From 991f0176e188227647bf4c993d8da81cf794b3ae Mon Sep 17 00:00:00 2001
+From: Christian Heimes <christian@python.org>
+Date: Sun, 25 Feb 2018 20:03:07 +0100
+Subject: [PATCH] bpo-30008: SSL module: emulate tls methods
+
+OpenSSL 1.1 compatility: emulate version specific TLS methods with
+SSL_CTX_set_min/max_proto_version().
+---
+ .../2018-02-25-20-05-51.bpo-30008.6Bmyhr.rst       |   4 +
+ Modules/_ssl.c                                     | 134 ++++++++++++++++-----
+ 2 files changed, 108 insertions(+), 30 deletions(-)
+ create mode 100644 Misc/NEWS.d/next/Library/2018-02-25-20-05-51.bpo-30008.6Bmyhr.rst
+
+--- /dev/null
++++ b/Misc/NEWS.d/next/Library/2018-02-25-20-05-51.bpo-30008.6Bmyhr.rst
+@@ -0,0 +1,4 @@
++The ssl module no longer uses function that are deprecated since OpenSSL
++1.1.0. The version specific TLS methods are emulated with TLS_method() plus
++SSL_CTX_set_min/max_proto_version(). Pseudo random numbers are generated
++with RAND_bytes().
+--- a/Modules/_ssl.c
++++ b/Modules/_ssl.c
+@@ -60,14 +60,6 @@ static PySocketModule_APIObject PySocket
+ #include <arpa/inet.h>
+ #endif
+ 
+-/* Don't warn about deprecated functions */
+-#ifdef __GNUC__
+-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+-#endif
+-#ifdef __clang__
+-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+-#endif
+-
+ /* Include OpenSSL header files */
+ #include "openssl/rsa.h"
+ #include "openssl/crypto.h"
+@@ -78,6 +70,7 @@ static PySocketModule_APIObject PySocket
+ #include "openssl/err.h"
+ #include "openssl/rand.h"
+ #include "openssl/bio.h"
++#include "openssl/dh.h"
+ 
+ /* SSL error object */
+ static PyObject *PySSLErrorObject;
+@@ -162,6 +155,7 @@ struct py_ssl_library_code {
+ #define HAVE_OPENSSL_CRYPTO_LOCK
+ #endif
+ 
++#define ASN1_STRING_get0_data ASN1_STRING_data
+ #define TLS_method SSLv23_method
+ #define TLS_client_method SSLv23_client_method
+ #define TLS_server_method SSLv23_server_method
+@@ -1118,8 +1112,9 @@ _get_peer_alt_names (X509 *certificate)
+                     goto fail;
+                 }
+                 PyTuple_SET_ITEM(t, 0, v);
+-                v = PyUnicode_FromStringAndSize((char *)ASN1_STRING_data(as),
+-                                                ASN1_STRING_length(as));
++                v = PyUnicode_FromStringAndSize(
++                    (char *)ASN1_STRING_get0_data(as),
++                    ASN1_STRING_length(as));
+                 if (v == NULL) {
+                     Py_DECREF(t);
+                     goto fail;
+@@ -1421,7 +1416,7 @@ _decode_certificate(X509 *certificate) {
+     Py_DECREF(sn_obj);
+ 
+     (void) BIO_reset(biobuf);
+-    notBefore = X509_get_notBefore(certificate);
++    notBefore = X509_get0_notBefore(certificate);
+     ASN1_TIME_print(biobuf, notBefore);
+     len = BIO_gets(biobuf, buf, sizeof(buf)-1);
+     if (len < 0) {
+@@ -1438,7 +1433,7 @@ _decode_certificate(X509 *certificate) {
+     Py_DECREF(pnotBefore);
+ 
+     (void) BIO_reset(biobuf);
+-    notAfter = X509_get_notAfter(certificate);
++    notAfter = X509_get0_notAfter(certificate);
+     ASN1_TIME_print(biobuf, notAfter);
+     len = BIO_gets(biobuf, buf, sizeof(buf)-1);
+     if (len < 0) {
+@@ -2698,44 +2693,124 @@ _ssl__SSLContext_impl(PyTypeObject *type
+     PySSLContext *self;
+     long options;
+     SSL_CTX *ctx = NULL;
+-    int result;
++    int result = 0;
+ #if defined(SSL_MODE_RELEASE_BUFFERS)
+     unsigned long libver;
+ #endif
+ 
+     PySSL_BEGIN_ALLOW_THREADS
+-    if (proto_version == PY_SSL_VERSION_TLS1)
++    switch (proto_version) {
++#if OPENSSL_VERSION_NUMBER <= 0x10100000L
++    /* OpenSSL < 1.1.0 or not LibreSSL
++     * Use old-style methods for OpenSSL 1.0.2
++     */
++#if defined(SSL2_VERSION) && !defined(OPENSSL_NO_SSL2)
++    case PY_SSL_VERSION_SSL2:
++        ctx = SSL_CTX_new(SSLv2_method());
++        break;
++#endif
++#if defined(SSL3_VERSION) && !defined(OPENSSL_NO_SSL3)
++    case PY_SSL_VERSION_SSL3:
++        ctx = SSL_CTX_new(SSLv3_method());
++        break;
++#endif
++#if defined(TLS1_VERSION) && !defined(OPENSSL_NO_TLS1)
++    case PY_SSL_VERSION_TLS1:
+         ctx = SSL_CTX_new(TLSv1_method());
+-#if HAVE_TLSv1_2
+-    else if (proto_version == PY_SSL_VERSION_TLS1_1)
++        break;
++#endif
++#if defined(TLS1_1_VERSION) && !defined(OPENSSL_NO_TLS1_1)
++    case PY_SSL_VERSION_TLS1_1:
+         ctx = SSL_CTX_new(TLSv1_1_method());
+-    else if (proto_version == PY_SSL_VERSION_TLS1_2)
++        break;
++#endif
++#if defined(TLS1_2_VERSION) && !defined(OPENSSL_NO_TLS1_2)
++    case PY_SSL_VERSION_TLS1_2:
+         ctx = SSL_CTX_new(TLSv1_2_method());
++        break;
+ #endif
+-#ifndef OPENSSL_NO_SSL3
+-    else if (proto_version == PY_SSL_VERSION_SSL3)
+-        ctx = SSL_CTX_new(SSLv3_method());
++#else
++    /* OpenSSL >= 1.1 or LibreSSL
++     * create context with TLS_method for all protocols
++     * no SSLv2_method in OpenSSL 1.1.
++     */
++#if defined(SSL3_VERSION) && !defined(OPENSSL_NO_SSL3)
++    case PY_SSL_VERSION_SSL3:
++        ctx = SSL_CTX_new(TLS_method());
++        if (ctx != NULL) {
++            /* OpenSSL 1.1.0 sets SSL_OP_NO_SSLv3 for TLS_method by default */
++            SSL_CTX_clear_options(ctx, SSL_OP_NO_SSLv3);
++            if (!SSL_CTX_set_min_proto_version(ctx, SSL3_VERSION))
++                result = -2;
++            if (!SSL_CTX_set_max_proto_version(ctx, SSL3_VERSION))
++                result = -2;
++        }
++        break;
+ #endif
+-#ifndef OPENSSL_NO_SSL2
+-    else if (proto_version == PY_SSL_VERSION_SSL2)
+-        ctx = SSL_CTX_new(SSLv2_method());
++#if defined(TLS1_VERSION) && !defined(OPENSSL_NO_TLS1)
++    case PY_SSL_VERSION_TLS1:
++        ctx = SSL_CTX_new(TLS_method());
++        if (ctx != NULL) {
++            SSL_CTX_clear_options(ctx, SSL_OP_NO_TLSv1);
++            if (!SSL_CTX_set_min_proto_version(ctx, TLS1_VERSION))
++                result = -2;
++            if (!SSL_CTX_set_max_proto_version(ctx, TLS1_VERSION))
++                result = -2;
++        }
++        break;
+ #endif
+-    else if (proto_version == PY_SSL_VERSION_TLS) /* SSLv23 */
++#if defined(TLS1_1_VERSION) && !defined(OPENSSL_NO_TLS1_1)
++    case PY_SSL_VERSION_TLS1_1:
+         ctx = SSL_CTX_new(TLS_method());
+-    else if (proto_version == PY_SSL_VERSION_TLS_CLIENT)
++        if (ctx != NULL) {
++            SSL_CTX_clear_options(ctx, SSL_OP_NO_TLSv1_1);
++            if (!SSL_CTX_set_min_proto_version(ctx, TLS1_1_VERSION))
++                result = -2;
++            if (!SSL_CTX_set_max_proto_version(ctx, TLS1_1_VERSION))
++                result = -2;
++        }
++        break;
++#endif
++#if defined(TLS1_2_VERSION) && !defined(OPENSSL_NO_TLS1_2)
++    case PY_SSL_VERSION_TLS1_2:
++        ctx = SSL_CTX_new(TLS_method());
++        if (ctx != NULL) {
++            SSL_CTX_clear_options(ctx, SSL_OP_NO_TLSv1_2);
++            if (!SSL_CTX_set_min_proto_version(ctx, TLS1_2_VERSION))
++                result = -2;
++            if (!SSL_CTX_set_max_proto_version(ctx, TLS1_2_VERSION))
++                result = -2;
++        }
++        break;
++#endif
++#endif /* OpenSSL >= 1.1 */
++    case PY_SSL_VERSION_TLS:
++        /* SSLv23 */
++        ctx = SSL_CTX_new(TLS_method());
++        break;
++    case PY_SSL_VERSION_TLS_CLIENT:
+         ctx = SSL_CTX_new(TLS_client_method());
+-    else if (proto_version == PY_SSL_VERSION_TLS_SERVER)
++        break;
++    case PY_SSL_VERSION_TLS_SERVER:
+         ctx = SSL_CTX_new(TLS_server_method());
+-    else
+-        proto_version = -1;
++        break;
++    default:
++        result = -1;
++        break;
++    }
+     PySSL_END_ALLOW_THREADS
+ 
+-    if (proto_version == -1) {
++    if (result == -1) {
+         PyErr_SetString(PyExc_ValueError,
+                         "invalid protocol version");
+         return NULL;
+     }
+-    if (ctx == NULL) {
++    else if (result == -2) {
++        PyErr_SetString(PyExc_ValueError,
++                        "protocol configuration error");
++        return NULL;
++    }
++    else if (ctx == NULL) {
+         _setSSLError(NULL, 0, __FILE__, __LINE__);
+         return NULL;
+     }
+@@ -2816,7 +2891,7 @@ _ssl__SSLContext_impl(PyTypeObject *type
+        conservative and assume it wasn't fixed until release. We do this check
+        at runtime to avoid problems from the dynamic linker.
+        See #25672 for more on this. */
+-    libver = SSLeay();
++    libver = OpenSSL_version_num();
+     if (!(libver >= 0x10001000UL && libver < 0x1000108fUL) &&
+         !(libver >= 0x10000000UL && libver < 0x100000dfUL)) {
+         SSL_CTX_set_mode(self->ctx, SSL_MODE_RELEASE_BUFFERS);
+@@ -4628,7 +4703,7 @@ PySSL_RAND(int len, int pseudo)
+     if (bytes == NULL)
+         return NULL;
+     if (pseudo) {
+-        ok = RAND_pseudo_bytes((unsigned char*)PyBytes_AS_STRING(bytes), len);
++        ok = RAND_bytes((unsigned char*)PyBytes_AS_STRING(bytes), len);
+         if (ok == 0 || ok == 1)
+             return Py_BuildValue("NO", bytes, ok == 1 ? Py_True : Py_False);
+     }
+@@ -5268,7 +5343,9 @@ PyInit__ssl(void)
+         return NULL;
+     PySocketModule = *socket_api;
+ 
+-#ifndef OPENSSL_VERSION_1_1
++#ifdef OPENSSL_VERSION_1_1
++    OPENSSL_init_ssl(0, NULL);
++#else
+     /* Load all algorithms and initialize cpuid */
+     OPENSSL_add_all_algorithms_noconf();
+     /* Init OpenSSL */
+@@ -5568,10 +5645,10 @@ PyInit__ssl(void)
+         return NULL;
+ 
+     /* OpenSSL version */
+-    /* SSLeay() gives us the version of the library linked against,
++    /* OpenSSL_version_num() gives us the version of the library linked against,
+        which could be different from the headers version.
+     */
+-    libver = SSLeay();
++    libver = OpenSSL_version_num();
+     r = PyLong_FromUnsignedLong(libver);
+     if (r == NULL)
+         return NULL;
+@@ -5581,7 +5658,7 @@ PyInit__ssl(void)
+     r = Py_BuildValue("IIIII", major, minor, fix, patch, status);
+     if (r == NULL || PyModule_AddObject(m, "OPENSSL_VERSION_INFO", r))
+         return NULL;
+-    r = PyUnicode_FromString(SSLeay_version(SSLEAY_VERSION));
++    r = PyUnicode_FromString(OpenSSL_version(OPENSSL_VERSION));
+     if (r == NULL || PyModule_AddObject(m, "OPENSSL_VERSION", r))
+         return NULL;
+ 
