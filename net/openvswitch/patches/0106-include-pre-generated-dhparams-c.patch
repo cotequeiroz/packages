@@ -1,9 +1,24 @@
 --- /dev/null
 +++ b/lib/dhparams.c
-@@ -0,0 +1,188 @@
+@@ -0,0 +1,182 @@
++#include <config.h>
 +#include "lib/dhparams.h"
-+#ifndef HEADER_DH_H
-+# include <openssl/dh.h>
++
++#ifdef __GNUC__
++#define __inline__ inline
++#else
++#define __inline__
++#endif
++
++#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined (LIBRESSL_VERSION_NUMBER)
++static __inline__ int my_DH_set0_pg(DH *dh, BIGNUM *p, BIGNUM *g)
++{
++    dh->p = p;
++    dh->g = g;
++    return 1;
++}
++#else
++#define my_DH_set0_pg(dh, p, g) DH_set0_pqg(dh, p, NULL, g)
 +#endif
 +
 +DH *get_dh1024(void)
@@ -31,22 +46,15 @@
 +
 +    if (dh == NULL)
 +        return NULL;
-+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-+    dhp_bn = BN_bin2bn(dhp_1024, sizeof (dhp_1024), NULL);
-+    dhg_bn = BN_bin2bn(dhg_1024, sizeof (dhg_1024), NULL);
++    dhp_bn = BN_bin2bn(dhp_1024, sizeof(dhp_1024), NULL);
++    dhg_bn = BN_bin2bn(dhg_1024, sizeof(dhg_1024), NULL);
 +    if (dhp_bn == NULL || dhg_bn == NULL
-+            || !DH_set0_pqg(dh, dhp_bn, NULL, dhg_bn)) {
++            || !my_DH_set0_pg(dh, dhp_bn, dhg_bn)) {
 +        DH_free(dh);
 +        BN_free(dhp_bn);
 +        BN_free(dhg_bn);
 +        return NULL;
 +    }
-+#else /* OPENSSL_VERSION_NUMBER >= 0x10100000L */
-+    dh->p=BN_bin2bn(dh1024_p,sizeof(dh1024_p),NULL);
-+    dh->g=BN_bin2bn(dh1024_g,sizeof(dh1024_g),NULL);
-+    if ((dh->p == NULL) || (dh->g == NULL))
-+	{ DH_free(dh); return(NULL); }
-+#endif /* OPENSSL_VERSION_NUMBER >= 0x10100000L */
 +    return dh;
 +}
 +
@@ -88,22 +96,15 @@
 +
 +    if (dh == NULL)
 +        return NULL;
-+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-+    dhp_bn = BN_bin2bn(dhp_2048, sizeof (dhp_2048), NULL);
-+    dhg_bn = BN_bin2bn(dhg_2048, sizeof (dhg_2048), NULL);
++    dhp_bn = BN_bin2bn(dhp_2048, sizeof(dhp_2048), NULL);
++    dhg_bn = BN_bin2bn(dhg_2048, sizeof(dhg_2048), NULL);
 +    if (dhp_bn == NULL || dhg_bn == NULL
-+            || !DH_set0_pqg(dh, dhp_bn, NULL, dhg_bn)) {
++            || !my_DH_set0_pg(dh, dhp_bn, dhg_bn)) {
 +        DH_free(dh);
 +        BN_free(dhp_bn);
 +        BN_free(dhg_bn);
 +        return NULL;
 +    }
-+#else /* OPENSSL_VERSION_NUMBER >= 0x10100000L */
-+    dh->p=BN_bin2bn(dh2048_p,sizeof(dh2048_p),NULL);
-+    dh->g=BN_bin2bn(dh2048_g,sizeof(dh2048_g),NULL);
-+    if ((dh->p == NULL) || (dh->g == NULL))
-+	{ DH_free(dh); return(NULL); }
-+#endif /* OPENSSL_VERSION_NUMBER >= 0x10100000L */
 +    return dh;
 +}
 +
@@ -171,34 +172,14 @@
 +
 +    if (dh == NULL)
 +        return NULL;
-+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-+    dhp_bn = BN_bin2bn(dhp_4096, sizeof (dhp_4096), NULL);
-+    dhg_bn = BN_bin2bn(dhg_4096, sizeof (dhg_4096), NULL);
++    dhp_bn = BN_bin2bn(dhp_4096, sizeof(dhp_4096), NULL);
++    dhg_bn = BN_bin2bn(dhg_4096, sizeof(dhg_4096), NULL);
 +    if (dhp_bn == NULL || dhg_bn == NULL
-+            || !DH_set0_pqg(dh, dhp_bn, NULL, dhg_bn)) {
++            || !my_DH_set0_pg(dh, dhp_bn, dhg_bn)) {
 +        DH_free(dh);
 +        BN_free(dhp_bn);
 +        BN_free(dhg_bn);
 +        return NULL;
 +    }
-+#else /* OPENSSL_VERSION_NUMBER >= 0x10100000L */
-+    dh->p=BN_bin2bn(dh4096_p,sizeof(dh4096_p),NULL);
-+    dh->g=BN_bin2bn(dh4096_g,sizeof(dh4096_g),NULL);
-+    if ((dh->p == NULL) || (dh->g == NULL))
-+	{ DH_free(dh); return(NULL); }
-+#endif /* OPENSSL_VERSION_NUMBER >= 0x10100000L */
 +    return dh;
 +}
---- a/lib/stream-ssl.c
-+++ b/lib/stream-ssl.c
-@@ -951,8 +951,10 @@ do_ssl_init(void)
-     /* The following call is needed if we "#include <openssl/applink.c>". */
-     CRYPTO_malloc_init();
- #endif
-+#if OPENSSL_VERSION_NUMBER < 0x10100000L
-     SSL_library_init();
-     SSL_load_error_strings();
-+#endif
- 
-     if (!RAND_status()) {
-         /* We occasionally see OpenSSL fail to seed its random number generator
