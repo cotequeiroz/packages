@@ -1,0 +1,530 @@
+--- a/dtls.c
++++ b/dtls.c
+@@ -1,10 +1,6 @@
+-/*
+- * Copyright (C) 2008-2009 Stig Venaas <venaas@uninett.no>
+- *
+- * Permission to use, copy, modify, and distribute this software for any
+- * purpose with or without fee is hereby granted, provided that the above
+- * copyright notice and this permission notice appear in all copies.
+- */
++/* Copyright (c) 2007-2009, UNINETT AS
++ * Copyright (c) 2012,2016-2017, NORDUnet A/S */
++/* See LICENSE for licensing information. */
+ 
+ #include <signal.h>
+ #include <sys/socket.h>
+@@ -172,8 +168,8 @@ int dtlsread(SSL *ssl, struct gqueue *q,
+ 		rbio = getrbio(ssl, q, timeout);
+ 		if (!rbio)
+ 		    return 0;
+-		BIO_free(ssl->rbio);
+-		ssl->rbio = rbio;
++		BIO_free(SSL_get_rbio(ssl));
++		SSL_set_bio(ssl, rbio, SSL_get_wbio(ssl));
+ 		cnt = 0;
+ 		continue;
+ 	    case SSL_ERROR_WANT_WRITE:
+@@ -214,9 +210,9 @@ SSL *dtlsacccon(uint8_t acc, SSL_CTX *ct
+         if (res == 0)
+             break;
+         if (SSL_get_error(ssl, res) == SSL_ERROR_WANT_READ) {
+-            BIO_free(ssl->rbio);
+-            ssl->rbio = getrbio(ssl, rbios, 5);
+-            if (!ssl->rbio)
++            BIO_free(SSL_get_rbio(ssl));
++            SSL_set_bio(ssl, getrbio(ssl, rbios, 5), SSL_get_wbio(ssl));
++            if (!SSL_get_rbio(ssl))
+                 break;
+         }
+         while ((error = ERR_get_error()))
+@@ -289,7 +285,9 @@ void *dtlsserverwr(void *arg) {
+ 		/* ssl might have changed while waiting */
+ 		pthread_mutex_unlock(&replyq->mutex);
+ 		debug(DBG_DBG, "dtlsserverwr: exiting as requested");
+-		ERR_remove_state(0);
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
++		ERR_remove_thread_state(NULL);
++#endif
+ 		pthread_exit(NULL);
+ 	    }
+ 	}
+@@ -411,7 +409,9 @@ exit:
+     params->sesscache->expiry.tv_sec += delay;
+     pthread_mutex_unlock(&params->sesscache->mutex);
+     free(params);
+-    ERR_remove_state(0);
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
++    ERR_remove_thread_state(NULL);
++#endif
+     pthread_exit(NULL);
+     debug(DBG_DBG, "dtlsservernew: exiting");
+ }
+@@ -670,8 +670,11 @@ void *dtlsclientrd(void *arg) {
+ 	}
+ 	replyh(server, buf);
+     }
+-    ERR_remove_state(0);
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
++    ERR_remove_thread_state(NULL);
++#endif
+     server->clientrdgone = 1;
++
+     return NULL;
+ }
+ 
+--- a/radmsg.c
++++ b/radmsg.c
+@@ -127,116 +127,115 @@ int radmsg_copy_attrs(struct radmsg *dst
+ }
+ 
+ int _checkmsgauth(unsigned char *rad, uint8_t *authattr, uint8_t *secret) {
++    int result = 0;             /* Fail. */
+     static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+-    static unsigned char first = 1;
+-    static HMAC_CTX hmacctx;
++    HMAC_CTX *hmacctx = NULL;
+     unsigned int md_len;
+     uint8_t auth[16], hash[EVP_MAX_MD_SIZE];
+ 
+     pthread_mutex_lock(&lock);
+-    if (first) {
+-	HMAC_CTX_init(&hmacctx);
+-	first = 0;
+-    }
+ 
+     memcpy(auth, authattr, 16);
+     memset(authattr, 0, 16);
+     md_len = 0;
+-    HMAC_Init_ex(&hmacctx, secret, strlen((char *)secret), EVP_md5(), NULL);
+-    HMAC_Update(&hmacctx, rad, RADLEN(rad));
+-    HMAC_Final(&hmacctx, hash, &md_len);
++    hmacctx = HMAC_CTX_new();
++    if (!hmacctx)
++        debugx(1, DBG_ERR, "%s: malloc failed", __func__);
++    HMAC_Init_ex(hmacctx, secret, strlen((char *)secret), EVP_md5(), NULL);
++    HMAC_Update(hmacctx, rad, RADLEN(rad));
++    HMAC_Final(hmacctx, hash, &md_len);
+     memcpy(authattr, auth, 16);
+     if (md_len != 16) {
+ 	debug(DBG_WARN, "message auth computation failed");
+-	pthread_mutex_unlock(&lock);
+-	return 0;
++	goto out;
+     }
+ 
+     if (memcmp(auth, hash, 16)) {
+ 	debug(DBG_WARN, "message authenticator, wrong value");
+-	pthread_mutex_unlock(&lock);
+-	return 0;
++	goto out;
+     }
+ 
++    result = 1;
++out:
++    HMAC_CTX_free(hmacctx);
+     pthread_mutex_unlock(&lock);
+-    return 1;
++    return result;
+ }
+ 
+ int _validauth(unsigned char *rad, unsigned char *reqauth, unsigned char *sec) {
+     static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+-    static unsigned char first = 1;
+-    static EVP_MD_CTX mdctx;
++    EVP_MD_CTX *mdctx = NULL;
+     unsigned char hash[EVP_MAX_MD_SIZE];
+     unsigned int len;
+     int result;
+ 
+     pthread_mutex_lock(&lock);
+-    if (first) {
+-	EVP_MD_CTX_init(&mdctx);
+-	first = 0;
+-    }
++    mdctx = EVP_MD_CTX_new();
++    if (!mdctx)
++	debugx(1, DBG_ERR, "%s: malloc failed", __func__);
+ 
+     len = RADLEN(rad);
+ 
+-    result = (EVP_DigestInit_ex(&mdctx, EVP_md5(), NULL) &&
+-	      EVP_DigestUpdate(&mdctx, rad, 4) &&
+-	      EVP_DigestUpdate(&mdctx, reqauth, 16) &&
+-	      (len <= 20 || EVP_DigestUpdate(&mdctx, rad + 20, len - 20)) &&
+-	      EVP_DigestUpdate(&mdctx, sec, strlen((char *)sec)) &&
+-	      EVP_DigestFinal_ex(&mdctx, hash, &len) &&
++    result = (EVP_DigestInit_ex(mdctx, EVP_md5(), NULL) &&
++	      EVP_DigestUpdate(mdctx, rad, 4) &&
++	      EVP_DigestUpdate(mdctx, reqauth, 16) &&
++	      (len <= 20 || EVP_DigestUpdate(mdctx, rad + 20, len - 20)) &&
++	      EVP_DigestUpdate(mdctx, sec, strlen((char *)sec)) &&
++	      EVP_DigestFinal_ex(mdctx, hash, &len) &&
+ 	      len == 16 &&
+ 	      !memcmp(hash, rad + 4, 16));
++    EVP_MD_CTX_free(mdctx);
+     pthread_mutex_unlock(&lock);
+     return result;
+ }
+ 
+ int _createmessageauth(unsigned char *rad, unsigned char *authattrval, uint8_t *secret) {
++    int result = 0;             /* Fail. */
+     static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+-    static unsigned char first = 1;
+-    static HMAC_CTX hmacctx;
++    HMAC_CTX *hmacctx = NULL;
+     unsigned int md_len;
+ 
+     if (!authattrval)
+ 	return 1;
+ 
+     pthread_mutex_lock(&lock);
+-    if (first) {
+-	HMAC_CTX_init(&hmacctx);
+-	first = 0;
+-    }
++    hmacctx = HMAC_CTX_new();
++    if (!hmacctx)
++	debugx(1, DBG_ERR, "%s: malloc failed", __func__);
+ 
+     memset(authattrval, 0, 16);
+     md_len = 0;
+-    HMAC_Init_ex(&hmacctx, secret, strlen((char *)secret), EVP_md5(), NULL);
+-    HMAC_Update(&hmacctx, rad, RADLEN(rad));
+-    HMAC_Final(&hmacctx, authattrval, &md_len);
++    HMAC_Init_ex(hmacctx, secret, strlen((char *)secret), EVP_md5(), NULL);
++    HMAC_Update(hmacctx, rad, RADLEN(rad));
++    HMAC_Final(hmacctx, authattrval, &md_len);
+     if (md_len != 16) {
+ 	debug(DBG_WARN, "message auth computation failed");
+-	pthread_mutex_unlock(&lock);
+-	return 0;
++	goto out;
+     }
++    result = 1;
++out:
++    HMAC_CTX_free(hmacctx);
+     pthread_mutex_unlock(&lock);
+-    return 1;
++    return result;
+ }
+ 
+ int _radsign(unsigned char *rad, unsigned char *sec) {
+     static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+-    static unsigned char first = 1;
+-    static EVP_MD_CTX mdctx;
++    EVP_MD_CTX *mdctx = NULL;
+     unsigned int md_len;
+     int result;
+ 
+     pthread_mutex_lock(&lock);
+-    if (first) {
+-	EVP_MD_CTX_init(&mdctx);
+-	first = 0;
+-    }
+-
+-    result = (EVP_DigestInit_ex(&mdctx, EVP_md5(), NULL) &&
+-	      EVP_DigestUpdate(&mdctx, rad, RADLEN(rad)) &&
+-	      EVP_DigestUpdate(&mdctx, sec, strlen((char *)sec)) &&
+-	      EVP_DigestFinal_ex(&mdctx, rad + 4, &md_len) &&
++    mdctx = EVP_MD_CTX_new();
++    if (!mdctx)
++	debugx(1, DBG_ERR, "%s: malloc failed", __func__);
++
++    result = (EVP_DigestInit_ex(mdctx, EVP_md5(), NULL) &&
++	      EVP_DigestUpdate(mdctx, rad, RADLEN(rad)) &&
++	      EVP_DigestUpdate(mdctx, sec, strlen((char *)sec)) &&
++	      EVP_DigestFinal_ex(mdctx, rad + 4, &md_len) &&
+ 	      md_len == 16);
++    EVP_MD_CTX_free(mdctx);
+     pthread_mutex_unlock(&lock);
+     return result;
+ }
+--- a/radsecproxy.c
++++ b/radsecproxy.c
+@@ -572,29 +572,27 @@ void sendreply(struct request *rq) {
+     pthread_mutex_unlock(&to->replyq->mutex);
+ }
+ 
+-int pwdcrypt(char encrypt_flag, uint8_t *in, uint8_t len, char *shared, uint8_t sharedlen, uint8_t *auth) {
++static int pwdcrypt(char encrypt_flag, uint8_t *in, uint8_t len, char *shared, uint8_t sharedlen, uint8_t *auth) {
++    int result = 0;             /* Fail. */
+     static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+-    static unsigned char first = 1;
+-    static EVP_MD_CTX mdctx;
++    EVP_MD_CTX *mdctx = NULL;
+     unsigned char hash[EVP_MAX_MD_SIZE], *input;
+     unsigned int md_len;
+     uint8_t i, offset = 0, out[128];
+ 
+     pthread_mutex_lock(&lock);
+-    if (first) {
+-	EVP_MD_CTX_init(&mdctx);
+-	first = 0;
+-    }
++    mdctx = EVP_MD_CTX_new();
++    if (!mdctx)
++	debugx(1, DBG_ERR, "%s: malloc failed", __func__);
+ 
+     input = auth;
+     for (;;) {
+-	if (!EVP_DigestInit_ex(&mdctx, EVP_md5(), NULL) ||
+-	    !EVP_DigestUpdate(&mdctx, (uint8_t *)shared, sharedlen) ||
+-	    !EVP_DigestUpdate(&mdctx, input, 16) ||
+-	    !EVP_DigestFinal_ex(&mdctx, hash, &md_len) ||
++	if (!EVP_DigestInit_ex(mdctx, EVP_md5(), NULL) ||
++	    !EVP_DigestUpdate(mdctx, (uint8_t *)shared, sharedlen) ||
++	    !EVP_DigestUpdate(mdctx, input, 16) ||
++	    !EVP_DigestFinal_ex(mdctx, hash, &md_len) ||
+ 	    md_len != 16) {
+-	    pthread_mutex_unlock(&lock);
+-	    return 0;
++	    goto out;
+ 	}
+ 	for (i = 0; i < 16; i++)
+ 	    out[offset + i] = hash[i] ^ in[offset + i];
+@@ -607,23 +605,25 @@ int pwdcrypt(char encrypt_flag, uint8_t
+ 	    break;
+     }
+     memcpy(in, out, len);
++    result = 1;
++out:
++    EVP_MD_CTX_free(mdctx);
+     pthread_mutex_unlock(&lock);
+-    return 1;
++    return result;
+ }
+ 
+-int msmppencrypt(uint8_t *text, uint8_t len, uint8_t *shared, uint8_t sharedlen, uint8_t *auth, uint8_t *salt) {
++static int msmppencrypt(uint8_t *text, uint8_t len, uint8_t *shared, uint8_t sharedlen, uint8_t *auth, uint8_t *salt) {
++    int result = 0;             /* Fail. */
+     static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+-    static unsigned char first = 1;
+-    static EVP_MD_CTX mdctx;
++    EVP_MD_CTX *mdctx = NULL;
+     unsigned char hash[EVP_MAX_MD_SIZE];
+     unsigned int md_len;
+     uint8_t i, offset;
+ 
+     pthread_mutex_lock(&lock);
+-    if (first) {
+-	EVP_MD_CTX_init(&mdctx);
+-	first = 0;
+-    }
++    mdctx = EVP_MD_CTX_new();
++    if (!mdctx)
++	debugx(1, DBG_ERR, "%s: malloc failed", __func__);
+ 
+ #if 0
+     printfchars(NULL, "msppencrypt auth in", "%02x ", auth, 16);
+@@ -631,13 +631,12 @@ int msmppencrypt(uint8_t *text, uint8_t
+     printfchars(NULL, "msppencrypt in", "%02x ", text, len);
+ #endif
+ 
+-    if (!EVP_DigestInit_ex(&mdctx, EVP_md5(), NULL) ||
+-	!EVP_DigestUpdate(&mdctx, shared, sharedlen) ||
+-	!EVP_DigestUpdate(&mdctx, auth, 16) ||
+-	!EVP_DigestUpdate(&mdctx, salt, 2) ||
+-	!EVP_DigestFinal_ex(&mdctx, hash, &md_len)) {
+-	pthread_mutex_unlock(&lock);
+-	return 0;
++    if (!EVP_DigestInit_ex(mdctx, EVP_md5(), NULL) ||
++	!EVP_DigestUpdate(mdctx, shared, sharedlen) ||
++	!EVP_DigestUpdate(mdctx, auth, 16) ||
++	!EVP_DigestUpdate(mdctx, salt, 2) ||
++	!EVP_DigestFinal_ex(mdctx, hash, &md_len)) {
++	goto out;
+     }
+ 
+ #if 0
+@@ -652,13 +651,12 @@ int msmppencrypt(uint8_t *text, uint8_t
+ 	printf("text + offset - 16 c(%d): ", offset / 16);
+ 	printfchars(NULL, NULL, "%02x ", text + offset - 16, 16);
+ #endif
+-	if (!EVP_DigestInit_ex(&mdctx, EVP_md5(), NULL) ||
+-	    !EVP_DigestUpdate(&mdctx, shared, sharedlen) ||
+-	    !EVP_DigestUpdate(&mdctx, text + offset - 16, 16) ||
+-	    !EVP_DigestFinal_ex(&mdctx, hash, &md_len) ||
++	if (!EVP_DigestInit_ex(mdctx, EVP_md5(), NULL) ||
++	    !EVP_DigestUpdate(mdctx, shared, sharedlen) ||
++	    !EVP_DigestUpdate(mdctx, text + offset - 16, 16) ||
++	    !EVP_DigestFinal_ex(mdctx, hash, &md_len) ||
+ 	    md_len != 16) {
+-	    pthread_mutex_unlock(&lock);
+-	    return 0;
++	    goto out;
+ 	}
+ #if 0
+ 	printfchars(NULL, "msppencrypt hash", "%02x ", hash, 16);
+@@ -667,29 +665,31 @@ int msmppencrypt(uint8_t *text, uint8_t
+ 	for (i = 0; i < 16; i++)
+ 	    text[offset + i] ^= hash[i];
+     }
++    result = 1;
+ 
+ #if 0
+     printfchars(NULL, "msppencrypt out", "%02x ", text, len);
+ #endif
+ 
++out:
++    EVP_MD_CTX_free(mdctx);
+     pthread_mutex_unlock(&lock);
+-    return 1;
++    return result;
+ }
+ 
+-int msmppdecrypt(uint8_t *text, uint8_t len, uint8_t *shared, uint8_t sharedlen, uint8_t *auth, uint8_t *salt) {
++static int msmppdecrypt(uint8_t *text, uint8_t len, uint8_t *shared, uint8_t sharedlen, uint8_t *auth, uint8_t *salt) {
++    int result = 0;             /* Fail. */
+     static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+-    static unsigned char first = 1;
+-    static EVP_MD_CTX mdctx;
++    EVP_MD_CTX *mdctx = NULL;
+     unsigned char hash[EVP_MAX_MD_SIZE];
+     unsigned int md_len;
+     uint8_t i, offset;
+     char plain[255];
+ 
+     pthread_mutex_lock(&lock);
+-    if (first) {
+-	EVP_MD_CTX_init(&mdctx);
+-	first = 0;
+-    }
++    mdctx= EVP_MD_CTX_new();
++    if (!mdctx)
++	debugx(1, DBG_ERR, "%s: malloc failed", __func__);
+ 
+ #if 0
+     printfchars(NULL, "msppdecrypt auth in", "%02x ", auth, 16);
+@@ -697,13 +697,12 @@ int msmppdecrypt(uint8_t *text, uint8_t
+     printfchars(NULL, "msppdecrypt in", "%02x ", text, len);
+ #endif
+ 
+-    if (!EVP_DigestInit_ex(&mdctx, EVP_md5(), NULL) ||
+-	!EVP_DigestUpdate(&mdctx, shared, sharedlen) ||
+-	!EVP_DigestUpdate(&mdctx, auth, 16) ||
+-	!EVP_DigestUpdate(&mdctx, salt, 2) ||
+-	!EVP_DigestFinal_ex(&mdctx, hash, &md_len)) {
+-	pthread_mutex_unlock(&lock);
+-	return 0;
++    if (!EVP_DigestInit_ex(mdctx, EVP_md5(), NULL) ||
++	!EVP_DigestUpdate(mdctx, shared, sharedlen) ||
++	!EVP_DigestUpdate(mdctx, auth, 16) ||
++	!EVP_DigestUpdate(mdctx, salt, 2) ||
++	!EVP_DigestFinal_ex(mdctx, hash, &md_len)) {
++	goto out;
+     }
+ 
+ #if 0
+@@ -718,13 +717,12 @@ int msmppdecrypt(uint8_t *text, uint8_t
+ 	printf("text + offset - 16 c(%d): ", offset / 16);
+ 	printfchars(NULL, NULL, "%02x ", text + offset - 16, 16);
+ #endif
+-	if (!EVP_DigestInit_ex(&mdctx, EVP_md5(), NULL) ||
+-	    !EVP_DigestUpdate(&mdctx, shared, sharedlen) ||
+-	    !EVP_DigestUpdate(&mdctx, text + offset - 16, 16) ||
+-	    !EVP_DigestFinal_ex(&mdctx, hash, &md_len) ||
++	if (!EVP_DigestInit_ex(mdctx, EVP_md5(), NULL) ||
++	    !EVP_DigestUpdate(mdctx, shared, sharedlen) ||
++	    !EVP_DigestUpdate(mdctx, text + offset - 16, 16) ||
++	    !EVP_DigestFinal_ex(mdctx, hash, &md_len) ||
+ 	    md_len != 16) {
+-	    pthread_mutex_unlock(&lock);
+-	    return 0;
++	    goto out;
+ 	}
+ #if 0
+ 	printfchars(NULL, "msppdecrypt hash", "%02x ", hash, 16);
+@@ -735,12 +733,15 @@ int msmppdecrypt(uint8_t *text, uint8_t
+     }
+ 
+     memcpy(text, plain, len);
++    result = 1;
+ #if 0
+     printfchars(NULL, "msppdecrypt out", "%02x ", text, len);
+ #endif
+ 
++out:
++    EVP_MD_CTX_free(mdctx);
+     pthread_mutex_unlock(&lock);
+-    return 1;
++    return result;
+ }
+ 
+ struct realm *newrealmref(struct realm *r) {
+@@ -1997,7 +1998,10 @@ errexit:
+ 	    freeclsrvconf(conf);
+     }
+     freeserver(server, 1);
+-    ERR_remove_state(0);
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
++    ERR_remove_thread_state(NULL);
++#endif
++
+     return NULL;
+ }
+ 
+--- a/tls.c
++++ b/tls.c
+@@ -295,7 +295,9 @@ void *tlsclientrd(void *arg) {
+ 	}
+     }
+     debug(DBG_INFO, "tlsclientrd: exiting for %s", server->conf->name);
+-    ERR_remove_state(0);
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
++    ERR_remove_thread_state(NULL);
++#endif
+     SSL_shutdown(server->ssl);
+     shutdown(server->sock, SHUT_RDWR);
+     close(server->sock);
+@@ -329,7 +331,9 @@ void *tlsserverwr(void *arg) {
+ 		/* ssl might have changed while waiting */
+ 		pthread_mutex_unlock(&replyq->mutex);
+ 		debug(DBG_DBG, "tlsserverwr: exiting as requested");
+-		ERR_remove_state(0);
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
++		ERR_remove_thread_state(NULL);
++#endif
+ 		pthread_exit(NULL);
+ 	    }
+ 	}
+@@ -455,7 +459,9 @@ exit:
+ 	SSL_shutdown(ssl);
+ 	SSL_free(ssl);
+     }
+-    ERR_remove_state(0);
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
++    ERR_remove_thread_state(NULL);
++#endif
+     shutdown(s, SHUT_RDWR);
+     close(s);
+     pthread_exit(NULL);
+--- a/tlscommon.c
++++ b/tlscommon.c
+@@ -375,7 +375,7 @@ static int subjectaltnameaddr(X509 *cert
+ 	if (gn->type != GEN_IPADD)
+ 	    continue;
+ 	r = -1;
+-	v = (char *)ASN1_STRING_data(gn->d.ia5);
++	v = (char *)ASN1_STRING_get0_data(gn->d.ia5);
+ 	l = ASN1_STRING_length(gn->d.ia5);
+ 	if (((family == AF_INET && l == sizeof(struct in_addr)) || (family == AF_INET6 && l == sizeof(struct in6_addr)))
+ 	    && !memcmp(v, &addr, l)) {
+@@ -411,7 +411,7 @@ static int subjectaltnameregexp(X509 *ce
+ 	if (gn->type != type)
+ 	    continue;
+ 	r = -1;
+-	v = (char *)ASN1_STRING_data(gn->d.ia5);
++	v = (char *)ASN1_STRING_get0_data(gn->d.ia5);
+ 	l = ASN1_STRING_length(gn->d.ia5);
+ 	if (l <= 0)
+ 	    continue;
+@@ -455,7 +455,7 @@ static int cnregexp(X509 *cert, char *ex
+ 	    break;
+ 	e = X509_NAME_get_entry(nm, loc);
+ 	t = X509_NAME_ENTRY_get_data(e);
+-	v = (char *) ASN1_STRING_data(t);
++	v = (char *) ASN1_STRING_get0_data(t);
+ 	l = ASN1_STRING_length(t);
+ 	if (l < 0)
+ 	    continue;
