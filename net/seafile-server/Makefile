@@ -8,16 +8,16 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=seafile-server
-PKG_VERSION:=6.2.5
+PKG_VERSION:=6.3.0
 PKG_RELEASE=$(PKG_SOURCE_VERSION)-1
 PKG_LICENSE:=GPL-3.0
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/haiwen/seafile-server.git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=cdb6d2ae46a5d2d2607e26bc152bbd8f18175ebf
+PKG_SOURCE_VERSION:=a8c66e1bc6f6245e48917f39a24167d22a95dbd6
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
-#PKG_MIRROR_HASH:=99aa9c41641d7c0ffe18bbab75418b1347dd9e156124472bbee5a6dda09a8057
+PKG_MIRROR_HASH:=d63667f8cddcac645fb0d350c71e2a32d0c44f47df46a3a013d2dbecb3574d9a
 PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
 
@@ -34,7 +34,7 @@ define Package/seafile-server
     DEPENDS:=+libarchive +libopenssl +glib2 +libsearpc +seafile-ccnet +seafile-seahub +sqlite3-cli +python-mysql +python-urllib3 \
 		+jansson +libevent2 +libevent2-openssl +zlib +libzdb +libsqlite3 +libmysqlclient \
 		+libpthread +libuuid +bash +procps-ng +procps-ng-pkill +SEAFILE_FUSE_SUPPORT:libfuse $(ICONV_DEPENDS)
-    EXTRA_DEPENDS:=seafile-ccnet (=6.2.5-ec994baa868780fd22f82d0f8832f445364541da-1), seafile-seahub (=6.2.5-dcdb37a8fb5b8a8b0899e94ffab43ea2f08f7bec-1)
+    EXTRA_DEPENDS:=seafile-ccnet (=6.3.0-614926b161623b267b4fb77fa1861718da406103-1), seafile-seahub (=6.3.0-d1ab146a936a6ea1e1581bf3f194e86742f0d3cd-1)
     MENU:=1
 endef
 
