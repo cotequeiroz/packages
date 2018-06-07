@@ -13,7 +13,7 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_URL:=http://patches.freeiz.com/alpine/release/src/
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_HASH:=6030b6881b8168546756ab3a5e43628d8d564539b0476578e287775573a77438
+PKG_HASH:=5af5d14522b22def5107d2fd6e9a07114eb3aceb20ba4ccf7c3d2609a347c259
 
 PKG_MAINTAINER:=Antti Seppälä <a.seppala@gmail.com>
 PKG_LICENSE:=Apache-2.0
@@ -85,7 +85,7 @@ ifeq ($(BUILD_VARIANT),ssl)
 	CONFIGURE_ARGS += \
 		--with-ssl-include-dir=$(STAGING_DIR)/usr/include/openssl/. \
 		--with-ssl-lib-dir=$(STAGING_DIR)/usr/lib
-	TARGET_CFLAGS += -DOPENSSL_1_1_0 -DOPENSSL_API_COMPAT=0x10100000L
+	TARGET_CFLAGS += -DOPENSSL_1_1_0
 endif
 
 ifeq ($(BUILD_VARIANT),nossl)
