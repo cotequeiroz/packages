@@ -1,6 +1,17 @@
+From 960df6d7a11eef90128dc2ae660866b27f0e4336 Mon Sep 17 00:00:00 2001
+From: muquit <muquit@gmail.com>
+Date: Wed, 21 Sep 2016 12:46:24 -0400
+Subject: [PATCH] OpenSSL 1.1 support for HMAC api
+
+---
+ utils.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/utils.c b/utils.c
+index b072138..abfb86e 100755
 --- a/utils.c
 +++ b/utils.c
-@@ -791,8 +791,14 @@ char *encode_cram_md5(char *challenge,ch
+@@ -791,8 +791,14 @@ char *encode_cram_md5(char *challenge,char *user,char *secret)
      unsigned char
          hmac_md5[16];
  
@@ -15,7 +26,7 @@
  
      const EVP_MD
          *md5=NULL;
-@@ -831,11 +837,20 @@ char *encode_cram_md5(char *challenge,ch
+@@ -831,11 +837,20 @@ char *encode_cram_md5(char *challenge,char *user,char *secret)
      showVerbose("Challenge After decoding: %s\n",data);
  
      /* take HMAC-MD5 of the challenge*/
