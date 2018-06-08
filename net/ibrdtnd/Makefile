@@ -17,6 +17,7 @@ PKG_HASH:=9bd79636154093ab6bf4fd10d6c62d67c6db45141460847b19def327c93771ed
 PKG_MAINTAINER:=Johannes Morgenroth <jm@m-network.de>
 PKG_LICENSE:=Apache-2.0
 
+PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
