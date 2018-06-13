@@ -4,7 +4,7 @@
  #include <linux/if_ether.h>
  #endif
  
-+#if !defined(__GLIBC__) && defined(__MIPS__)
++#ifndef __GLIBC__
  #include <netinet/in.h>
 +#endif
  
