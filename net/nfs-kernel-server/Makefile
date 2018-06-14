@@ -19,6 +19,7 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/nfs-utils-$(PKG_VERSION)
 PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
 PKG_BUILD_DEPENDS:=$(PKG_NAME)/host
+HOST_BUILD_DEPENDS:=libtirpc/host
 
 include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
@@ -104,8 +105,9 @@ HOST_CONFIGURE_ARGS += \
 	--disable-nfsv4 \
 	--disable-nfsv41 \
 	--disable-ipv6 \
-	--disable-tirpc \
 	--without-tcp-wrappers
+
+EXTRA_CFLAGS += -Wno-error=format-security
 
 HOST_CONFIGURE_VARS += \
 	ac_cv_lib_event_event_dispatch=yes \
