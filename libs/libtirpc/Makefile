@@ -22,6 +22,7 @@ PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/host-build.mk
 
 define Package/libtirpc
   SECTION:=libs
@@ -68,3 +69,4 @@ define Package/libtirpc/conffiles
 endef
 
 $(eval $(call BuildPackage,libtirpc))
+$(eval $(call HostBuild))
