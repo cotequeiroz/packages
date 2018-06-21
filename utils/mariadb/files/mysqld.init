@@ -1,38 +1,32 @@
 #!/bin/sh /etc/rc.common
-# Copyright (C) 2010-2018 OpenWrt.org
+# Copyright (C) 2010-2011 OpenWrt.org
 
 START=95
 STOP=10
 
-USE_PROCD=1
+SERVICE_DAEMONIZE=1
+SERVICE_WRITE_PID=1
+SERVICE_STOP_TIME=9
+PROG='/usr/bin/mysqld'
 
-#PROCD_DEBUG=1
-
-LOGGER="/usr/bin/logger -p user.err -s -t MariaDB"
-PROG=/usr/bin/mysqld
-
-start_service() {
+start() {
 	local conf='/etc/mysql/my.cnf'
 	local datadir="$( sed -nE "s/^\s*datadir\s*=\s*('([^']*)'|\x22([^\x22]*)\x22|(.*\S))\s*$/\2\3\4/p" "$conf" )"
 
 	[ -d "$datadir" ] || {
-		$LOGGER "datadir '$datadir' in '$conf' does not exist"
+		logger -s "[ERROR] datadir '$datadir' in '$conf' does not exist"
 		return 1
 	}
 
 	[ -f "$datadir/mysql/tables_priv.MYD" ] || {
-		$LOGGER "cannot detect privileges table, you might need to"
-		$LOGGER "run 'mysql_install_db --force' to initialize the system tables"
+		logger -s "[ERROR] can not detect privileges table, you might need to"
+		logger -s "run 'mysql_install_db --force' to initialize the system tables"
 		return 1
 	}
 
-	procd_open_instance
+	service_start "$PROG"
+}
 
-	procd_set_param command $PROG
-	procd_set_param pidfile /var/run/mysqld.pid
-	# forward stderr to logd
-	procd_set_param stderr 1
-	procd_set_param user mariadb
-
-	procd_close_instance
+stop() {
+	service_stop "$PROG"
 }

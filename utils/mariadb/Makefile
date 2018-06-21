@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mariadb
-PKG_VERSION:=10.2.15
+PKG_VERSION:=10.1.33
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -18,10 +18,10 @@ PKG_SOURCE_URL := \
 	https://ftp.yz.yamagata-u.ac.jp/pub/dbms/mariadb/$(PKG_NAME)-$(PKG_VERSION)/source \
 	https://downloads.mariadb.org/interstitial/$(PKG_NAME)-$(PKG_VERSION)/source
 
-PKG_HASH:=33de205158fc22fd8eb4e5770cc5ffa1cb4029f9c398dfd8c554ccb3e636ba11
+PKG_HASH:=94312c519f2c0c25e1964c64e22aff0036fb22dfb2685638f43a6b2211395d2d
 PKG_MAINTAINER:=Sebastian Kemper <sebastian_ml@gmx.net>
-PKG_LICENSE:=GPL-2.0 LGPL-2.1
-PKG_LICENSE_FILES:=COPYING libmariadb/COPYING.LIB
+PKG_LICENSE:=GPL-2.0
+PKG_LICENSE_FILES:=COPYING
 
 HOST_BUILD_PARALLEL:=1
 PKG_BUILD_PARALLEL:=1
@@ -60,8 +60,7 @@ MARIADB_SERVER_PLUGINS := \
 	ha_example \
 	ha_federated \
 	ha_federatedx \
-	ha_sequence \
-	ha_sphinx \
+	ha_innodb \
 	ha_spider \
 	ha_test_sql_discovery \
 	handlersocket \
@@ -103,8 +102,7 @@ plugin-ha_connect               := PLUGIN_CONNECT
 plugin-ha_example               := PLUGIN_EXAMPLE
 plugin-ha_federated             := PLUGIN_FEDERATED
 plugin-ha_federatedx            := PLUGIN_FEDERATEDX
-plugin-ha_sequence              := PLUGIN_SEQUENCE
-plugin-ha_sphinx                := PLUGIN_SPHINX
+plugin-ha_innodb                := PLUGIN_INNOBASE
 plugin-ha_spider                := PLUGIN_SPIDER
 plugin-ha_test_sql_discovery    := PLUGIN_TEST_SQL_DISCOVERY
 plugin-handlersocket            := PLUGIN_HANDLERSOCKET
@@ -185,16 +183,16 @@ database query language in the world. The main goals of MariaDB are
 speed, robustness and ease of use.
 endef
 
-define Package/libmariadb
+define Package/libmariadbclient
   SECTION:=libs
   CATEGORY:=Libraries
   DEPENDS:=$(MARIADB_COMMON_DEPENDS)
   TITLE:=MariaDB database client library
   URL:=https://mariadb.org/
-  PROVIDES:=libmariadbclient libmysqlclient libmysqlclient-r
+  PROVIDES:=libmysqlclient libmysqlclient-r
 endef
 
-define Package/libmariadb/description
+define Package/libmariadbclient/description
 $(call Package/mariadb/description/Default)
 
 This package includes the client library.
@@ -249,6 +247,7 @@ endef
 define Package/mariadb-extra-charsets/description
 $(call Package/mariadb/description/Default)
 
+The MariaDB server packaged by OpenWrt only provides support for UTF-8.
 This package contains single Byte character sets and collations that can
 be added at run time.
 
@@ -265,7 +264,6 @@ define Package/mariadb-server
   TITLE:=MariaDB database core server binaries
   MENU:=1
   PROVIDES:=mysql-server
-  USERID:=mariadb=376:mariadb=376
 endef
 
 define Package/mariadb-server/description
@@ -342,14 +340,13 @@ CMAKE_OPTIONS += \
 	-DINSTALL_SCRIPTDIR=bin \
 	-DINSTALL_SQLBENCHDIR="" \
 	-DINSTALL_SUPPORTFILESDIR=share/mysql \
-	-DINSTALL_UNIX_ADDRDIR=/var/run/mysqld.sock \
-	-DMYSQLD_USER=mariadb \
+	-DMYSQLD_USER=root \
 	-DMYSQL_DATADIR=/var/lib/mysql \
 	-DMYSQL_UNIX_ADDR=/var/run/mysqld.sock \
 	-DSKIP_TESTS=ON \
 	-DWITH_ASAN=OFF \
 	-DWITH_EMBEDDED_SERVER=OFF \
-	-DWITH_EXTRA_CHARSETS=complex \
+	-DWITH_EXTRA_CHARSETS=none \
 	-DWITH_INNODB_BZIP2=OFF \
 	-DWITH_INNODB_LZ4=OFF \
 	-DWITH_INNODB_LZMA=ON \
@@ -374,6 +371,7 @@ CMAKE_OPTIONS += \
 	-DPLUGIN_MROONGA=NO \
 	-DPLUGIN_OQGRAPH=NO \
 	-DPLUGIN_ROCKSDB=NO \
+	-DPLUGIN_SPHINX=NO \
 	-DPLUGIN_TOKUDB=NO \
 	-DPLUGIN_AUTH_PAM=NO \
 	-DPLUGIN_AUTH_GSSAPI=NO \
@@ -427,15 +425,15 @@ define Build/InstallDev
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/mysql_config $(1)/usr/bin
 	$(LN) $(STAGING_DIR)/usr/bin/mysql_config $(2)/bin
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/mysql $(1)/usr/include
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{mariadb,mysqlclient}*.so* $(1)/usr/lib
-	cd $(1)/usr/lib/mysql; $(LN) ../lib{mariadb,mysqlclient}*.so* .
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libmysqlclient*.so* $(1)/usr/lib
+	cd $(1)/usr/lib/mysql; $(LN) ../libmysqlclient*.so* .
 	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/share/pkgconfig/mariadb.pc $(1)/usr/lib/pkgconfig
 	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/share/aclocal/mysql.m4 $(1)/usr/share/aclocal
 endef
 
-define Package/libmariadb/install
+define Package/libmariadbclient/install
 	$(INSTALL_DIR) $(1)$(PLUGIN_DIR)
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{mariadb,mysqlclient}*.so* $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libmysqlclient*.so* $(1)/usr/lib
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)$(PLUGIN_DIR)/dialog.so $(1)$(PLUGIN_DIR)
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)$(PLUGIN_DIR)/mysql_clear_password.so $(1)$(PLUGIN_DIR)
 endef
@@ -443,10 +441,6 @@ endef
 define Package/mariadb-client/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(foreach b,$(MARIADB_CLIENT),$(call Package/mariadb/install/bin,$(1),$(b));)
-	# Install convenience links for mysqlcheck multi-call binary
-	cd $(1)/usr/bin; $(LN) mysqlcheck mysqlanalyze
-	cd $(1)/usr/bin; $(LN) mysqlcheck mysqlrepair
-	cd $(1)/usr/bin; $(LN) mysqlcheck mysqloptimize
 endef
 
 define Package/mariadb-client-extra/install
@@ -484,7 +478,7 @@ endef
 
 define Package/mariadb-server/conffiles
 /etc/mysql/my.cnf
-$(PLUGIN_DIR)/daemon_example.ini
+/usr/lib/mysql/plugin/daemon_example.ini
 endef
 
 define BuildPlugin
@@ -509,7 +503,7 @@ This package provides the $(1) plugin.
 endef
 
 $(eval $(call HostBuild))
-$(eval $(call BuildPackage,libmariadb))
+$(eval $(call BuildPackage,libmariadbclient))
 $(eval $(call BuildPackage,mariadb-client))
 $(eval $(call BuildPackage,mariadb-client-extra))
 $(eval $(call BuildPackage,mariadb-extra-charsets))
@@ -531,11 +525,9 @@ $(eval $(call BuildPlugin,file_key_management,))
 $(eval $(call BuildPlugin,ha_archive,))
 $(eval $(call BuildPlugin,ha_blackhole,))
 $(eval $(call BuildPlugin,ha_connect,+libxml2))
-$(eval $(call BuildPlugin,ha_example,))
 $(eval $(call BuildPlugin,ha_federated,))
 $(eval $(call BuildPlugin,ha_federatedx,))
-$(eval $(call BuildPlugin,ha_sequence,))
-$(eval $(call BuildPlugin,ha_sphinx,))
+$(eval $(call BuildPlugin,ha_innodb,))
 $(eval $(call BuildPlugin,ha_spider,))
 $(eval $(call BuildPlugin,ha_test_sql_discovery,))
 $(eval $(call BuildPlugin,handlersocket,))
