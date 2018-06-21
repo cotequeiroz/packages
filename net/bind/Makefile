@@ -123,6 +123,7 @@ CONFIGURE_ARGS += \
 	--enable-ipv6=$(if $(CONFIG_IPV6),yes,no) \
 	--with-randomdev="/dev/urandom" \
 	--disable-threads \
+	--disable-atomic \
 	--disable-linux-caps \
 	--with-openssl="$(STAGING_DIR)/usr" \
 	--with-libtool \
