@@ -98,6 +98,8 @@ define Package/libopensc-profile-$(subst _,-,$(firstword $(subst :, ,$(1))))
 endef
 endef
 
+CONFIGURE_VARS+= GIO2_CFLAGS='--dont-want-gio2'
+
 TOOLS:= \
 	cardos-tool \
 	cryptoflex-tool \
