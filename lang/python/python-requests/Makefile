@@ -27,7 +27,7 @@ define Package/python-requests
   MAINTAINER:=Eneas U de Queiroz <cote2004-github@yahoo.com>
   TITLE:=HTTP library for Python
   URL:=http://python-requests.org/
-  DEPENDS:=+python +chardet +python-idna +python-urllib3 +pytohon-certifi
+  DEPENDS:=+python +chardet +python-idna +python-urllib3 +python-certifi
 endef
 
 define Package/python-requests/description
