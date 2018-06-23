@@ -15,6 +15,7 @@ PKG_LICENSE:=MIT
 PKG_SOURCE:=PyJWT-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/00/5e/b358c9bb24421e6155799d995b4aa3aa3307ffc7ecae4ad9d29fd7e07a73
 PKG_HASH:=4ee413b357d53fd3fb44704577afac88e72e878716116270d722723d65b42176
+PKG_BUILD_DIR:=$(BUILD_DIR)/PyJWT-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
