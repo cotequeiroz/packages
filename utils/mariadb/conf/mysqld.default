@@ -1,0 +1,6 @@
+# The user and group that will run the MySQL server. The user mariadb is
+# automatically created by the mariadb-server package, hence that is the
+# default choice.
+
+#MY_USER=mariadb
+#MY_GROUP=mariadb
