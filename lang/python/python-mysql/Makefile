@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2007-2014 OpenWrt.org
+# Copyright (C) 2007-2018 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -7,14 +7,14 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=MySQL-python
-PKG_VERSION:=1.2.5
+PKG_NAME:=mysqlclient
+PKG_VERSION:=1.3.12
 PKG_RELEASE:=1
 PKG_LICENSE:=GPL-2.0
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).zip
-PKG_SOURCE_URL:=https://pypi.python.org/packages/source/M/MySQL-python/
-PKG_HASH:=811040b647e5d5686f84db415efd697e6250008b112b6909ba77ac059e140c74
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/m/$(PKG_NAME)
+PKG_HASH:=2d9ec33de39f4d9c64ad7322ede0521d85829ce36a76f9dd3d6ab76a9c8648e5
 
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
@@ -24,7 +24,7 @@ define Package/python-mysql
   SECTION:=lang
   CATEGORY:=Languages
   TITLE:=MySQL database adapter for Python
-  URL:=https://pypi.python.org/pypi/MySQL-python
+  URL:=https://pypi.python.org/project/mysqlclient
   MAINTAINER:=Gergely Kiss <mail.gery@gmail.com>
   DEPENDS:=+python +libmysqlclient
 endef
