@@ -1,0 +1,12 @@
+--- a/src/ls_mysql.c
++++ b/src/ls_mysql.c
+@@ -17,6 +17,9 @@
+ #endif
+ 
+ #include "mysql.h"
++#ifndef MYSQL_SERVER_VERSION
++#include "server/mysql_version.h"
++#endif
+ 
+ #include "lua.h"
+ #include "lauxlib.h"
