@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=usbip
-PKG_RELEASE:=9
+PKG_RELEASE:=10
 PKG_LICENSE:=GPL-2.0
 
 # Since kernel 2.6.39.1 userspace tools are inside the kernel tree
@@ -70,7 +70,9 @@ endef
 CONFIGURE_PATH:=.
 MAKE_PATH:=.
 LIBTOOL_PATHS:=.
-MAKE_FLAGS+=CFLAGS='-Wno-implicit-function-declaration -Dudev_device_get_devpath=udev_device_get_syspath'
+MAKE_FLAGS+=CFLAGS='-Dudev_device_get_devpath\(x\)=udev_device_get_syspath\(x\)+strlen\(\"/sys\"\) \
+	-DSIGCLD=SIGCHLD'
+CONFIGURE_ARGS+= --disable-silent-rules
 
 define Build/Configure
 	(cd $(PKG_BUILD_DIR); ./autogen.sh );
