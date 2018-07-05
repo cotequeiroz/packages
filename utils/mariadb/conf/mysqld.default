@@ -4,3 +4,7 @@
 
 #MY_USER=mariadb
 #MY_GROUP=mariadb
+
+# Additional arguments you want to pass to the MySQL server.
+
+#MY_ARGS=""
