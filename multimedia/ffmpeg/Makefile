@@ -341,8 +341,8 @@ endef
 define Package/libffmpeg-full
 $(call Package/libffmpeg/Default)
  TITLE+= (full)
- DEPENDS+= @BUILD_PATENTED +alsa-lib +PACKAGE_libopus:libopus \
- 	   +SOFT_FLOAT:shine +!SOFT_FLOAT:lame-lib \
+ DEPENDS+= +alsa-lib +PACKAGE_libopus:libopus \
+	   +SOFT_FLOAT:shine +!SOFT_FLOAT:lame-lib \
 	   +!SOFT_FLOAT:libx264 +!SOFT_FLOAT:fdk-aac
  VARIANT:=full
 endef
@@ -367,7 +367,7 @@ $(call Package/ffmpeg/Default/description)
  This package contains minimal-featured FFmpeg shared libraries.
 endef
 
-TARGET_CXXFLAGS += -std=gnu++11
+#TARGET_CXXFLAGS += -std=gnu++11
 
 FFMPEG_CONFIGURE:= \
 	CFLAGS="$(TARGET_CFLAGS) $(TARGET_CPPFLAGS) $(FPIC)" \
@@ -641,9 +641,11 @@ define Build/InstallDev/full
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{avcodec,avdevice,avfilter,avformat,avresample,avutil,swresample,swscale}.{a,so*} $(1)/usr/lib/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/lib{avcodec,avdevice,avfilter,avformat,avresample,avutil,swresample,swscale}.pc $(1)/usr/lib/pkgconfig/
 ifneq ($(CONFIG_PACKAGE_libx264),)
+ifeq ($(CONFIG_SOFT_FLOAT),)
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/libpostproc $(1)/usr/include/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpostproc.{a,so*} $(1)/usr/lib/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/libpostproc.pc $(1)/usr/lib/pkgconfig/
+endif
 endif
 endef
 
@@ -707,7 +709,9 @@ define Package/libffmpeg-full/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{avcodec,avdevice,avfilter,avformat,avresample,avutil,swresample,swscale}.so.* $(1)/usr/lib/
 ifneq ($(CONFIG_PACKAGE_libx264),)
+ifeq ($(CONFIG_SOFT_FLOAT),)
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpostproc.so.* $(1)/usr/lib/
+endif
 endif
 endef
 
