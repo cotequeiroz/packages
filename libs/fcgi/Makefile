@@ -8,12 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fcgi
-PKG_VERSION:=2.4.0
+PKG_VERSION:=2.4.1
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://www.fastcgi.com/dist/
-PKG_HASH:=66fc45c6b36a21bf2fbbb68e90f780cc21a9da1fffbae75e76d2b4402d3f05b9
+PKG_SOURCE:=$(PKG_NAME)2-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/FastCGI-Archives/fcgi2/tar.gz/$(PKG_VERSION)?
+PKG_HASH:=53cc36624bb92a88e3d5a3d696282e1af24b280c3f275604123d9c6d407173e2
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)2-$(PKG_VERSION)
 
 PKG_FIXUP:=libtool-ucxx
 
@@ -27,7 +28,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/fcgi/Default
   SECTION:=libs
   CATEGORY:=Libraries
-  URL:=http://www.fastcgi.com/
+  URL:=https://fastcgi-archives.github.io/
 endef
 
 define Package/fcgi
