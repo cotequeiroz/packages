@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=emailrelay
 PKG_VERSION:=2.0
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-src.tar.gz
 PKG_SOURCE_URL:=@SF/emailrelay/$(PKG_VERSION)
@@ -83,6 +83,9 @@ CONFIGURE_ARGS += \
 	--disable-mac \
 	--disable-testing \
 	--disable-windows
+
+CONFIGURE_VARS += \
+	ac_cv_search_pam_end=no
 
 ifeq ($(CONFIG_EMAILRELAY_SSL),y)
 	CONFIGURE_ARGS += \
