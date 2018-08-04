@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gnurl
 PKG_VERSION:=7.57.0
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=https://gnunet.org/sites/default/files
@@ -60,6 +60,7 @@ CONFIGURE_ARGS += \
 	--without-libssh2 \
 	--without-libmetalink \
 	--without-winidn \
+	--without-libpsl \
 	--without-librtmp \
 	--without-nghttp2 \
 	--without-nss \
