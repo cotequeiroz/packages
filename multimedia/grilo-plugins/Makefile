@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=grilo-plugins
 PKG_VERSION:=0.3.5
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_MAINTAINER:=W. Michael Petullo <mike@flyn.org>
 
@@ -80,7 +80,7 @@ endef
 $(eval $(call BuildPackage,grilo-plugins))
 
 $(eval $(call BuildPlugin,dleyna,DLNA sharing,dleyna,,30))
-$(eval $(call BuildPlugin,dmap,DAAP and DPAP sharing,daap dpap,libdmapsharing,30))
+#$(eval $(call BuildPlugin,dmap,DAAP and DPAP sharing,daap dpap,libdmapsharing,30))
 $(eval $(call BuildPlugin,gravatar,Gravatar provider,gravatar,,30))
 $(eval $(call BuildPlugin,jamendo,Jamendo sharing,jamendo,,30))
 $(eval $(call BuildPlugin,magnatune,Magnatune sharing,magnatune,,30))
