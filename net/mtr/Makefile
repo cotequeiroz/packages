@@ -55,6 +55,9 @@ define Package/mtr/description
 	running statistics about each machine.
 endef
 
+CONFIGURE_VARS += \
+	ac_cv_lib_cap_cap_set_proc=no
+
 CONFIGURE_ARGS += \
 	--without-gtk \
 	$(call autoconf_bool,CONFIG_IPV6,ipv6)
