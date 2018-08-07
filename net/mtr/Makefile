@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mtr
 PKG_VERSION:=0.92
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_MAINTAINER:=Jonathan McCrohan <jmccrohan@gmail.com>
 
@@ -45,6 +45,9 @@ define Package/mtr/description
 	quality of the link to each machine. As it does this, it prints
 	running statistics about each machine.
 endef
+
+CONFIGURE_VARS += \
+	ac_cv_lib_cap_cap_set_proc=no
 
 CONFIGURE_ARGS += \
 	--without-gtk \
