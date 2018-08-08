@@ -10,14 +10,14 @@ include $(TOPDIR)/rules.mk
 PKG_NPM_NAME:=serialport
 PKG_NAME:=node-$(PKG_NPM_NAME)
 PKG_VERSION:=6.1.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NPM_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=http://registry.npmjs.org/$(PKG_NPM_NAME)/-/
 PKG_HASH:=b58c326d217fb0af1639e4ea834d9fca4be16934c486499e2ddac6e52b8dd560
 
 PKG_BUILD_DEPENDS:=node/host
-PKG_NODE_VERSION:=8.10.0
+PKG_NODE_VERSION:=`$(STAGING_DIR_HOSTPKG)/bin/node --version`
 
 PKG_MAINTAINER:=John Crispin <blogic@openwrt.org>
 PKG_LICENSE:=Custom
@@ -51,8 +51,8 @@ define Build/Compile
 	cd $(PKG_BUILD_DIR) ; \
 	$(MAKE_FLAGS) \
 	npm_config_arch=$(CONFIG_ARCH) \
-	npm_config_nodedir=$(BUILD_DIR)/node-v$(PKG_NODE_VERSION)/ \
-	npm_config_cache=$(BUILD_DIR)/node-v$(PKG_NODE_VERSION)/npm-cache \
+	npm_config_nodedir=$(BUILD_DIR)/node-$(PKG_NODE_VERSION)/ \
+	npm_config_cache=$(BUILD_DIR)/node-$(PKG_NODE_VERSION)/npm-cache \
 	PREFIX="$(PKG_INSTALL_DIR)/usr/" \
 	npm install --build-from-source --target_arch=$(CPU) -g \
 		`npm pack $(PKG_BUILD_DIR) | tail -n 1`
@@ -66,6 +66,10 @@ define Package/node-serialport/install
 		  $(1)/usr/lib/node/node-hid/.quilt* \
 		  $(1)/usr/lib/node/node-hid/.built* \
 		  $(1)/usr/lib/node/node-hid/.config*
+	# Strip PKG_BUILD_DIR from useless metadata inserted by npm install
+	# https://github.com/npm/npm/issues/10393
+	# https://github.com/npm/npm/issues/12110
+	find $(1)/usr/lib/node -name package.json -exec sed -i -e 's,$(PKG_BUILD_DIR),,g' {} +
 endef
 
 $(eval $(call BuildPackage,node-serialport))
