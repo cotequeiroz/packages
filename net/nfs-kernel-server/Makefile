@@ -84,8 +84,7 @@ CONFIGURE_ARGS += \
 	--disable-nfsv41 \
 	--enable-shared \
 	--disable-caps \
-	$(if $(or $(CONFIG_IPV6),$(CONFIG_NFS_KERNEL_LEGACY_PORTMAP)),--disable-ipv6) \
-	$(if $(CONFIG_NFS_KERNEL_LEGACY_PORTMAP),--disable-tirpc)
+	$(if $(CONFIG_IPV6)),--disable-ipv6)
 
 CONFIGURE_VARS += \
 	libblkid_cv_is_recent=yes \
