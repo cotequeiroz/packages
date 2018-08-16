@@ -47,6 +47,8 @@ $(call Package/python-pyodbc/Default)
   VARIANT:=python3
 endef
 
+TARGET_CFLAGS += -fpermissive
+
 define Package/python-pyodbc/description
 DB API Module for ODBC
 
