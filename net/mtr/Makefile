@@ -32,7 +32,7 @@ define Package/mtr
   CATEGORY:=Network
   DEPENDS:=+libncurses
   TITLE:=Full screen ncurses traceroute tool
-  URL:=http://www.bitwizard.nl/mtr/
+  URL:=https://www.bitwizard.nl/mtr/
 endef
 
 define Package/mtr/description
@@ -51,25 +51,17 @@ CONFIGURE_VARS += \
 
 CONFIGURE_ARGS += \
 	--without-gtk \
-	--without-glib \
 	$(call autoconf_bool,CONFIG_IPV6,ipv6)
 
 define Build/Configure
-	(cd $(PKG_BUILD_DIR); touch \
-		configure.in \
-		aclocal.m4 \
-		Makefile.in \
-		img/Makefile.in \
-		stamp-h.in \
-		config.h.in \
-		configure \
-	);
+	echo $(PKG_VERSION) > .tarball-version
 	$(call Build/Configure/Default)
 endef
 
 define Package/mtr/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/mtr $(1)/usr/sbin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/mtr-packet $(1)/usr/sbin/
 endef
 
 $(eval $(call BuildPackage,mtr))
