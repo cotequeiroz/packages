@@ -23,6 +23,12 @@ PKG_LICENSE_FILES:=LICENCE
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
 
+ifeq ($(CONFIG_OPENSSL_USE_VERSION_1_1_0)$(CONFIG_OPENSSL_USE_VERSION_1_1_1),y)
+  PATCH_DIR=./patches/openssl-1.1
+else
+  PATCH_DIR=./patches/openssl-1.0
+endif
+
 include $(INCLUDE_DIR)/package.mk
 
 define Package/openssh/Default
