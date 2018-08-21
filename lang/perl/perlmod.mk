@@ -1,7 +1,7 @@
 # This makefile simplifies perl module builds.
 #
 
-include ../perl/perlver.mk
+include $(TOPDIR)/package/feeds/packages/perl/perlver.mk
 
 ifneq ($(PKG_NAME),perl)
   PKG_VERSION:=$(PKG_VERSION)+perl$(PERL_VERSION2)
