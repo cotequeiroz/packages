@@ -49,6 +49,7 @@ CONFIGURE_ARGS += \
 	--disable-dependency-tracking \
 	--disable-static \
 	--disable-fatal-warnings \
+	--disable-libftdi \
 	--disable-unittests \
 	--without-dns-sd \
 	--with-ola-protoc-plugin=$(STAGING_DIR_HOSTPKG)/bin/ola_protoc_plugin
