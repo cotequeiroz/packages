@@ -1,6 +1,6 @@
 --- a/src/options.c
 +++ b/src/options.c
-@@ -373,7 +373,7 @@ int options_fromfd(int fd, bstring bt) {
+@@ -377,7 +377,7 @@ int options_fromfd(int fd, bstring bt) {
  
  #ifdef ENABLE_CHILLIREDIR
    for (i = 0; i < MAX_REGEX_PASS_THROUGHS; i++) {
@@ -11,12 +11,12 @@
      regfree(&_options.regex_pass_throughs[i].re_qs);
 --- a/src/main-redir.c
 +++ b/src/main-redir.c
-@@ -512,7 +512,7 @@ check_regex(regex_t *re, char *regex, ch
+@@ -510,7 +510,7 @@ check_regex(regex_t *re, char *regex, ch
  
  #if defined (__FreeBSD__) || defined (__APPLE__) || defined (__OpenBSD__) || defined (__NetBSD__)
    if (!re->re_g)
 -#else
 +#elif defined (__GLIBC__) /* add your libc test macros here, musl has none, so let's always compile it */
-   if (!re->allocated) 
+     if (!re->allocated)
  #endif
-   {
+     {
