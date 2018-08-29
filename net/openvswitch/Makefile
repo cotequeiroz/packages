@@ -43,6 +43,7 @@ CONFIGURE_VARS += \
 	ovs_cv_sphinx=no \
 	ovs_cv_python=$(PYTHON) \
 	ovs_cv_python_host=$(HOST_PYTHON_BIN) \
+	ac_cv_lib_unbound_ub_ctx_create=no \
 
 TARGET_CFLAGS += -flto -std=gnu99
 MAKE_VARS += PYTHONPATH="$(HOST_PYTHONPATH)"
