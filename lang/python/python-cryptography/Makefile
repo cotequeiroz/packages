@@ -27,6 +27,10 @@ include ../python3-package.mk
 
 PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
+define Package/python-cryptography/config
+  select OPENSSL_WITH_DEPRECATED if !OPENSSL_USE_VERSION_1_0_2
+endef
+
 define Package/python-cryptography/Default
   SECTION:=lang
   CATEGORY:=Languages
