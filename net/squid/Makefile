@@ -36,7 +36,6 @@ define Package/squid
   $(call Package/squid/Default)
   MENU:=1
   DEPENDS:=+libpthread +librt +libltdl +libstdcpp +libatomic +USE_GLIBC:libbsd
-  DEPENDS+= +@OPENSSL_WITH_DEPRECATED
   DEPENDS+= +SQUID_use-gnutls:libgnutls +!SQUID_use-gnutls:libopenssl
   DEPENDS+= +SQUID_with-libcap:libcap
   DEPENDS+= +SQUID_with-nettle:libnettle
@@ -113,7 +112,6 @@ CONFIGURE_ARGS += \
 
 CONFIGURE_VARS += \
 	ac_cv_header_linux_netfilter_ipv4_h=yes \
-	ac_cv_require_wno_deprecated_register=no \
 	ac_cv_epoll_works=yes
 
 define Build/Compile
