@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=squid
-PKG_VERSION:=4.0.24
+PKG_VERSION:=4.2
 PKG_RELEASE:=1
 
 PKG_LICENSE:=GPL-2.0
@@ -18,7 +18,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=http://www3.us.squid-cache.org/Versions/v4/ \
 	http://www2.pl.squid-cache.org/Versions/v4/ \
 	http://www.squid-cache.org/Versions/v4/
-PKG_HASH:=091da0d763307dcc0f5c784ab07ea0c5a093f6dfac60f17ff26e2a6d50f76a07
+PKG_HASH:=994807762c59991b32449caf29418fd0ec9d2329746b18eb19bd930b6806d208
 
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
