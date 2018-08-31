@@ -1,0 +1,359 @@
+From 9013e44ab688c5a775441adc722ca42a1c7961d7 Mon Sep 17 00:00:00 2001
+From: Eneas U de Queiroz <cote2004-github@yahoo.com>
+Date: Sat, 1 Sep 2018 11:33:57 -0300
+Subject: [PATCH] Allow compilation with OPENSSL_NO_DEPRECATED
+
+Updated the calls to openssl deprecated API, so that squid can be
+compiled with openssl built with the OPENSSL_NO_DEPRECATED option.
+
+Signed-off-by: Eneas U de Queiroz <cote2004-github@yahoo.com>
+---
+ acinclude/lib-checks.m4                            |  4 ++
+ src/main.cc                                        |  4 ++
+ .../cert_generators/file/certificate_db.cc         |  8 ++--
+ src/security/cert_generators/file/certificate_db.h |  5 +++
+ .../cert_generators/file/security_file_certgen.cc  |  2 +
+ src/security/forward.h                             | 19 +++++++++-
+ src/ssl/ErrorDetail.cc                             |  4 +-
+ src/ssl/gadgets.cc                                 | 28 +++++++-------
+ src/ssl/support.cc                                 | 43 ++++++++++++++++------
+ 9 files changed, 84 insertions(+), 33 deletions(-)
+
+diff --git a/acinclude/lib-checks.m4 b/acinclude/lib-checks.m4
+index b581c61c8..d58832457 100644
+--- a/acinclude/lib-checks.m4
++++ b/acinclude/lib-checks.m4
+@@ -61,6 +61,7 @@ AC_DEFUN([SQUID_CHECK_OPENSSL_TLS_METHODS],[
+ 
+ dnl Checks whether the -lcrypto library provides various OpenSSL API functions
+ AC_DEFUN([SQUID_CHECK_LIBCRYPTO_API],[
++  AH_TEMPLATE(HAVE_LIBCRYPTO_OPENSSL_LH_STRHASH, "Define to 1 if the OPENSSL_LH_strhash() OpenSSL API function exists")
+   AH_TEMPLATE(HAVE_LIBCRYPTO_EVP_PKEY_GET0_RSA, "Define to 1 if the EVP_PKEY_get0_RSA() OpenSSL API function exists")
+   AH_TEMPLATE(HAVE_LIBCRYPTO_BIO_METH_NEW, "Define to 1 if the BIO_meth_new() OpenSSL API function exists")
+   AH_TEMPLATE(HAVE_LIBCRYPTO_BIO_GET_INIT, "Define to 1 if the BIO_get_init() OpenSSL API function exists")
+@@ -75,6 +76,7 @@ AC_DEFUN([SQUID_CHECK_LIBCRYPTO_API],[
+   AH_TEMPLATE(HAVE_LIBCRYPTO_X509_GET0_SIGNATURE, "Define to 1 if the X509_get0_signature() OpenSSL API function exists")
+   SQUID_STATE_SAVE(check_openssl_libcrypto_api)
+   LIBS="$LIBS $SSLLIB"
++  AC_CHECK_LIB(crypto, OPENSSL_LH_strhash, AC_DEFINE(HAVE_LIBCRYPTO_OPENSSL_LH_STRHASH, 1))
+   AC_CHECK_LIB(crypto, EVP_PKEY_get0_RSA, AC_DEFINE(HAVE_LIBCRYPTO_EVP_PKEY_GET0_RSA, 1))
+   AC_CHECK_LIB(crypto, BIO_meth_new, AC_DEFINE(HAVE_LIBCRYPTO_BIO_METH_NEW, 1))
+   AC_CHECK_LIB(crypto, BIO_get_init, AC_DEFINE(HAVE_LIBCRYPTO_BIO_GET_INIT, 1))
+@@ -94,11 +96,13 @@ dnl Checks whether the -lssl library provides various OpenSSL API functions
+ AC_DEFUN([SQUID_CHECK_LIBSSL_API],[
+   AH_TEMPLATE(HAVE_LIBSSL_SSL_CIPHER_FIND, "Define to 1 if the SSL_CIPHER_find() OpenSSL API function exists")
+   AH_TEMPLATE(HAVE_LIBSSL_SSL_CTX_SET_TMP_RSA_CALLBACK, "Define to 1 if the SSL_CTX_set_tmp_rsa_callback() OpenSSL API function exists")
++  AH_TEMPLATE(HAVE_LIBSSL_SSL_LOAD_ERROR_STRINGS, "Define to 1 if the SSL_load_error_strings() OpenSSL API function exists")
+   AH_TEMPLATE(HAVE_LIBSSL_SSL_SESSION_GET_ID, "Define to 1 if the SSL_SESSION_get_id() OpenSSL API function exists")
+   SQUID_STATE_SAVE(check_openssl_libssl_api)
+   LIBS="$LIBS $SSLLIB"
+   AC_CHECK_LIB(ssl, SSL_CIPHER_find, AC_DEFINE(HAVE_LIBSSL_SSL_CIPHER_FIND, 1))
+   AC_CHECK_LIB(ssl, SSL_CTX_set_tmp_rsa_callback, AC_DEFINE(HAVE_LIBSSL_SSL_CTX_SET_TMP_RSA_CALLBACK, 1))
++  AC_CHECK_LIB(ssl, SSL_load_error_strings, AC_DEFINE(HAVE_LIBSSL_SSL_LOAD_ERROR_STRINGS, 1))
+   AC_CHECK_LIB(ssl, SSL_SESSION_get_id, AC_DEFINE(HAVE_LIBSSL_SSL_SESSION_GET_ID, 1))
+   SQUID_STATE_ROLLBACK(check_openssl_libssl_api)
+ ])
+diff --git a/src/main.cc b/src/main.cc
+index b018b64f8..252efcfc7 100644
+--- a/src/main.cc
++++ b/src/main.cc
+@@ -677,7 +677,11 @@ mainHandleCommandLineOption(const int optId, const char *optValue)
+         if (strlen(SQUID_BUILD_INFO))
+             printf("%s\n",SQUID_BUILD_INFO);
+ #if USE_OPENSSL
++#ifdef SSLEAY_VERSION
+         printf("\nThis binary uses %s. ", SSLeay_version(SSLEAY_VERSION));
++#else
++        printf("\nThis binary uses %s. ", OpenSSL_version(OPENSSL_VERSION));
++#endif
+         printf("For legal restrictions on distribution see https://www.openssl.org/source/license.html\n\n");
+ #endif
+         printf( "configure options: %s\n", SQUID_CONFIGURE_OPTIONS);
+diff --git a/src/security/cert_generators/file/certificate_db.cc b/src/security/cert_generators/file/certificate_db.cc
+index a3ed84dab..08339ae95 100644
+--- a/src/security/cert_generators/file/certificate_db.cc
++++ b/src/security/cert_generators/file/certificate_db.cc
+@@ -216,7 +216,7 @@ void Ssl::CertificateDb::sq_TXT_DB_delete_row(TXT_DB *db, int idx) {
+             data = lh_OPENSSL_STRING_delete(fieldIndex, rrow);
+ #else
+         if (LHASH *fieldIndex = db->index[db_indexes[i]])
+-            data = lh_delete(fieldIndex, rrow);
++            data = OPENSSL_LH_delete(fieldIndex, rrow);
+ #endif
+         if (data)
+             assert(data == rrow);
+@@ -227,7 +227,7 @@ unsigned long Ssl::CertificateDb::index_serial_hash(const char **a) {
+     const char *n = a[Ssl::CertificateDb::cnlSerial];
+     while (*n == '0')
+         ++n;
+-    return lh_strhash(n);
++    return OPENSSL_LH_strhash(n);
+ }
+ 
+ int Ssl::CertificateDb::index_serial_cmp(const char **a, const char **b) {
+@@ -238,7 +238,7 @@ int Ssl::CertificateDb::index_serial_cmp(const char **a, const char **b) {
+ }
+ 
+ unsigned long Ssl::CertificateDb::index_name_hash(const char **a) {
+-    return(lh_strhash(a[Ssl::CertificateDb::cnlKey]));
++    return(OPENSSL_LH_strhash(a[Ssl::CertificateDb::cnlKey]));
+ }
+ 
+ int Ssl::CertificateDb::index_name_cmp(const char **a, const char **b) {
+@@ -336,7 +336,7 @@ Ssl::CertificateDb::addCertAndPrivateKey(std::string const &useKey, const Securi
+         dbSize = size(); // get the current database size
+     }
+ 
+-    ASN1_UTCTIME * tm = X509_get_notAfter(cert.get());
++    ASN1_UTCTIME * tm = X509_getm_notAfter(cert.get());
+     row.setValue(cnlExp_date, std::string(reinterpret_cast<char *>(tm->data), tm->length).c_str());
+     std::unique_ptr<char, CharDeleter> subject(X509_NAME_oneline(X509_get_subject_name(cert.get()), nullptr, 0));
+     row.setValue(cnlName, subject.get());
+diff --git a/src/security/cert_generators/file/certificate_db.h b/src/security/cert_generators/file/certificate_db.h
+index f58181485..1494b143c 100644
+--- a/src/security/cert_generators/file/certificate_db.h
++++ b/src/security/cert_generators/file/certificate_db.h
+@@ -14,6 +14,11 @@
+ #if HAVE_OPENSSL_OPENSSLV_H
+ #include <openssl/opensslv.h>
+ #endif
++#include <openssl/lhash.h>
++#if !HAVE_LIBCRYPTO_OPENSSL_LH_STRHASH
++#define OPENSSL_LH_delete lh_delete
++#define OPENSSL_LH_strhash lh_strhash
++#endif
+ #include <string>
+ 
+ namespace Ssl
+diff --git a/src/security/cert_generators/file/security_file_certgen.cc b/src/security/cert_generators/file/security_file_certgen.cc
+index e8a63472d..4170a7bc5 100644
+--- a/src/security/cert_generators/file/security_file_certgen.cc
++++ b/src/security/cert_generators/file/security_file_certgen.cc
+@@ -324,9 +324,11 @@ int main(int argc, char *argv[])
+             Ssl::CertificateDb::Check(db_path, max_db_size, fs_block_size);
+         }
+ 
++#if HAVE_LIBSSL_SSL_LOAD_ERROR_STRINGS
+         // Initialize SSL subsystem
+         SSL_load_error_strings();
+         SSLeay_add_ssl_algorithms();
++#endif
+         // process request.
+         for (;;) {
+             char request[HELPER_INPUT_BUFFER];
+diff --git a/src/security/forward.h b/src/security/forward.h
+index 7bf3f0e19..c1d0f1f80 100644
+--- a/src/security/forward.h
++++ b/src/security/forward.h
+@@ -17,9 +17,26 @@
+ #include <gnutls/abstract.h>
+ #endif
+ #include <list>
+-#if USE_OPENSSL && HAVE_OPENSSL_ERR_H
++#if USE_OPENSSL
++#include <openssl/bn.h>
++#include <openssl/dh.h>
++#if HAVE_OPENSSL_ERR_H
+ #include <openssl/err.h>
+ #endif
++#include <openssl/rsa.h>
++#include <openssl/x509.h>
++
++/// Use new calls for API deprecated in OpenSSL 1.1.0
++/// Note that all of the calls in this next group were implemented at the same time
++/// as X509_STORE_CTX_set0_untrusted, in both OpenSSL 1.1.0, and LibreSSL 2.7.0.
++#if !HAVE_LIBCRYPTO_X509_STORE_CTX_SET0_UNTRUSTED
++#define X509_STORE_CTX_set0_untrusted X509_STORE_CTX_set_chain
++#define X509_getm_notAfter X509_get_notAfter
++#define X509_getm_notBefore X509_get_notBefore
++#define X509_set1_notAfter X509_set_notAfter
++#define X509_set1_notBefore X509_set_notBefore
++#endif
++#endif /* USE_OPENSSL */
+ #include <unordered_set>
+ 
+ #if USE_OPENSSL
+diff --git a/src/ssl/ErrorDetail.cc b/src/ssl/ErrorDetail.cc
+index 22341caf8..bfcb9fc2f 100644
+--- a/src/ssl/ErrorDetail.cc
++++ b/src/ssl/ErrorDetail.cc
+@@ -490,7 +490,7 @@ const char *Ssl::ErrorDetail::ca_name() const
+ const char *Ssl::ErrorDetail::notbefore() const
+ {
+     if (broken_cert.get()) {
+-        if (ASN1_UTCTIME * tm = X509_get_notBefore(broken_cert.get())) {
++        if (ASN1_UTCTIME * tm = X509_getm_notBefore(broken_cert.get())) {
+             static char tmpBuffer[256]; // A temporary buffer
+             Ssl::asn1timeToString(tm, tmpBuffer, sizeof(tmpBuffer));
+             return tmpBuffer;
+@@ -505,7 +505,7 @@ const char *Ssl::ErrorDetail::notbefore() const
+ const char *Ssl::ErrorDetail::notafter() const
+ {
+     if (broken_cert.get()) {
+-        if (ASN1_UTCTIME * tm = X509_get_notAfter(broken_cert.get())) {
++        if (ASN1_UTCTIME * tm = X509_getm_notAfter(broken_cert.get())) {
+             static char tmpBuffer[256]; // A temporary buffer
+             Ssl::asn1timeToString(tm, tmpBuffer, sizeof(tmpBuffer));
+             return tmpBuffer;
+diff --git a/src/ssl/gadgets.cc b/src/ssl/gadgets.cc
+index c091a63fe..8f4978244 100644
+--- a/src/ssl/gadgets.cc
++++ b/src/ssl/gadgets.cc
+@@ -496,25 +496,25 @@ static bool buildCertificate(Security::CertPointer & cert, Ssl::CertificatePrope
+     // objects.
+     ASN1_TIME *aTime = NULL;
+     if (!properties.setValidBefore && properties.mimicCert.get())
+-        aTime = X509_get_notBefore(properties.mimicCert.get());
++        aTime = X509_getm_notBefore(properties.mimicCert.get());
+     if (!aTime && properties.signWithX509.get())
+-        aTime = X509_get_notBefore(properties.signWithX509.get());
++        aTime = X509_getm_notBefore(properties.signWithX509.get());
+ 
+     if (aTime) {
+-        if (!X509_set_notBefore(cert.get(), aTime))
++        if (!X509_set1_notBefore(cert.get(), aTime))
+             return false;
+-    } else if (!X509_gmtime_adj(X509_get_notBefore(cert.get()), (-2)*24*60*60))
++    } else if (!X509_gmtime_adj(X509_getm_notBefore(cert.get()), (-2)*24*60*60))
+         return false;
+ 
+     aTime = NULL;
+     if (!properties.setValidAfter && properties.mimicCert.get())
+-        aTime = X509_get_notAfter(properties.mimicCert.get());
++        aTime = X509_getm_notAfter(properties.mimicCert.get());
+     if (!aTime && properties.signWithX509.get())
+-        aTime = X509_get_notAfter(properties.signWithX509.get());
++        aTime = X509_getm_notAfter(properties.signWithX509.get());
+     if (aTime) {
+-        if (!X509_set_notAfter(cert.get(), aTime))
++        if (!X509_set1_notAfter(cert.get(), aTime))
+             return false;
+-    } else if (!X509_gmtime_adj(X509_get_notAfter(cert.get()), 60*60*24*356*3))
++    } else if (!X509_gmtime_adj(X509_getm_notAfter(cert.get()), 60*60*24*356*3))
+         return false;
+ 
+     int addedExtensions = 0;
+@@ -844,21 +844,21 @@ bool Ssl::certificateMatchesProperties(X509 *cert, CertificateProperties const &
+         return false;
+ 
+     if (!properties.setValidBefore) {
+-        ASN1_TIME *aTime = X509_get_notBefore(cert);
+-        ASN1_TIME *bTime = X509_get_notBefore(cert2);
++        ASN1_TIME *aTime = X509_getm_notBefore(cert);
++        ASN1_TIME *bTime = X509_getm_notBefore(cert2);
+         if (asn1time_cmp(aTime, bTime) != 0)
+             return false;
+-    } else if (X509_cmp_current_time(X509_get_notBefore(cert)) >= 0) {
++    } else if (X509_cmp_current_time(X509_getm_notBefore(cert)) >= 0) {
+         // notBefore does not exist (=0) or it is in the future (>0)
+         return false;
+     }
+ 
+     if (!properties.setValidAfter) {
+-        ASN1_TIME *aTime = X509_get_notAfter(cert);
+-        ASN1_TIME *bTime = X509_get_notAfter(cert2);
++        ASN1_TIME *aTime = X509_getm_notAfter(cert);
++        ASN1_TIME *bTime = X509_getm_notAfter(cert2);
+         if (asn1time_cmp(aTime, bTime) != 0)
+             return false;
+-    } else if (X509_cmp_current_time(X509_get_notAfter(cert)) <= 0) {
++    } else if (X509_cmp_current_time(X509_getm_notAfter(cert)) <= 0) {
+         // notAfter does not exist (0) or  it is in the past (<0)
+         return false;
+     }
+diff --git a/src/ssl/support.cc b/src/ssl/support.cc
+index e2cb85264..44ad7f7fe 100644
+--- a/src/ssl/support.cc
++++ b/src/ssl/support.cc
+@@ -99,16 +99,32 @@ ssl_temp_rsa_cb(SSL * ssl, int anInt, int keylen)
+ {
+     static RSA *rsa_512 = NULL;
+     static RSA *rsa_1024 = NULL;
++    static BIGNUM *e = NULL;
+     RSA *rsa = NULL;
+     int newkey = 0;
+ 
++    if (!e) {
++        e = BN_new();
++        if (!e || !BN_set_word(e, RSA_F4)) {
++            debugs(83, DBG_IMPORTANT, "ssl_temp_rsa_cb: Failed to set exponent for key " << keylen);
++            BN_free(e);
++            e = NULL;
++            return NULL;
++        }
++    }
++
+     switch (keylen) {
+ 
+     case 512:
+ 
+         if (!rsa_512) {
+-            rsa_512 = RSA_generate_key(512, RSA_F4, NULL, NULL);
+-            newkey = 1;
++            rsa_512 = RSA_new();
++            if (rsa_512 && RSA_generate_key_ex(rsa_512, 512, e, NULL)) {
++                newkey = 1;
++            } else {
++                RSA_free(rsa_512);
++                rsa_512 = NULL;
++            }
+         }
+ 
+         rsa = rsa_512;
+@@ -117,8 +133,13 @@ ssl_temp_rsa_cb(SSL * ssl, int anInt, int keylen)
+     case 1024:
+ 
+         if (!rsa_1024) {
+-            rsa_1024 = RSA_generate_key(1024, RSA_F4, NULL, NULL);
+-            newkey = 1;
++            rsa_1024 = RSA_new();
++            if (rsa_1024 && RSA_generate_key_ex(rsa_1024, 1024, e, NULL)) {
++                newkey = 1;
++            } else {
++                RSA_free(rsa_1024);
++                rsa_1024 = NULL;
++            }
+         }
+ 
+         rsa = rsa_1024;
+@@ -469,8 +490,10 @@ Ssl::Initialize(void)
+         return;
+     initialized = true;
+ 
++#if HAVE_LIBSSL_SSL_LOAD_ERROR_STRINGS
+     SSL_load_error_strings();
+     SSLeay_add_ssl_algorithms();
++#endif
+ 
+ #if HAVE_OPENSSL_ENGINE_H
+     if (::Config.SSL.ssl_engine) {
+@@ -905,8 +928,8 @@ Ssl::verifySslCertificate(Security::ContextPointer &ctx, CertificateProperties c
+ #endif
+     if (!cert)
+         return false;
+-    ASN1_TIME * time_notBefore = X509_get_notBefore(cert);
+-    ASN1_TIME * time_notAfter = X509_get_notAfter(cert);
++    ASN1_TIME * time_notBefore = X509_getm_notBefore(cert);
++    ASN1_TIME * time_notAfter = X509_getm_notAfter(cert);
+     return (X509_cmp_current_time(time_notBefore) < 0 && X509_cmp_current_time(time_notAfter) > 0);
+ }
+ 
+@@ -1172,13 +1195,9 @@ untrustedToStoreCtx_cb(X509_STORE_CTX *ctx,void *data)
+     if (SquidUntrustedCerts.size() > 0)
+         completeIssuers(ctx, sk);
+ 
+-    X509_STORE_CTX_set_chain(ctx, sk); // No locking/unlocking, just sets ctx->untrusted
++    X509_STORE_CTX_set0_untrusted(ctx, sk); // No locking/unlocking, just sets ctx->untrusted
+     int ret = X509_verify_cert(ctx);
+-#if HAVE_LIBCRYPTO_X509_STORE_CTX_SET0_UNTRUSTED
+-    X509_STORE_CTX_set0_untrusted(ctx, oldUntrusted);
+-#else
+-    X509_STORE_CTX_set_chain(ctx, oldUntrusted); // Set back the old untrusted list
+-#endif
++    X509_STORE_CTX_set0_untrusted(ctx, oldUntrusted); // Set back the old untrusted list
+     sk_X509_free(sk); // Release sk list
+     return ret;
+ }
+-- 
+2.16.4
+

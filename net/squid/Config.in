@@ -51,7 +51,6 @@ if PACKAGE_squid
 
 		config SQUID_use-openssl
 		bool "Use OpenSSL (default)"
-		select OPENSSL_WITH_DEPRECATED
 
 		config SQUID_use-gnutls
 		bool "Use GnuTLS (experimental, see help)"
