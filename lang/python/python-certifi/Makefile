@@ -13,7 +13,7 @@ PKG_RELEASE:=1
 PKG_LICENSE:=MPL-2.0
 
 PKG_SOURCE:=certifi-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/e1/0f/f8d5e939184547b3bdc6128551b831a62832713aa98c2ccdf8c47ecc7f17
+PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/c/certifi
 PKG_HASH:=376690d6f16d32f9d1fe8932551d80b23e9d393a8578c5633a2ed39a64861638
 PKG_BUILD_DIR:=$(BUILD_DIR)/certifi-$(PKG_VERSION)
 

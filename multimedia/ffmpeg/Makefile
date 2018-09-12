@@ -653,6 +653,7 @@ define Build/InstallDev/full
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/lib{avcodec,avdevice,avfilter,avformat,avresample,avutil,swresample,swscale} $(1)/usr/include/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{avcodec,avdevice,avfilter,avformat,avresample,avutil,swresample,swscale}.{a,so*} $(1)/usr/lib/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/lib{avcodec,avdevice,avfilter,avformat,avresample,avutil,swresample,swscale}.pc $(1)/usr/lib/pkgconfig/
+ifneq ($(CONFIG_SOFT_FLOAT),y)
 ifneq ($(CONFIG_PACKAGE_libx264),)
 ifeq ($(CONFIG_SOFT_FLOAT),)
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/libpostproc $(1)/usr/include/
@@ -721,6 +722,7 @@ endef
 define Package/libffmpeg-full/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{avcodec,avdevice,avfilter,avformat,avresample,avutil,swresample,swscale}.so.* $(1)/usr/lib/
+ifneq ($(CONFIG_SOFT_FLOAT),y)
 ifneq ($(CONFIG_PACKAGE_libx264),)
 ifeq ($(CONFIG_SOFT_FLOAT),)
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpostproc.so.* $(1)/usr/lib/
