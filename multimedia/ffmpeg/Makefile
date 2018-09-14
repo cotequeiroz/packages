@@ -368,7 +368,6 @@ $(call Package/ffmpeg/Default/description)
  This package contains minimal-featured FFmpeg shared libraries.
 endef
 
-#TARGET_CXXFLAGS += -std=gnu++11
 
 # Strip off FPU notation
 REAL_CPU_TYPE:=$(firstword $(subst +, ,$(CONFIG_CPU_TYPE)))
@@ -655,7 +654,6 @@ define Build/InstallDev/full
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/lib{avcodec,avdevice,avfilter,avformat,avresample,avutil,swresample,swscale}.pc $(1)/usr/lib/pkgconfig/
 ifneq ($(CONFIG_SOFT_FLOAT),y)
 ifneq ($(CONFIG_PACKAGE_libx264),)
-ifeq ($(CONFIG_SOFT_FLOAT),)
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/libpostproc $(1)/usr/include/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpostproc.{a,so*} $(1)/usr/lib/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/libpostproc.pc $(1)/usr/lib/pkgconfig/
@@ -724,7 +722,6 @@ define Package/libffmpeg-full/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{avcodec,avdevice,avfilter,avformat,avresample,avutil,swresample,swscale}.so.* $(1)/usr/lib/
 ifneq ($(CONFIG_SOFT_FLOAT),y)
 ifneq ($(CONFIG_PACKAGE_libx264),)
-ifeq ($(CONFIG_SOFT_FLOAT),)
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpostproc.so.* $(1)/usr/lib/
 endif
 endif
