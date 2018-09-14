@@ -20,13 +20,14 @@ PKG_HASH:=1a484bb15152c183bb2514e112aa30dd34138c3cfb032eee5490a66c507144ca
 PKG_LICENSE:=BSD ISC
 PKG_LICENSE_FILES:=LICENCE
 
-
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
 
 ifeq ($(CONFIG_OPENSSL_USE_VERSION_1_1_0)$(CONFIG_OPENSSL_USE_VERSION_1_1_1),y)
-  PATCH_DIR=./patches/openssl-1.1
+  PATCH_DIR:=./patches/openssl-1.1
+  PKG_REMOVE_FILES:=
+  PKG_FIXUP:=autoreconf
 else
-  PATCH_DIR=./patches/openssl-1.0
+  PATCH_DIR:=./patches/openssl-1.0
 endif
 
 include $(INCLUDE_DIR)/package.mk
