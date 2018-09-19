@@ -8,29 +8,29 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=aircrack-ng
-PKG_VERSION:=1.2-rc1
-PKG_RELEASE:=3
+PKG_VERSION:=1.3
+PKG_RELEASE:=1
+
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://download.aircrack-ng.org/
+PKG_HASH:=8ae08a7c28741f6ace2769267112053366550e7f746477081188ad38410383ca
+
+PKG_MAINTAINER:=Rick Farina <zerochaos@gentoo.org>
 PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=LICENSE
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://download.aircrack-ng.org/ \
-		http://archive.aircrack-ng.org/aircrack-ng/$(PKG_VERSION)/
-PKG_HASH:=cf3134521e1c3d7aed4e384e3e5e7b6959e2d485bd1554474608a3a9328e35fd
-
+PKG_FIXUP:=autoreconf
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
-
-PKG_MAINTAINER:=Rick Farina <zerochaos@gentoo.org>
 
 include $(INCLUDE_DIR)/package.mk
 
 define Package/aircrack-ng
   SECTION:=net
   CATEGORY:=Network
-  DEPENDS:=+libpcap +libpthread +libopenssl +libnl-core +libnl-genl +zlib
+  DEPENDS:=+libpcap +libpcre +libpthread +libopenssl +libnl-core +libnl-genl +libstdcpp +zlib
   TITLE:=WLAN tools (without airmon-ng) for breaking 802.11 WEP/WPA keys
-  URL:=http://www.aircrack-ng.org/
+  URL:=https://www.aircrack-ng.org/
   SUBMENU:=wireless
 endef
 
@@ -51,13 +51,13 @@ define Package/airmon-ng/description
   Bash script designed to turn wireless cards into monitor mode.
 endef
 
-TARGET_CFLAGS += -std=gnu89
-
-MAKE_FLAGS += prefix=/usr \
-	libnl=true \
-	sqlite=false \
-	unstable=false \
-	OSNAME=Linux
+CONFIGURE_ARGS += \
+	--enable-libnl \
+	--with-gnu-ld \
+	--without-duma \
+	--without-gcrypt \
+	--without-sqlite3 \
+	--with-experimental \
 
 define Package/aircrack-ng/install
 	$(INSTALL_DIR) $(1)/usr/bin
