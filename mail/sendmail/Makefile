@@ -102,6 +102,7 @@ define Build/Prepare
 	$(CP) $(PKG_BUILD_DIR)/cf/cf/generic-linux.mc $(PKG_BUILD_DIR)/cf/cf/sendmail.mc
 	$(SED) 's@TARGET_CC@$(TARGET_CC)@g' $(PKG_BUILD_DIR)/devtools/Site/$(SITECONFIG)
 	$(SED) 's@TARGET_CFLAGS@$(TARGET_CFLAGS)@g' $(PKG_BUILD_DIR)/devtools/Site/$(SITECONFIG)
+	$(SED) 's@STAGING_DIR@$(STAGING_DIR)@g' $(PKG_BUILD_DIR)/devtools/OS/$(TARGET_OS)
 endef
 
 define Build/Compile
