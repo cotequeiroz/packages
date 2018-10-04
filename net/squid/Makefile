@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=squid
-PKG_VERSION:=4.2
+PKG_VERSION:=4.3
 PKG_RELEASE:=1
 
 PKG_LICENSE:=GPL-2.0
@@ -18,10 +18,11 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=http://www3.us.squid-cache.org/Versions/v4/ \
 	http://www2.pl.squid-cache.org/Versions/v4/ \
 	http://www.squid-cache.org/Versions/v4/
-PKG_HASH:=994807762c59991b32449caf29418fd0ec9d2329746b18eb19bd930b6806d208
+PKG_HASH:=322612ef0544828f6c673a25124b32364fb41ef5e2847e21c89480b5546a4c7c
 
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
+PKG_FIXUP:=autoreconf
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -66,6 +67,8 @@ define Package/squid-mod-cachemgr
 endef
 
 CONFIGURE_ARGS += \
+	BUILDCXX=$(HOSTCXX) \
+	BUILDCXXFLAGS=$(if $(HOST_CXXFLAGS),$(HOST_CXXFLAGS),-O2) \
 	--config-cache \
 	--datadir=/usr/share/squid \
 	--libexecdir=/usr/lib/squid \

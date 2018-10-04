@@ -1,4 +1,4 @@
-From 92bb3c5037cae6ea1f30f54d7efd81617def98e2 Mon Sep 17 00:00:00 2001
+From fcb7e21c3ecbd75d63e8a9482364dbcdbbd2bb6c Mon Sep 17 00:00:00 2001
 From: Eneas U de Queiroz <cote2004-github@yahoo.com>
 Date: Sat, 1 Sep 2018 11:33:57 -0300
 Subject: [PATCH] Allow compilation with OPENSSL_NO_DEPRECATED
@@ -6,43 +6,40 @@ Subject: [PATCH] Allow compilation with OPENSSL_NO_DEPRECATED
 Updated the calls to openssl deprecated API, so that squid can be
 compiled with openssl built with the OPENSSL_NO_DEPRECATED option.
 
-Most* of the calls in the main code were updated to the openssl 1.1 API,
-and the wrappers were moved into compat/openssl.h.
-* The exceptions to the rule above were: (a) the BIO table setup,
-which would need many calls, instead of a simple static struct;
-(b) library initialization, which is optional in openssl >= 1.1, and
-mandatory for < 1.1; (c) RSA key generation callback, which is absent in
-openssl >= 1.1.
-
-Applied changes from #265-Libressl support: Removed const from
-*useMethod in src/ssl/bio.cc
-
 Signed-off-by: Eneas U de Queiroz <cote2004-github@yahoo.com>
 ---
- acinclude/lib-checks.m4                            |  14 +-
+ acinclude/lib-checks.m4                            |  21 +-
  compat/Makefile.am                                 |   1 +
- compat/compat.h                                    |  16 ++
- compat/openssl.h                                   | 209 +++++++++++++++++++++
+ compat/openssl.h                                   | 241 +++++++++++++++++++++
  configure.ac                                       |   7 +
+ src/CachePeer.h                                    |   4 -
  src/main.cc                                        |   4 +
+ src/security/LockingPointer.h                      |   1 +
+ src/security/PeerOptions.cc                        |   4 -
+ src/security/ServerOptions.cc                      |   7 -
+ src/security/ServerOptions.h                       |   6 +
  src/security/Session.cc                            |   5 -
+ src/security/Session.h                             |   1 +
  .../cert_generators/file/certificate_db.cc         |   8 +-
- src/security/cert_generators/file/certificate_db.h |   3 +
- .../cert_generators/file/security_file_certgen.cc  |   5 +
- src/security/forward.h                             |  43 +----
+ src/security/cert_generators/file/certificate_db.h |   3 -
+ .../cert_generators/file/security_file_certgen.cc  |   3 +-
+ src/security/forward.h                             |  44 +---
  src/ssl/ErrorDetail.cc                             |   4 +-
- src/ssl/bio.cc                                     |  10 +-
- src/ssl/bio.h                                      |   8 -
- src/ssl/gadgets.cc                                 |  37 ++--
- src/ssl/support.cc                                 |  79 ++++----
- 16 files changed, 329 insertions(+), 124 deletions(-)
+ src/ssl/bio.cc                                     |  14 +-
+ src/ssl/bio.h                                      |   9 +-
+ src/ssl/context_storage.h                          |   1 +
+ src/ssl/gadgets.cc                                 |  52 ++---
+ src/ssl/gadgets.h                                  |  12 +-
+ src/ssl/support.cc                                 |  69 +++---
+ src/ssl/support.h                                  |   1 +
+ 24 files changed, 355 insertions(+), 167 deletions(-)
  create mode 100644 compat/openssl.h
 
 diff --git a/acinclude/lib-checks.m4 b/acinclude/lib-checks.m4
-index b581c61c8..9887972f9 100644
+index b581c61c8..986652839 100644
 --- a/acinclude/lib-checks.m4
 +++ b/acinclude/lib-checks.m4
-@@ -61,28 +61,32 @@ AC_DEFUN([SQUID_CHECK_OPENSSL_TLS_METHODS],[
+@@ -61,42 +61,48 @@ AC_DEFUN([SQUID_CHECK_OPENSSL_TLS_METHODS],[
  
  dnl Checks whether the -lcrypto library provides various OpenSSL API functions
  AC_DEFUN([SQUID_CHECK_LIBCRYPTO_API],[
@@ -77,7 +74,10 @@ index b581c61c8..9887972f9 100644
    AC_CHECK_LIB(crypto, X509_up_ref, AC_DEFINE(HAVE_LIBCRYPTO_X509_UP_REF, 1))
    AC_CHECK_LIB(crypto, X509_CRL_up_ref, AC_DEFINE(HAVE_LIBCRYPTO_X509_CRL_UP_REF, 1))
    AC_CHECK_LIB(crypto, DH_up_ref, AC_DEFINE(HAVE_LIBCRYPTO_DH_UP_REF, 1))
-@@ -92,11 +96,13 @@ AC_DEFUN([SQUID_CHECK_LIBCRYPTO_API],[
+-  AC_CHECK_LIB(crypto, X509_get0_signature, AC_DEFINE(HAVE_LIBCRYPTO_X509_GET0_SIGNATURE, 1))
++  AC_CHECK_LIB(crypto, X509_get0_signature, AC_DEFINE(HAVE_LIBCRYPTO_X509_GET0_SIGNATURE, 1), AC_DEFINE(SQUID_CONST_X509_GET0_SIGNATURE_ARGS,))
+   SQUID_STATE_ROLLBACK(check_openssl_libcrypto_api)
+ ])
  
  dnl Checks whether the -lssl library provides various OpenSSL API functions
  AC_DEFUN([SQUID_CHECK_LIBSSL_API],[
@@ -111,6 +111,27 @@ index b581c61c8..9887972f9 100644
  #if HAVE_OPENSSL_TLS_METHOD
      SSL_CTX *sslContext = SSL_CTX_new(TLS_method());
  #else
+@@ -261,7 +271,7 @@ return 0;
+ 
+ dnl Checks whether the X509_get0_signature() has const arguments
+ AC_DEFUN([SQUID_CHECK_OPENSSL_CONST_X509_GET0_SIGNATURE_ARGS],[
+-  AH_TEMPLATE(SQUID_USE_CONST_X509_GET0_SIGNATURE_ARGS, "Define if X509_get0_signature() accepts const parameters")
++  AH_TEMPLATE(SQUID_CONST_X509_GET0_SIGNATURE_ARGS, Define to const if X509_get0_signature() accepts const parameters; define as empty otherwise. Don't leave it undefined!)
+   SQUID_STATE_SAVE(check_const_X509_get0_signature_args)
+   AC_MSG_CHECKING("whether X509_get0_signature() accepts const parameters")
+   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
+@@ -276,9 +286,10 @@ AC_DEFUN([SQUID_CHECK_OPENSSL_CONST_X509_GET0_SIGNATURE_ARGS],[
+ #endif
+     ])
+   ],[
+-   AC_DEFINE(SQUID_USE_CONST_X509_GET0_SIGNATURE_ARGS, 1)
++   AC_DEFINE(SQUID_CONST_X509_GET0_SIGNATURE_ARGS, const)
+    AC_MSG_RESULT([yes])
+   ],[
++   AC_DEFINE(SQUID_CONST_X509_GET0_SIGNATURE_ARGS,)
+    AC_MSG_RESULT([no])
+   ])
+   SQUID_STATE_ROLLBACK(check_const_X509_get0_signature_args)
 diff --git a/compat/Makefile.am b/compat/Makefile.am
 index 62252e18e..08b100be9 100644
 --- a/compat/Makefile.am
@@ -123,38 +144,12 @@ index 62252e18e..08b100be9 100644
  	osdetect.h \
  	psignal.h \
  	shm.cc \
-diff --git a/compat/compat.h b/compat/compat.h
-index b2c55fd5c..3cc9e20fa 100644
---- a/compat/compat.h
-+++ b/compat/compat.h
-@@ -117,5 +117,21 @@
- /* cppunit is not quite C++0x compatible yet */
- #include "compat/cppunit.h"
- 
-+#if USE_OPENSSL
-+/* OpenSSL API changed dramatically between 1.0.2 and 1.1.0, and
-+ * compatibility was broken.  Most of the structures became opaque,
-+ * and access functions were created.  There's no (safe) way to
-+ * access the struct members any more, so the solution is to use
-+ * the new API in the main code, and add the functions for older
-+ * versions in compat/openssl.h.
-+ * LibreSSL is trying to maintain both versions, keeping the structs
-+ * acessible while adding the access functions, but it is not 100%
-+ * compatible yet.
-+ * Once all the supported library versions use the new API, the shim
-+ * can be dropped.
-+ */
-+#include "compat/openssl.h"
-+#endif
-+
- #endif /* _SQUID_COMPAT_H */
- 
 diff --git a/compat/openssl.h b/compat/openssl.h
 new file mode 100644
-index 000000000..049a90ee8
+index 000000000..04ac95aee
 --- /dev/null
 +++ b/compat/openssl.h
-@@ -0,0 +1,209 @@
+@@ -0,0 +1,241 @@
 +/*
 + * Copyright (C) 1996-2018 The Squid Software Foundation and contributors
 + *
@@ -162,8 +157,23 @@ index 000000000..049a90ee8
 + * contributions from numerous individuals and organizations.
 + * Please see the COPYING and CONTRIBUTORS files for details.
 + */
++
++/* OpenSSL API changed dramatically between 1.0.2 and 1.1.0, and
++ * compatibility was broken.  Most of the structures became opaque,
++ * and access functions were created.  There's no (safe) way to
++ * access the struct members any more, so the solution is to use
++ * the new API in the main code, and add the functions for older
++ * versions in compat/openssl.h.
++ * Once all the supported library versions use the new API, the shim
++ * can be dropped.
++ */
++
 +#ifndef OPENSSL_COMPAT_H
 +#define OPENSSL_COMPAT_H
++
++#if !USE_OPENSSL
++#error compat/openssl.h depends on USE_OPENSSL
++#endif
 +
 +#if defined(__cplusplus)
 +
@@ -189,6 +199,7 @@ index 000000000..049a90ee8
 +#include <openssl/x509.h>
 +#endif
 +
++extern "C" {
 +
 +#if !HAVE_LIBCRYPTO_ASN1_STRING_GET0_DATA
 +inline const unsigned char *
@@ -218,7 +229,6 @@ index 000000000..049a90ee8
 +}
 +#endif
 +
-+// BIO_get_init is not implemented in LibreSSL, even though BIO_set_init is
 +#if !HAVE_LIBCRYPTO_BIO_GET_INIT
 +inline int
 +BIO_get_init(BIO *table)
@@ -232,8 +242,8 @@ index 000000000..049a90ee8
 +inline int
 +DH_up_ref(DH *t)
 +{
-+    if (t)
-+        CRYPTO_add(&t->references, 1, CRYPTO_LOCK_DH);
++    if (t && (CRYPTO_add(&t->references, 1, CRYPTO_LOCK_DH) > 1))
++        return 1;
 +    return 0;
 +}
 +#else
@@ -256,8 +266,8 @@ index 000000000..049a90ee8
 +inline int
 +EVP_PKEY_up_ref(EVP_PKEY *t)
 +{
-+    if (t)
-+        CRYPTO_add(&t->references, 1, CRYPTO_LOCK_EVP_PKEY);
++    if (t && (CRYPTO_add(&t->references, 1, CRYPTO_LOCK_EVP_PKEY)) > 1)
++        return 1;
 +    return 0;
 +}
 +
@@ -270,6 +280,14 @@ index 000000000..049a90ee8
 +#define OPENSSL_LH_delete lh_delete
 +#define OPENSSL_LH_strhash lh_strhash
 +#endif
++
++inline void SQUID_OPENSSL_init_ssl(void)
++{
++#if !HAVE_LIBSSL_OPENSSL_INIT_SSL
++    SSL_load_error_strings();
++    SSLeay_add_ssl_algorithms();
++#endif
++}
 +
 +#if !HAVE_LIBSSL_SSL_CIPHER_FIND
 +inline const SSL_CIPHER *
@@ -289,13 +307,21 @@ index 000000000..049a90ee8
 +}
 +#endif
 +
++#if !HAVE_OPENSSL_TLS_CLIENT_METHOD
++#define TLS_client_method SSLv23_client_method
++#endif
++
++#if !HAVE_OPENSSL_TLS_SERVER_METHOD
++#define TLS_server_method SSLv23_server_method
++#endif
++
 +#if !HAVE_LIBCRYPTO_X509_CRL_UP_REF // OpenSSL 1.1 API
 +#if defined(CRYPTO_LOCK_X509_CRL) // OpenSSL 1.0 API
 +inline int
 +X509_CRL_up_ref(X509_CRL *t)
 +{
-+    if (t)
-+        CRYPTO_add(&t->references, 1, CRYPTO_LOCK_X509_CRL);
++    if (t && (CRYPTO_add(&t->references, 1, CRYPTO_LOCK_X509_CRL) > 1))
++        return 1;
 +    return 0;
 +}
 +#else
@@ -331,7 +357,7 @@ index 000000000..049a90ee8
 +
 +/// Note that all of the calls in this next group were renamed, or had the new
 +/// name added at the same time as X509_STORE_CTX_get0_untrusted was implemented,
-+/// in both OpenSSL 1.1.0, and LibreSSL 2.7.0.
++/// in all supported OpenSSL-compatible libraries
 +#define X509_STORE_CTX_set0_untrusted X509_STORE_CTX_set_chain
 +#define X509_getm_notAfter X509_get_notAfter
 +#define X509_getm_notBefore X509_get_notBefore
@@ -344,8 +370,8 @@ index 000000000..049a90ee8
 +inline int
 +X509_up_ref(X509 *t)
 +{
-+    if (t)
-+        CRYPTO_add(&t->references, 1, CRYPTO_LOCK_X509);
++    if (t && (CRYPTO_add(&t->references, 1, CRYPTO_LOCK_X509)) > 1)
++        return 1;
 +    return 0;
 +}
 +#else
@@ -362,10 +388,11 @@ index 000000000..049a90ee8
 +}
 +#endif
 +
++} /* extern "C" */
 +#endif /* __cplusplus */
 +#endif /* OPENSSL_COMPAT_H */
 diff --git a/configure.ac b/configure.ac
-index daa3e9606..abc895852 100644
+index 9a72ed48d..6de42b708 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -1317,12 +1317,19 @@ AH_TEMPLATE(USE_OPENSSL,[OpenSSL support is available])
@@ -388,6 +415,21 @@ index daa3e9606..abc895852 100644
      openssl/x509v3.h \
      openssl/engine.h \
      openssl/txt_db.h \
+diff --git a/src/CachePeer.h b/src/CachePeer.h
+index f5f7c082b..fbf63d701 100644
+--- a/src/CachePeer.h
++++ b/src/CachePeer.h
+@@ -19,10 +19,6 @@
+ //TODO: remove, it is unconditionally defined and always used.
+ #define PEER_MULTICAST_SIBLINGS 1
+ 
+-#if HAVE_OPENSSL_SSL_H
+-#include <openssl/ssl.h>
+-#endif
+-
+ class NeighborTypeDomainList;
+ class PconnPool;
+ class PeerDigest;
 diff --git a/src/main.cc b/src/main.cc
 index 2a7269edc..3bb10eb30 100644
 --- a/src/main.cc
@@ -404,6 +446,81 @@ index 2a7269edc..3bb10eb30 100644
          printf("For legal restrictions on distribution see https://www.openssl.org/source/license.html\n\n");
  #endif
          printf( "configure options: %s\n", SQUID_CONFIGURE_OPTIONS);
+diff --git a/src/security/LockingPointer.h b/src/security/LockingPointer.h
+index cde009cbe..058f07770 100644
+--- a/src/security/LockingPointer.h
++++ b/src/security/LockingPointer.h
+@@ -12,6 +12,7 @@
+ #include "base/HardFun.h"
+ 
+ #if USE_OPENSSL
++#include "compat/openssl.h"
+ #if HAVE_OPENSSL_CRYPTO_H
+ #include <openssl/crypto.h>
+ #endif
+diff --git a/src/security/PeerOptions.cc b/src/security/PeerOptions.cc
+index d6db76920..c6857f478 100644
+--- a/src/security/PeerOptions.cc
++++ b/src/security/PeerOptions.cc
+@@ -248,11 +248,7 @@ Security::PeerOptions::createBlankContext() const
+ #if USE_OPENSSL
+     Ssl::Initialize();
+ 
+-#if HAVE_OPENSSL_TLS_CLIENT_METHOD
+     SSL_CTX *t = SSL_CTX_new(TLS_client_method());
+-#else
+-    SSL_CTX *t = SSL_CTX_new(SSLv23_client_method());
+-#endif
+     if (!t) {
+         const auto x = ERR_get_error();
+         fatalf("Failed to allocate TLS client context: %s\n", Security::ErrorString(x));
+diff --git a/src/security/ServerOptions.cc b/src/security/ServerOptions.cc
+index bad120662..6ffc46987 100644
+--- a/src/security/ServerOptions.cc
++++ b/src/security/ServerOptions.cc
+@@ -17,13 +17,10 @@
+ #include "SquidConfig.h"
+ #if USE_OPENSSL
+ #include "ssl/support.h"
+-#endif
+ 
+ #if HAVE_OPENSSL_ERR_H
+ #include <openssl/err.h>
+ #endif
+-#if HAVE_OPENSSL_X509_H
+-#include <openssl/x509.h>
+ #endif
+ 
+ Security::ServerOptions &
+@@ -161,11 +158,7 @@ Security::ServerOptions::createBlankContext() const
+ #if USE_OPENSSL
+     Ssl::Initialize();
+ 
+-#if HAVE_OPENSSL_SERVER_METHOD
+     SSL_CTX *t = SSL_CTX_new(TLS_server_method());
+-#else
+-    SSL_CTX *t = SSL_CTX_new(SSLv23_server_method());
+-#endif
+     if (!t) {
+         const auto x = ERR_get_error();
+         debugs(83, DBG_CRITICAL, "ERROR: Failed to allocate TLS server context: " << Security::ErrorString(x));
+diff --git a/src/security/ServerOptions.h b/src/security/ServerOptions.h
+index 1d1198bc4..0646b76b0 100644
+--- a/src/security/ServerOptions.h
++++ b/src/security/ServerOptions.h
+@@ -11,6 +11,12 @@
+ 
+ #include "anyp/forward.h"
+ #include "security/PeerOptions.h"
++#if USE_OPENSSL
++#include "compat/openssl.h"
++#if HAVE_OPENSSL_X509_H
++#include <openssl/x509.h>
++#endif
++#endif
+ 
+ namespace Security
+ {
 diff --git a/src/security/Session.cc b/src/security/Session.cc
 index ab93b970c..a56efec22 100644
 --- a/src/security/Session.cc
@@ -422,6 +539,18 @@ index ab93b970c..a56efec22 100644
      // XXX: the other calls [to openForReading()] do not copy the sessionId to a char buffer, does this really have to?
      unsigned char key[MEMMAP_SLOT_KEY_SIZE];
      // Session ids are of size 32bytes. They should always fit to a
+diff --git a/src/security/Session.h b/src/security/Session.h
+index 3b17a6463..19b1c9f1e 100644
+--- a/src/security/Session.h
++++ b/src/security/Session.h
+@@ -16,6 +16,7 @@
+ #include <memory>
+ 
+ #if USE_OPENSSL
++#include "compat/openssl.h"
+ #if HAVE_OPENSSL_SSL_H
+ #include <openssl/ssl.h>
+ #endif
 diff --git a/src/security/cert_generators/file/certificate_db.cc b/src/security/cert_generators/file/certificate_db.cc
 index a3ed84dab..08339ae95 100644
 --- a/src/security/cert_generators/file/certificate_db.cc
@@ -463,47 +592,44 @@ index a3ed84dab..08339ae95 100644
      std::unique_ptr<char, CharDeleter> subject(X509_NAME_oneline(X509_get_subject_name(cert.get()), nullptr, 0));
      row.setValue(cnlName, subject.get());
 diff --git a/src/security/cert_generators/file/certificate_db.h b/src/security/cert_generators/file/certificate_db.h
-index f58181485..8ceff10e4 100644
+index f58181485..b1882d458 100644
 --- a/src/security/cert_generators/file/certificate_db.h
 +++ b/src/security/cert_generators/file/certificate_db.h
-@@ -14,6 +14,9 @@
- #if HAVE_OPENSSL_OPENSSLV_H
- #include <openssl/opensslv.h>
- #endif
-+#if HAVE_OPENSSL_LHASH_H
-+#include <openssl/lhash.h>
-+#endif
+@@ -11,9 +11,6 @@
+ 
+ #include "ssl/gadgets.h"
+ 
+-#if HAVE_OPENSSL_OPENSSLV_H
+-#include <openssl/opensslv.h>
+-#endif
  #include <string>
  
  namespace Ssl
 diff --git a/src/security/cert_generators/file/security_file_certgen.cc b/src/security/cert_generators/file/security_file_certgen.cc
-index 7b875f780..5f5341d96 100644
+index 7b875f780..71534ad10 100644
 --- a/src/security/cert_generators/file/security_file_certgen.cc
 +++ b/src/security/cert_generators/file/security_file_certgen.cc
-@@ -325,8 +325,13 @@ int main(int argc, char *argv[])
+@@ -325,8 +325,7 @@ int main(int argc, char *argv[])
          }
  
          // Initialize SSL subsystem
-+#if HAVE_LIBSSL_OPENSSL_INIT_SSL
-+	// No explicit initialisation is required.
-+	//OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS, nullptr);
-+#else
-         SSL_load_error_strings();
-         SSLeay_add_ssl_algorithms();
-+#endif
+-        SSL_load_error_strings();
+-        SSLeay_add_ssl_algorithms();
++        SQUID_OPENSSL_init_ssl();
          // process request.
          for (;;) {
              char request[HELPER_INPUT_BUFFER];
 diff --git a/src/security/forward.h b/src/security/forward.h
-index 7bf3f0e19..e5791e4c4 100644
+index 7bf3f0e19..eef8408ab 100644
 --- a/src/security/forward.h
 +++ b/src/security/forward.h
-@@ -17,9 +17,17 @@
+@@ -17,9 +17,18 @@
  #include <gnutls/abstract.h>
  #endif
  #include <list>
 -#if USE_OPENSSL && HAVE_OPENSSL_ERR_H
 +#if USE_OPENSSL
++#include "compat/openssl.h"
 +#if HAVE_OPENSSL_BN_H
 +#include <openssl/bn.h>
 +#endif
@@ -517,7 +643,7 @@ index 7bf3f0e19..e5791e4c4 100644
  #include <unordered_set>
  
  #if USE_OPENSSL
-@@ -30,39 +38,6 @@
+@@ -30,39 +39,6 @@
          struct sk_object ## _free_wrapper { \
              void operator()(argument_type a) { sk_object ## _pop_free(a, freefunction); } \
          }
@@ -580,10 +706,21 @@ index 22341caf8..bfcb9fc2f 100644
              Ssl::asn1timeToString(tm, tmpBuffer, sizeof(tmpBuffer));
              return tmpBuffer;
 diff --git a/src/ssl/bio.cc b/src/ssl/bio.cc
-index 802f5273b..d85a607b3 100644
+index 802f5273b..2a7fd6b47 100644
 --- a/src/ssl/bio.cc
 +++ b/src/ssl/bio.cc
-@@ -76,7 +76,7 @@ Ssl::Bio::Create(const int fd, Security::Io::Type type)
+@@ -23,10 +23,6 @@
+ #include "SquidTime.h"
+ #include "ssl/bio.h"
+ 
+-#if HAVE_OPENSSL_SSL_H
+-#include <openssl/ssl.h>
+-#endif
+-
+ #if _SQUID_WINDOWS_
+ extern int socket_read_method(int, char *, int);
+ extern int socket_write_method(int, const char *, int);
+@@ -76,7 +72,7 @@ Ssl::Bio::Create(const int fd, Security::Io::Type type)
          BIO_meth_set_create(SquidMethods, squid_bio_create);
          BIO_meth_set_destroy(SquidMethods, squid_bio_destroy);
      }
@@ -592,7 +729,7 @@ index 802f5273b..d85a607b3 100644
  #else
      BIO_METHOD *useMethod = &SquidMethods;
  #endif
-@@ -706,13 +706,7 @@ applyTlsDetailsToSSL(SSL *ssl, Security::TlsDetails::Pointer const &details, Ssl
+@@ -706,13 +702,7 @@ applyTlsDetailsToSSL(SSL *ssl, Security::TlsDetails::Pointer const &details, Ssl
              cbytes[0] = (cipherId >> 8) & 0xFF;
              cbytes[1] = cipherId & 0xFF;
              cbytes[2] = 0;
@@ -603,15 +740,23 @@ index 802f5273b..d85a607b3 100644
 -            const SSL_CIPHER *c = method->get_cipher_by_char(cbytes);
 -#endif
 -            if (c != NULL) {
-+            if (auto c = SSL_CIPHER_find(ssl, cbytes)) {
++            if (const auto c = SSL_CIPHER_find(ssl, cbytes)) {
                  if (!strCiphers.isEmpty())
                      strCiphers.append(":");
                  strCiphers.append(SSL_CIPHER_get_name(c));
 diff --git a/src/ssl/bio.h b/src/ssl/bio.h
-index fb311b0d9..b34718454 100644
+index fb311b0d9..13dce9ccc 100644
 --- a/src/ssl/bio.h
 +++ b/src/ssl/bio.h
-@@ -204,14 +204,6 @@ private:
+@@ -11,6 +11,7 @@
+ 
+ #if USE_OPENSSL
+ 
++#include "compat/openssl.h"
+ #include "FadingCounter.h"
+ #include "fd.h"
+ #include "MemBuf.h"
+@@ -204,14 +205,6 @@ private:
  void
  applyTlsDetailsToSSL(SSL *ssl, Security::TlsDetails::Pointer const &details, Ssl::BumpMode bumpMode);
  
@@ -626,11 +771,35 @@ index fb311b0d9..b34718454 100644
  #endif /* USE_OPENSSL */
  #endif /* SQUID_SSL_BIO_H */
  
+diff --git a/src/ssl/context_storage.h b/src/ssl/context_storage.h
+index f2d5cad6d..e5b7cf1e8 100644
+--- a/src/ssl/context_storage.h
++++ b/src/ssl/context_storage.h
+@@ -13,6 +13,7 @@
+ 
+ #include "base/LruMap.h"
+ #include "CacheManager.h"
++#include "compat/openssl.h"
+ #include "ip/Address.h"
+ #include "mgr/Action.h"
+ #include "mgr/Command.h"
 diff --git a/src/ssl/gadgets.cc b/src/ssl/gadgets.cc
-index c091a63fe..1054d44eb 100644
+index c091a63fe..0a4c49d5b 100644
 --- a/src/ssl/gadgets.cc
 +++ b/src/ssl/gadgets.cc
-@@ -381,13 +381,8 @@ mimicExtensions(Security::CertPointer & cert, Security::CertPointer const &mimic
+@@ -9,11 +9,6 @@
+ #include "squid.h"
+ #include "ssl/gadgets.h"
+ 
+-#include <openssl/asn1.h>
+-#if HAVE_OPENSSL_X509V3_H
+-#include <openssl/x509v3.h>
+-#endif
+-
+ EVP_PKEY * Ssl::createSslPrivateKey()
+ {
+     Security::PrivateKeyPointer pkey(EVP_PKEY_new());
+@@ -381,13 +376,8 @@ mimicExtensions(Security::CertPointer & cert, Security::CertPointer const &mimic
          DecipherOnly
      };
  
@@ -644,7 +813,7 @@ index c091a63fe..1054d44eb 100644
  
      int added = 0;
      int nid;
-@@ -496,25 +491,25 @@ static bool buildCertificate(Security::CertPointer & cert, Ssl::CertificatePrope
+@@ -496,25 +486,25 @@ static bool buildCertificate(Security::CertPointer & cert, Ssl::CertificatePrope
      // objects.
      ASN1_TIME *aTime = NULL;
      if (!properties.setValidBefore && properties.mimicCert.get())
@@ -678,7 +847,7 @@ index c091a63fe..1054d44eb 100644
          return false;
  
      int addedExtensions = 0;
-@@ -844,21 +839,21 @@ bool Ssl::certificateMatchesProperties(X509 *cert, CertificateProperties const &
+@@ -844,21 +834,21 @@ bool Ssl::certificateMatchesProperties(X509 *cert, CertificateProperties const &
          return false;
  
      if (!properties.setValidBefore) {
@@ -706,16 +875,21 @@ index c091a63fe..1054d44eb 100644
          // notAfter does not exist (0) or  it is in the past (<0)
          return false;
      }
-@@ -948,7 +943,6 @@ Ssl::CertificatesCmp(const Security::CertPointer &cert1, const Security::CertPoi
+@@ -948,18 +938,10 @@ Ssl::CertificatesCmp(const Security::CertPointer &cert1, const Security::CertPoi
  const ASN1_BIT_STRING *
  Ssl::X509_get_signature(const Security::CertPointer &cert)
  {
 -#if HAVE_LIBCRYPTO_X509_GET0_SIGNATURE
- #if SQUID_USE_CONST_X509_GET0_SIGNATURE_ARGS
-     const ASN1_BIT_STRING *sig = nullptr;
-     const X509_ALGOR *sig_alg = nullptr;
-@@ -958,8 +952,5 @@ Ssl::X509_get_signature(const Security::CertPointer &cert)
- #endif
+-#if SQUID_USE_CONST_X509_GET0_SIGNATURE_ARGS
+-    const ASN1_BIT_STRING *sig = nullptr;
+-    const X509_ALGOR *sig_alg = nullptr;
+-#else
+-    ASN1_BIT_STRING *sig = nullptr;
+-    X509_ALGOR *sig_alg = nullptr;
+-#endif
++    SQUID_CONST_X509_GET0_SIGNATURE_ARGS ASN1_BIT_STRING *sig = nullptr;
++    SQUID_CONST_X509_GET0_SIGNATURE_ARGS X509_ALGOR *sig_alg = nullptr;
++
      X509_get0_signature(&sig, &sig_alg, cert.get());
      return sig;
 -#else
@@ -723,8 +897,44 @@ index c091a63fe..1054d44eb 100644
 -#endif
  }
  
+diff --git a/src/ssl/gadgets.h b/src/ssl/gadgets.h
+index b0e0d4b75..323a7fe7c 100644
+--- a/src/ssl/gadgets.h
++++ b/src/ssl/gadgets.h
+@@ -13,12 +13,18 @@
+ #include "security/forward.h"
+ #include "ssl/crtd_message.h"
+ 
++#if USE_OPENSSL
++#include "compat/openssl.h"
++#if HAVE_OPENSSL_ASN1_H
++#include <openssl/asn1.h>
++#endif
+ #if HAVE_OPENSSL_TXT_DB_H
+ #include <openssl/txt_db.h>
+ #endif
+ #if HAVE_OPENSSL_X509V3_H
+ #include <openssl/x509v3.h>
+ #endif
++#endif
+ #include <string>
+ 
+ namespace Ssl
+@@ -29,12 +35,6 @@ namespace Ssl
+  because they are used by security_file_certgen helper.
+  */
+ 
+-#if SQUID_USE_CONST_SSL_METHOD
+-typedef const SSL_METHOD * ContextMethod;
+-#else
+-typedef SSL_METHOD * ContextMethod;
+-#endif
+-
+ #if !defined(SQUID_SSL_SIGN_HASH_IF_NONE)
+ #define SQUID_SSL_SIGN_HASH_IF_NONE "sha256"
+ #endif
 diff --git a/src/ssl/support.cc b/src/ssl/support.cc
-index e2cb85264..435ae21d5 100644
+index e2cb85264..cdb49937d 100644
 --- a/src/ssl/support.cc
 +++ b/src/ssl/support.cc
 @@ -97,18 +97,34 @@ ssl_ask_password(SSL_CTX * context, const char * prompt)
@@ -783,28 +993,6 @@ index e2cb85264..435ae21d5 100644
          }
  
          rsa = rsa_1024;
-@@ -126,17 +147,17 @@ ssl_temp_rsa_cb(SSL * ssl, int anInt, int keylen)
- 
-     default:
-         debugs(83, DBG_IMPORTANT, "ssl_temp_rsa_cb: Unexpected key length " << keylen);
--        return NULL;
-+        return nullptr;
-     }
- 
--    if (rsa == NULL) {
-+    if (rsa == nullptr) {
-         debugs(83, DBG_IMPORTANT, "ssl_temp_rsa_cb: Failed to generate key " << keylen);
--        return NULL;
-+        return nullptr;
-     }
- 
-     if (newkey) {
-         if (Debug::Enabled(83, 5))
--            PEM_write_RSAPrivateKey(debug_log, rsa, NULL, NULL, 0, NULL, NULL);
-+            PEM_write_RSAPrivateKey(debug_log, rsa, nullptr, nullptr, 0, nullptr, nullptr);
- 
-         debugs(83, DBG_IMPORTANT, "Generated ephemeral RSA key of length " << keylen);
-     }
 @@ -232,13 +253,6 @@ bool Ssl::checkX509ServerValidity(X509 *cert, const char *server)
      return matchX509CommonNames(cert, (void *)server, check_domain);
  }
@@ -819,21 +1007,17 @@ index e2cb85264..435ae21d5 100644
  /// \ingroup ServerProtocolSSLInternal
  static int
  ssl_verify_cb(int ok, X509_STORE_CTX * ctx)
-@@ -469,8 +483,13 @@ Ssl::Initialize(void)
+@@ -469,8 +483,7 @@ Ssl::Initialize(void)
          return;
      initialized = true;
  
-+#if HAVE_LIBSSL_OPENSSL_INIT_SSL
-+    // No explicit initialisation is required.
-+    //OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS, nullptr);
-+#else
-     SSL_load_error_strings();
-     SSLeay_add_ssl_algorithms();
-+#endif
+-    SSL_load_error_strings();
+-    SSLeay_add_ssl_algorithms();
++    SQUID_OPENSSL_init_ssl();
  
  #if HAVE_OPENSSL_ENGINE_H
      if (::Config.SSL.ssl_engine) {
-@@ -905,8 +924,8 @@ Ssl::verifySslCertificate(Security::ContextPointer &ctx, CertificateProperties c
+@@ -905,8 +918,8 @@ Ssl::verifySslCertificate(Security::ContextPointer &ctx, CertificateProperties c
  #endif
      if (!cert)
          return false;
@@ -844,7 +1028,7 @@ index e2cb85264..435ae21d5 100644
      return (X509_cmp_current_time(time_notBefore) < 0 && X509_cmp_current_time(time_notAfter) > 0);
  }
  
-@@ -949,11 +968,7 @@ hasAuthorityInfoAccessCaIssuers(X509 *cert)
+@@ -949,11 +962,7 @@ hasAuthorityInfoAccessCaIssuers(X509 *cert)
              if (ad->location->type == GEN_URI) {
                  xstrncpy(uri,
                           reinterpret_cast<const char *>(
@@ -856,7 +1040,7 @@ index e2cb85264..435ae21d5 100644
                           ),
                           sizeof(uri));
              }
-@@ -1115,12 +1130,8 @@ completeIssuers(X509_STORE_CTX *ctx, STACK_OF(X509) *untrustedCerts)
+@@ -1115,12 +1124,8 @@ completeIssuers(X509_STORE_CTX *ctx, STACK_OF(X509) *untrustedCerts)
  {
      debugs(83, 2,  "completing " << sk_X509_num(untrustedCerts) << " OpenSSL untrusted certs using " << SquidUntrustedCerts.size() << " configured untrusted certificates");
  
@@ -869,7 +1053,7 @@ index e2cb85264..435ae21d5 100644
      X509 *current = X509_STORE_CTX_get0_cert(ctx);
      int i = 0;
      for (i = 0; current && (i < depth); ++i) {
-@@ -1155,11 +1166,7 @@ untrustedToStoreCtx_cb(X509_STORE_CTX *ctx,void *data)
+@@ -1155,11 +1160,7 @@ untrustedToStoreCtx_cb(X509_STORE_CTX *ctx,void *data)
      // OpenSSL already maintains ctx->untrusted but we cannot modify
      // internal OpenSSL list directly. We have to give OpenSSL our own
      // list, but it must include certificates on the OpenSSL ctx->untrusted
@@ -881,7 +1065,7 @@ index e2cb85264..435ae21d5 100644
      STACK_OF(X509) *sk = sk_X509_dup(oldUntrusted); // oldUntrusted is always not NULL
  
      for (int i = 0; i < sk_X509_num(sslUntrustedStack); ++i) {
-@@ -1172,13 +1179,9 @@ untrustedToStoreCtx_cb(X509_STORE_CTX *ctx,void *data)
+@@ -1172,13 +1173,9 @@ untrustedToStoreCtx_cb(X509_STORE_CTX *ctx,void *data)
      if (SquidUntrustedCerts.size() > 0)
          completeIssuers(ctx, sk);
  
@@ -897,6 +1081,15 @@ index e2cb85264..435ae21d5 100644
      sk_X509_free(sk); // Release sk list
      return ret;
  }
--- 
-2.16.4
-
+diff --git a/src/ssl/support.h b/src/ssl/support.h
+index 38c080bfb..40dc2903a 100644
+--- a/src/ssl/support.h
++++ b/src/ssl/support.h
+@@ -15,6 +15,7 @@
+ 
+ #include "base/CbDataList.h"
+ #include "comm/forward.h"
++#include "compat/openssl.h"
+ #include "sbuf/SBuf.h"
+ #include "security/forward.h"
+ #include "ssl/gadgets.h"
