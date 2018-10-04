@@ -67,7 +67,7 @@ define Build/Configure
 		--prefix=/usr/ \
 		--exec-prefix=/usr/ \
 		--enable-milter \
-		--disable-xml \
+		--with-xml=no \
 		--disable-bzip2 \
 		--with-user nobody \
 		--with-group nogroup \
