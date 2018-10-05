@@ -15,7 +15,7 @@ PKG_HASH:=f1156df22fc2365a31a3dc5f752c53aad49e34a5e22d75ed231cd97eaa437f9d
 
 PKG_LICENSE:=BSD-3-Clause
 PKG_MAINTAINER:=W. Michael Petullo <mike@flyn.org>
-PKG_INSTALL:=1
+PKG_INSTALL:=2
 
 PKG_FIXUP:=autoreconf
 
@@ -62,6 +62,8 @@ define Package/libhwloc/description
 $(call Package/hwloc/Default/description)
   This package contains the hwloc libraries.
 endef
+
+CONFIGURE_ARGS+=--disable-libxml2
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(STAGING_DIR)/usr/include
