@@ -37,6 +37,7 @@ define Package/fish/description
 endef
 
 CONFIGURE_VARS += ac_cv_file__proc_self_stat=yes
+CONFIGURE_ARGS += --without-included-pcre2
 TARGET_CXXFLAGS += -std=c++0x
 
 define Package/fish/install
