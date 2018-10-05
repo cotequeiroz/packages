@@ -9,12 +9,14 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=jool
 PKG_VERSION:=3.5.7
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/NICMx/Jool/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=b8e95d1526cd2434dedbae292afd2d17f0780ac2dca2be21264712b41eb76a3d
-PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/Jool-$(PKG_VERSION)
+PKG_GITHASH:=de791931d94e972c36bb3c102a9cadab5230c285
+
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_GITHASH).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/NICMx/Jool/tar.gz/https://codeload.github.com/NICMx/Jool/tar.gz/$(PKG_GITHASH)?
+PKG_HASH:=80cebfd1558617fd49173b88dba4277575770e886040f2d4565aaa21ac28342e
+PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/Jool-$(PKG_GITHASH)
 
 PKG_MAINTAINER:=Dan Luedtke <mail@danrl.com>
 PKG_LICENSE:=GPL-2.0
