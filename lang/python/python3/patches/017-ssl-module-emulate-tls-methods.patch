@@ -35,15 +35,7 @@ SSL_CTX_set_min/max_proto_version().
  /* Include OpenSSL header files */
  #include "openssl/rsa.h"
  #include "openssl/crypto.h"
-@@ -63,6 +55,7 @@ static PySocketModule_APIObject PySocket
- #include "openssl/err.h"
- #include "openssl/rand.h"
- #include "openssl/bio.h"
-+#include "openssl/dh.h"
- 
- #ifndef HAVE_X509_VERIFY_PARAM_SET1_HOST
- #  ifdef LIBRESSL_VERSION_NUMBER
-@@ -200,6 +193,7 @@ static void _PySSLFixErrno(void) {
+@@ -201,6 +193,7 @@ static void _PySSLFixErrno(void) {
  #ifndef PY_OPENSSL_1_1_API
  /* OpenSSL 1.1 API shims for OpenSSL < 1.1.0 and LibreSSL < 2.7.0 */
  
@@ -51,7 +43,7 @@ SSL_CTX_set_min/max_proto_version().
  #define TLS_method SSLv23_method
  #define TLS_client_method SSLv23_client_method
  #define TLS_server_method SSLv23_server_method
-@@ -1304,8 +1298,9 @@ _get_peer_alt_names (X509 *certificate)
+@@ -1305,8 +1298,9 @@ _get_peer_alt_names (X509 *certificate)
                      goto fail;
                  }
                  PyTuple_SET_ITEM(t, 0, v);
@@ -63,7 +55,7 @@ SSL_CTX_set_min/max_proto_version().
                  if (v == NULL) {
                      Py_DECREF(t);
                      goto fail;
-@@ -1607,7 +1602,7 @@ _decode_certificate(X509 *certificate) {
+@@ -1608,7 +1602,7 @@ _decode_certificate(X509 *certificate) {
      Py_DECREF(sn_obj);
  
      (void) BIO_reset(biobuf);
@@ -72,7 +64,7 @@ SSL_CTX_set_min/max_proto_version().
      ASN1_TIME_print(biobuf, notBefore);
      len = BIO_gets(biobuf, buf, sizeof(buf)-1);
      if (len < 0) {
-@@ -1624,7 +1619,7 @@ _decode_certificate(X509 *certificate) {
+@@ -1625,7 +1619,7 @@ _decode_certificate(X509 *certificate) {
      Py_DECREF(pnotBefore);
  
      (void) BIO_reset(biobuf);
@@ -81,7 +73,7 @@ SSL_CTX_set_min/max_proto_version().
      ASN1_TIME_print(biobuf, notAfter);
      len = BIO_gets(biobuf, buf, sizeof(buf)-1);
      if (len < 0) {
-@@ -2895,44 +2890,124 @@ _ssl__SSLContext_impl(PyTypeObject *type
+@@ -2896,44 +2890,124 @@ _ssl__SSLContext_impl(PyTypeObject *type
      long options;
      SSL_CTX *ctx = NULL;
      X509_VERIFY_PARAM *params;
@@ -224,7 +216,7 @@ SSL_CTX_set_min/max_proto_version().
          _setSSLError(NULL, 0, __FILE__, __LINE__);
          return NULL;
      }
-@@ -3020,7 +3095,7 @@ _ssl__SSLContext_impl(PyTypeObject *type
+@@ -3021,7 +3095,7 @@ _ssl__SSLContext_impl(PyTypeObject *type
         conservative and assume it wasn't fixed until release. We do this check
         at runtime to avoid problems from the dynamic linker.
         See #25672 for more on this. */
@@ -233,7 +225,7 @@ SSL_CTX_set_min/max_proto_version().
      if (!(libver >= 0x10001000UL && libver < 0x1000108fUL) &&
          !(libver >= 0x10000000UL && libver < 0x100000dfUL)) {
          SSL_CTX_set_mode(self->ctx, SSL_MODE_RELEASE_BUFFERS);
-@@ -4980,7 +5055,7 @@ PySSL_RAND(int len, int pseudo)
+@@ -4981,7 +5055,7 @@ PySSL_RAND(int len, int pseudo)
      if (bytes == NULL)
          return NULL;
      if (pseudo) {
@@ -242,7 +234,7 @@ SSL_CTX_set_min/max_proto_version().
          if (ok == 0 || ok == 1)
              return Py_BuildValue("NO", bytes, ok == 1 ? Py_True : Py_False);
      }
-@@ -5619,7 +5694,9 @@ PyInit__ssl(void)
+@@ -5620,7 +5694,9 @@ PyInit__ssl(void)
          return NULL;
      PySocketModule = *socket_api;
  
@@ -253,7 +245,7 @@ SSL_CTX_set_min/max_proto_version().
      /* Load all algorithms and initialize cpuid */
      OPENSSL_add_all_algorithms_noconf();
      /* Init OpenSSL */
-@@ -5997,10 +6074,10 @@ PyInit__ssl(void)
+@@ -5998,10 +6074,10 @@ PyInit__ssl(void)
          return NULL;
  
      /* OpenSSL version */
@@ -266,7 +258,7 @@ SSL_CTX_set_min/max_proto_version().
      r = PyLong_FromUnsignedLong(libver);
      if (r == NULL)
          return NULL;
-@@ -6010,7 +6087,7 @@ PyInit__ssl(void)
+@@ -6011,7 +6087,7 @@ PyInit__ssl(void)
      r = Py_BuildValue("IIIII", major, minor, fix, patch, status);
      if (r == NULL || PyModule_AddObject(m, "OPENSSL_VERSION_INFO", r))
          return NULL;
