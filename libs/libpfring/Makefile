@@ -56,6 +56,7 @@ define Build/InstallDev
 endef
 
 CONFIGURE_VARS += \
+	ac_cv_lib_nl_3_nl_socket_alloc=n \
 	MACHINE="$(ARCH)"
 
 define Package/libpfring/install
