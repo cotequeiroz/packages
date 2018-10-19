@@ -1,0 +1,141 @@
+From 76d7b258e18ed3aea7fa3ed66cba5898b818ef2e Mon Sep 17 00:00:00 2001
+From: Rosen Penev <rosenp@gmail.com>
+Date: Sun, 14 Oct 2018 19:35:29 -0700
+Subject: [PATCH 1/3] net-snmp: Update to 5.8.0
+
+Signed-off-by: Rosen Penev <rosenp@gmail.com>
+---
+ net/net-snmp/Makefile                            |  6 +++---
+ net/net-snmp/patches/000-cross-compile.patch     | 10 +++++-----
+ net/net-snmp/patches/100-debian-statistics.patch |  4 ++--
+ net/net-snmp/patches/110-debian-makefiles.patch  |  6 +++---
+ net/net-snmp/patches/160-no_ldconfig.patch       |  2 +-
+ net/net-snmp/patches/170-ldflags.patch           |  4 ++--
+ 6 files changed, 16 insertions(+), 16 deletions(-)
+
+diff --git a/net/net-snmp/Makefile b/net/net-snmp/Makefile
+index ecb4efa12..3a795c957 100644
+--- a/net/net-snmp/Makefile
++++ b/net/net-snmp/Makefile
+@@ -8,12 +8,12 @@
+ include $(TOPDIR)/rules.mk
+ 
+ PKG_NAME:=net-snmp
+-PKG_VERSION:=5.7.3
+-PKG_RELEASE:=10
++PKG_VERSION:=5.8.0
++PKG_RELEASE:=1
+ 
+ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+ PKG_SOURCE_URL:=@SF/net-snmp
+-PKG_HASH:=12ef89613c7707dc96d13335f153c1921efc9d61d3708ef09f3fc4a7014fb4f0
++PKG_HASH:=b2fc3500840ebe532734c4786b0da4ef0a5f67e51ef4c86b3345d697e4976adf
+ PKG_MAINTAINER:=Stijn Tintel <stijn@linux-ipv6.be>
+ PKG_LICENSE:=MIT BSD-3-Clause-Clear
+ 
+diff --git a/net/net-snmp/patches/000-cross-compile.patch b/net/net-snmp/patches/000-cross-compile.patch
+index 290622098..730bdbcfc 100644
+--- a/net/net-snmp/patches/000-cross-compile.patch
++++ b/net/net-snmp/patches/000-cross-compile.patch
+@@ -15,14 +15,14 @@ link tests to fail due to a stray "no" word getting passed to the linker.
+ Signed-off-by: Jo-Philipp Wich <jo@mein.io>
+ --- a/configure.d/config_os_libs2
+ +++ b/configure.d/config_os_libs2
+-@@ -226,14 +226,22 @@ if test "x$with_nl" != "xno"; then
+-     case $target_os in
+-     linux*) # Check for libnl (linux)
++@@ -254,14 +254,22 @@ if test "x$with_nl" != "xno"; then
++         )
++ 
+          netsnmp_save_CPPFLAGS="$CPPFLAGS"
+--        CPPFLAGS="-I/usr/include/libnl3 $CPPFLAGS"
++-        CPPFLAGS="${LIBNL3_CFLAGS} $CPPFLAGS"
+ -        NETSNMP_SEARCH_LIBS(nl_connect, nl-3,
+ -            [AC_CHECK_HEADERS(netlink/netlink.h)
+--            EXTERNAL_MIBGROUP_INCLUDES="$EXTERNAL_MIBGROUP_INCLUDES -I/usr/include/libnl3"],
++-            EXTERNAL_MIBGROUP_INCLUDES="$EXTERNAL_MIBGROUP_INCLUDES ${LIBNL3_CFLAGS}"],
+ -            [CPPFLAGS="$netsnmp_save_CPPFLAGS"], [], [], [LMIBLIBS])
+ +        netsnmp_netlink_include_flags=""
+          if test "x$ac_cv_header_netlink_netlink_h" != xyes; then
+diff --git a/net/net-snmp/patches/100-debian-statistics.patch b/net/net-snmp/patches/100-debian-statistics.patch
+index c6e1db448..2b24d9443 100644
+--- a/net/net-snmp/patches/100-debian-statistics.patch
++++ b/net/net-snmp/patches/100-debian-statistics.patch
+@@ -1,6 +1,6 @@
+ --- a/agent/mibgroup/mibII/interfaces.c
+ +++ b/agent/mibgroup/mibII/interfaces.c
+-@@ -1590,6 +1590,10 @@ Interface_Scan_Init(void)
++@@ -1588,6 +1588,10 @@ Interface_Scan_Init(void)
+          struct ifnet   *nnew;
+          char           *stats, *ifstart = line;
+  
+@@ -11,7 +11,7 @@
+          if (line[strlen(line) - 1] == '\n')
+              line[strlen(line) - 1] = '\0';
+  
+-@@ -1622,7 +1622,7 @@ Interface_Scan_Init(void)
++@@ -1620,7 +1624,7 @@ Interface_Scan_Init(void)
+                                                 &coll) != 5)) {
+              if ((scan_line_to_use == scan_line_2_2)
+                  && !strstr(line, "No statistics available"))
+diff --git a/net/net-snmp/patches/110-debian-makefiles.patch b/net/net-snmp/patches/110-debian-makefiles.patch
+index 5ace74321..7b71ed087 100644
+--- a/net/net-snmp/patches/110-debian-makefiles.patch
++++ b/net/net-snmp/patches/110-debian-makefiles.patch
+@@ -1,7 +1,7 @@
+ diff -uNr a/local/Makefile.in b/local/Makefile.in
+ --- a/local/Makefile.in	2014-02-20 08:36:42.000000000 +0800
+ +++ b/local/Makefile.in	2014-05-27 13:21:34.245223503 +0800
+-@@ -103,7 +103,7 @@
++@@ -101,7 +101,7 @@
+  
+  mib2c.made: $(srcdir)/mib2c
+  	if test "x$(PERL)" != "x" ; then \
+@@ -13,7 +13,7 @@ diff -uNr a/local/Makefile.in b/local/Makefile.in
+ diff -uNr a/Makefile.top b/Makefile.top
+ --- a/Makefile.top	2014-02-20 08:36:42.000000000 +0800
+ +++ b/Makefile.top	2014-05-27 13:26:53.023737120 +0800
+-@@ -27,6 +27,7 @@
++@@ -28,6 +28,7 @@
+  snmplibdir	= $(datadir)/snmp
+  mibdir		= $(snmplibdir)/mibs
+  persistentdir	= @PERSISTENT_DIRECTORY@
+@@ -24,7 +24,7 @@ diff -uNr a/Makefile.top b/Makefile.top
+ diff -uNr a/mibs/Makefile.in b/mibs/Makefile.in
+ --- a/mibs/Makefile.in	2014-02-20 08:36:42.000000000 +0800
+ +++ b/mibs/Makefile.in	2014-05-27 13:25:07.151988585 +0800
+-@@ -49,11 +49,15 @@
++@@ -47,11 +47,15 @@
+  UCDMIBS = UCD-SNMP-MIB.txt UCD-DEMO-MIB.txt UCD-IPFWACC-MIB.txt \
+  	UCD-DLMOD-MIB.txt UCD-DISKIO-MIB.txt
+  
+diff --git a/net/net-snmp/patches/160-no_ldconfig.patch b/net/net-snmp/patches/160-no_ldconfig.patch
+index 7b65c1867..d9de73e0d 100644
+--- a/net/net-snmp/patches/160-no_ldconfig.patch
++++ b/net/net-snmp/patches/160-no_ldconfig.patch
+@@ -1,6 +1,6 @@
+ --- a/configure
+ +++ b/configure
+-@@ -14197,7 +14197,7 @@ linux* | k*bsd*-gnu | kopensolaris*-gnu)
++@@ -15097,7 +15097,7 @@ linux* | k*bsd*-gnu | kopensolaris*-gnu)
+    need_version=no
+    library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major $libname${shared_ext}'
+    soname_spec='${libname}${release}${shared_ext}$major'
+diff --git a/net/net-snmp/patches/170-ldflags.patch b/net/net-snmp/patches/170-ldflags.patch
+index 2d572c06f..656fdede4 100644
+--- a/net/net-snmp/patches/170-ldflags.patch
++++ b/net/net-snmp/patches/170-ldflags.patch
+@@ -1,8 +1,8 @@
+ --- a/Makefile.top
+ +++ b/Makefile.top
+-@@ -85,7 +85,7 @@ LIBCURRENT  = 30
++@@ -87,7 +87,7 @@ LIBCURRENT  = 30
+  LIBAGE      = 0
+- LIBREVISION = 3
++ LIBREVISION = 0
+  
+ -LIB_LD_CMD      = $(LIBTOOL) --mode=link $(LINKCC) $(CFLAGS) -rpath $(libdir) -version-info $(LIBCURRENT):$(LIBREVISION):$(LIBAGE) -o
+ +LIB_LD_CMD      = $(LIBTOOL) --mode=link $(LINKCC) $(CFLAGS) -rpath $(libdir) $(LDFLAGS) -version-info $(LIBCURRENT):$(LIBREVISION):$(LIBAGE) -o
+-- 
+2.19.1
+

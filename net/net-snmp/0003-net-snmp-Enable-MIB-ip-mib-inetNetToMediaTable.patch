@@ -1,0 +1,41 @@
+From b76cbe0427d6d1e4ecb9b7c4d78a40e5ed398706 Mon Sep 17 00:00:00 2001
+From: Karol Babioch <karol@babioch.de>
+Date: Sun, 25 Mar 2018 23:36:18 +0200
+Subject: [PATCH 3/3] net-snmp: Enable MIB ip-mib/inetNetToMediaTable
+
+This enables the table `inetNetToMediaTable` from `ip-mib`, which implements
+the `ipNetToPhysicalTable`. The former one is already enabled with the current
+configuraiton, but it has been deprecatd by the IP version-neutral
+`ipNetToMediaTable`, which also supports IPv6 entries [1]. It also disables all
+other submodules from this MIB to keep the footprint small.
+
+[1]: http://net-snmp.sourceforge.net/docs/mibs/IP-MIB.txt
+
+Signed-off-by: Karol Babioch <karol@babioch.de>
+---
+ net/net-snmp/Makefile | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/net-snmp/Makefile b/net/net-snmp/Makefile
+index 3a795c957..65ae12fc9 100644
+--- a/net/net-snmp/Makefile
++++ b/net/net-snmp/Makefile
+@@ -128,6 +128,7 @@ SNMP_MIB_MODULES_INCLUDED = \
+ 	host/hr_system \
+ 	ieee802dot11 \
+ 	if-mib/ifXTable \
++	ip-mib/inetNetToMediaTable \
+ 	mibII/at \
+ 	mibII/icmp \
+ 	mibII/ifTable \
+@@ -164,6 +165,7 @@ SNMP_MIB_MODULES_EXCLUDED = \
+ 	hardware \
+ 	host \
+ 	if-mib \
++	ip-mib \
+ 	mibII \
+ 	notification \
+ 	notification-log-mib \
+-- 
+2.19.1
+
