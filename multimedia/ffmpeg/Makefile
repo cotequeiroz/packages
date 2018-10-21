@@ -10,7 +10,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ffmpeg
 PKG_VERSION:=3.2.12
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://ffmpeg.org/releases/
@@ -343,8 +343,8 @@ define Package/libffmpeg-full
 $(call Package/libffmpeg/Default)
  TITLE+= (full)
  DEPENDS+= +alsa-lib +PACKAGE_libopus:libopus \
-	   +SOFT_FLOAT:shine +!SOFT_FLOAT:lame-lib \
-	   +!SOFT_FLOAT:libx264 +!SOFT_FLOAT:fdk-aac
+	   +SOFT_FLOAT:shine
+	   +!SOFT_FLOAT:lame-lib +!SOFT_FLOAT:libx264 +!SOFT_FLOAT:fdk-aac
  VARIANT:=full
 endef
 
