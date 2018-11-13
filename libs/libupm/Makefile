@@ -53,7 +53,7 @@ define Package/libupm
 endef
 
 define Package/libupm/install/Default
-	$(INSTALL_DIR) $(1)/usr/lib/{node/,python2.7/site-packages}; \
+	$(INSTALL_DIR) $(1)/usr/lib/{node/,python2.7/site-packages/upm}; \
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libupm-$(2).so* $(1)/usr/lib/; \
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/jsupm_$(2) $(1)/usr/lib/node/; \
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/python2.7/site-packages/{pyupm_$(2).py,_pyupm_$(2).so} \
