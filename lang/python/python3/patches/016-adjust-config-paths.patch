@@ -51,7 +51,7 @@
    LIBPL='$(prefix)'"/lib/python${VERSION}/config-${LDVERSION}-${PLATFORM_TRIPLET}"
 --- a/configure.ac
 +++ b/configure.ac
-@@ -4682,7 +4682,7 @@ AC_MSG_RESULT($LDVERSION)
+@@ -4680,7 +4680,7 @@ AC_MSG_RESULT($LDVERSION)
  
  dnl define LIBPL after ABIFLAGS and LDVERSION is defined.
  AC_SUBST(PY_ENABLE_SHARED)
