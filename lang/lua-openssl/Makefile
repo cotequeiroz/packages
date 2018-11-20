@@ -8,17 +8,15 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=lua-openssl
-PKG_VERSION:=0.7.1
+PKG_VERSION:=0.7.3
 PKG_RELEASE:=1
+
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/zhaozg/lua-openssl/tar.gz/$(PKG_VERSION)?
+PKG_HASH:=d0eb26510ba4d44d69504b49d58323e093788188297910a2f72c5d761a37ca6d
+
 PKG_MAINTAINER:=Amnon Paz <pazamnon@gmail.com>
 PKG_LICENSE:=MIT
-
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_MIRROR_HASH:=225e3fe09226ff72968a7f36a33e207d27332107456a754abbaa59f99a3038f3
-PKG_SOURCE_URL:=https://github.com/zhaozg/lua-openssl.git
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=b104bbe914d279276560f188854036075b99f724
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -27,8 +25,8 @@ define Package/lua-openssl
   SECTION:=lang
   CATEGORY:=Languages
   TITLE:=Lua openSSL binding
-  URL:=http://github.com/zhaozg/lua-openssl
-  DEPENDS:=+lua +libopenssl +librt
+  URL:=https://github.com/zhaozg/lua-openssl
+  DEPENDS:=+lua +libopenssl +librt +luajit
 endef
 
 define Package/lua-openssl/description
