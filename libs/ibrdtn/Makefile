@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ibrdtn
 PKG_VERSION:=1.0.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://www.ibr.cs.tu-bs.de/projects/ibr-dtn/releases
@@ -25,7 +25,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/ibrdtn
   SECTION:=libs
   CATEGORY:=Libraries
-  DEPENDS:=+ibrcommon +zlib
+  DEPENDS:=+ibrcommon +zlib +libstdcpp
   TITLE:=IBR-DTN Library
 endef
 
