@@ -26,7 +26,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/ibrdtn
   SECTION:=libs
   CATEGORY:=Libraries
-  DEPENDS:=+ibrcommon +zlib
+  DEPENDS:=+ibrcommon +zlib +libstdcpp
   TITLE:=IBR-DTN Library
 endef
 
