@@ -1,0 +1,81 @@
+From 3cbf2e26b51f5fbf88b7d97304238fe84583f8be Mon Sep 17 00:00:00 2001
+From: Stijn Tintel <stijn@linux-ipv6.be>
+Date: Thu, 27 Dec 2018 22:43:28 +0100
+Subject: [PATCH 1/2] ipset: support libipset version 7
+
+Signed-off-by: Stijn Tintel <stijn@linux-ipv6.be>
+Rebased-by: Eneas U de Queiroz <cote2004-github@yahoo.com>
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 92bfc1b..bcfb74b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -39,6 +39,14 @@ add_definitions(-D_GNU_SOURCE)
+ 
+ include_directories("${PROJECT_BINARY_DIR}")
+ 
++find_package(PkgConfig REQUIRED)
++
++pkg_check_modules(LIBIPSET REQUIRED libipset)
++
++if (LIBIPSET_VERSION_MAJOR VERSION_LESS 7)
++    add_definitions("-DWITH_LIBIPSET_V6_COMPAT")
++endif ()
++
+ list(APPEND ext_libs ipset)
+ list(APPEND ext_libs mosquitto)
+ 
+diff --git a/src/ipset.c b/src/ipset.c
+index 64c7ad8..7258f4c 100644
+--- a/src/ipset.c
++++ b/src/ipset.c
+@@ -21,14 +21,23 @@
+ #include <arpa/inet.h>
+ #include <libipset/session.h>
+ #include <libipset/types.h>
+-#include <libipset/ui.h>
+ #include <string.h>
+ 
++#ifdef WITH_LIBIPSET_V6_COMPAT
++#include <libipset/ui.h>
++#else
++#include <libipset/ipset.h>
++#endif
++
+ #include "log.h"
+ 
+ static int exit_error(int e, struct ipset_session *sess)
+ {
++#ifdef WITH_LIBIPSET_V6_COMPAT
+     pr_err("ipset: %s\n", ipset_session_error(sess));
++#else
++    ipset_session_report(sess, ipset_session_report_type(sess), "ipset: %s\n");
++#endif
+     ipset_session_fini(sess);
+ 
+     return e;
+@@ -60,16 +69,24 @@ int ipset_add(char *set, char *elem)
+ 
+     ipset_load_types();
+ 
++#ifdef WITH_LIBIPSET_V6_COMPAT
+     sess = ipset_session_init(printf);
++#else
++    sess = ipset_session_init(NULL, NULL);
++#endif
+     if (sess == NULL) {
+         pr_err("ipset: failed to initialize session\n");
+         return 1;
+     }
+ 
++#ifndef WITH_LIBIPSET_V6_COMPAT
++    ipset_envopt_set(sess, IPSET_ENV_EXIST);
++#else
+     ret = ipset_envopt_parse(sess, IPSET_ENV_EXIST, NULL);
+     if (ret < 0) {
+         return exit_error(1, sess);
+     }
++#endif
+ 
+     ret = ipset_parse_setname(sess, IPSET_SETNAME, set);
+     if (ret < 0) {

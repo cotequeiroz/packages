@@ -1,0 +1,23 @@
+From 995ccb442303f08f6a41f3f3e1711776b256a1ba Mon Sep 17 00:00:00 2001
+From: Eneas U de Queiroz <cote2004-github@yahoo.com>
+Date: Thu, 3 Jan 2019 14:44:53 -0200
+Subject: [PATCH 2/2] CMakeLists.txt: fix detection of libipset version
+
+Use LIBIPSET_VERSION instead of LIBIPSET_VERSION_MAJOR, which apparently
+is not being set by cmake 3.12.4
+
+Signed-off-by: Eneas U de Queiroz <cote2004-github@yahoo.com>
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index bcfb74b..ba982f8 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -43,7 +43,7 @@ find_package(PkgConfig REQUIRED)
+ 
+ pkg_check_modules(LIBIPSET REQUIRED libipset)
+ 
+-if (LIBIPSET_VERSION_MAJOR VERSION_LESS 7)
++if (LIBIPSET_VERSION VERSION_LESS 7)
+     add_definitions("-DWITH_LIBIPSET_V6_COMPAT")
+ endif ()
+ 
