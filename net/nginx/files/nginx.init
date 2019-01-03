@@ -52,6 +52,12 @@ start_service() {
 		"${CONF_DIR}*.conf" "${CONF_DIR}*.locations"
 	procd_set_param respawn
 	procd_close_instance
+
+	# prime OCSP response
+	( sleep 5
+          FQDN="`cat /proc/sys/kernel/hostname`.`cat /proc/sys/kernel/domainname`"
+	  openssl s_client -connect ${FQDN}:443 -servername ${FQDN} -status < /dev/null > /dev/null 2> /dev/null
+	) &
 }
 
 
