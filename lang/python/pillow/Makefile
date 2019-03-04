@@ -12,38 +12,55 @@ PKG_RELEASE:=2
 
 PKG_SOURCE:=Pillow-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/P/Pillow
-PKG_HASH:=2ea3517cd5779843de8a759c2349a3cd8d3893e03ab47053b66d5ec6f8bc4f93
-PKG_BUILD_DIR:=$(BUILD_DIR)/Pillow-$(PKG_VERSION)
+PKG_HASH:=5233664eadfa342c639b9b9977190d64ad7aca4edc51a966394d7e08e7f38a9f
 PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
+
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-Pillow-$(PKG_VERSION)
 
 PKG_LICENSE:=CUSTOM
 PKG_LICENSE_FILES:=LICENSE
 
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
+include ../python3-package.mk
 
-define Package/pillow
-    SUBMENU:=Python
-    SECTION:=lang
-    CATEGORY:=Languages
-    TITLE:=The friendly PIL fork
-    URL:=https://python-pillow.org/
-    DEPENDS:=+python +libfreetype +libjpeg +zlib +libtiff
+PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
+
+define Package/python-pillow/Default
+  SUBMENU:=Python
+  SECTION:=lang
+  CATEGORY:=Languages
+  TITLE:=The friendly PIL fork
+  URL:=https://python-pillow.org/
+  DEPENDS:=+libjpeg +libtiff +zlib
 endef
 
-define Package/pillow/description
-    The friendly PIL fork
+define Package/python-pillow
+$(call Package/python-pillow/Default)
+  DEPENDS+=+PACKAGE_python-pillow:python
+  VARIANT:=python
 endef
 
-define Build/Compile
-	$(call Build/Compile/PyMod,,install --prefix=/usr --root=$(PKG_INSTALL_DIR))
+define Package/python-pillow/description
+  The friendly PIL fork
 endef
 
-define Package/pillow/install
-	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
-	$(CP) \
-		$(PKG_INSTALL_DIR)$(PYTHON_PKG_DIR)/* \
-		$(1)$(PYTHON_PKG_DIR)/
+define Package/python3-pillow
+$(call Package/python-pillow/Default)
+  DEPENDS+=+PACKAGE_python3-pillow:python3
+  VARIANT:=python3
 endef
 
-$(eval $(call BuildPackage,pillow))
+define Package/python3-pillow/description
+$(call Package/python-pillow/description)
+.
+(Variant for Python3)
+endef
+
+$(eval $(call PyPackage,python-pillow))
+$(eval $(call BuildPackage,python-pillow))
+$(eval $(call BuildPackage,python-pillow-src))
+
+$(eval $(call Py3Package,python3-pillow))
+$(eval $(call BuildPackage,python3-pillow))
+$(eval $(call BuildPackage,python3-pillow-src))
