@@ -28,7 +28,7 @@ define Package/django-simple-captcha
   CATEGORY:=Languages
   TITLE:=A very simple, yet powerful, Django captcha application
   URL:=https://github.com/mbi/django-simple-captcha
-  DEPENDS:=+python +python-six +django +pillow +django-ranged-response
+  DEPENDS:=+python +python-six +django +python-pillow +django-ranged-response
   VARIANT:=python
 endef
 
