@@ -27,7 +27,7 @@ define Package/seafile-seahub
     CATEGORY:=Network
     TITLE:=Seafile server - seahub component
     URL:=https://seafile.com/
-    DEPENDS:=+python-simplejson +python +pillow +python-chardet +django +django-appconf \
+    DEPENDS:=+python-simplejson +python +python-pillow +python-chardet +django +django-appconf \
 		+django-compressor +django-constance +django-formtools +django-jsonfield \
 		+django-picklefield +django-postoffice +django-restframework \
 		+django-simple-captcha +django-statici18n +django-webpack-loader \
