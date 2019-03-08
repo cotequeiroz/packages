@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=django-simple-captcha
-PKG_VERSION:=0.5.9
-PKG_RELEASE:=2
+PKG_VERSION:=0.5.10
+PKG_RELEASE:=1
 PKG_LICENSE:=MIT
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).zip
 PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/d/${PKG_NAME}
-PKG_HASH:=0c30a14f02502119fd1a4d308dd5d2b899d0f4284825a396bbb010afd904754a
+PKG_HASH:=f71d20a294ce645f3ddd6cdf5bdfc693cecfe86b192f2069d2298344a3e82041
 
 include $(INCLUDE_DIR)/package.mk
 include ../python-package.mk
