@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=netdata
 PKG_VERSION:=1.12.2
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 PKG_MAINTAINER:=
 PKG_LICENSE:=GPL-3.0+
 PKG_LICENSE_FILES:=COPYING
@@ -51,6 +51,7 @@ CONFIGURE_ARGS += \
 	--disable-x86-sse \
 	--enable-lto \
 	--without-libcap \
+	--disable-plugin-cups \
 	--disable-plugin-nfacct
 
 define Package/netdata/conffiles
