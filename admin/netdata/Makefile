@@ -53,6 +53,7 @@ CONFIGURE_ARGS += \
 	--disable-x86-sse \
 	--enable-lto \
 	--without-libcap \
+	--disable-plugin-cups \
 	--disable-plugin-nfacct
 
 define Package/netdata/conffiles
