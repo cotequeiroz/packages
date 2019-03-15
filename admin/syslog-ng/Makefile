@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=syslog-ng
 PKG_VERSION:=3.20.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_MAINTAINER:=Josef Schlehofer <josef.schlehofer@nic.cz>
 PKG_LICENSE:=LGPL-2.1+
@@ -56,6 +56,7 @@ CONFIGURE_ARGS +=  \
 	--with-jsonc=system \
 	--enable-json=yes \
 	--enable-http=yes \
+	--disable-geoip2 \
 	--disable-smtp \
 	--disable-redis \
 	--disable-dependency-tracking \
