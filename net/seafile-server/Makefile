@@ -24,6 +24,20 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
 include ../../lang/python/python-package.mk
 
+# Current version-release of seanet-seahub should go here:
+SEAHUB_VERSION_RELEASE:=6.3.4-2
+
+# Check that the actual Makefile version-relase match the above.
+$(eval $(shell awk '/^PKG_VERSION.*=/ { print "SEAHUB_" $$$$0 }' ../seafile-seahub/Makefile))
+$(eval $(shell awk '/^PKG_RELEASE.*=/ { print "SEAHUB_" $$$$0 }' ../seafile-seahub/Makefile))
+ifneq ($(SEAHUB_VERSION_RELEASE),$(SEAHUB_PKG_VERSION)-$(SEAHUB_PKG_RELEASE))
+    $(error $(if $(SEAHUB_PKG_VERSION)$(SEAHUB_PKG_RELEASE), \
+		Mismatch between seafile-seahub and seafile-server Makefiles. \
+		Current seafile-seahub is $(SEAHUB_PKG_VERSION)-$(SEAHUB_PKG_RELEASE); \
+		seafile-server expects $(SEAHUB_VERSION_RELEASE), \
+		Could not get PKG_VERSION and PKG_RELEASE from seafile-seahub Makefile))
+endif
+
 define Package/seafile-server
     SECTION:=net
     CATEGORY:=Network
@@ -33,7 +47,7 @@ define Package/seafile-server
     DEPENDS:=+libarchive +libopenssl +glib2 +libsearpc +seafile-ccnet +seafile-seahub +sqlite3-cli +python-mysql +python-urllib3 \
 		+jansson +libevent2 +libevent2-openssl +zlib +libzdb +libsqlite3 +libmysqlclient \
 		+libpthread +libuuid +bash +procps-ng +procps-ng-pkill +SEAFILE_FUSE_SUPPORT:libfuse $(ICONV_DEPENDS)
-    EXTRA_DEPENDS:=seafile-seahub (=6.3.4-2)
+    EXTRA_DEPENDS:=seafile-seahub (=$(SEAHUB_VERSION_RELEASE))
     MENU:=1
 endef
 
