@@ -8,6 +8,9 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=seafile-seahub
+# Make sure to update SEAHUB_VERSION_RELEASE in seafile-server Makefile to match this
+# package's PKG_VERSION and PKG_RELEASE.  Keep them simple, since they are being read there by
+# $(eval $(shell awk '/^PKG_VERSION.*=/ { print "SEAHUB_" $$$$0 }' ../seafile-seahub/Makefile))
 PKG_VERSION:=6.3.4
 PKG_RELEASE:=2
 PKG_LICENSE:=Apache-2.0
