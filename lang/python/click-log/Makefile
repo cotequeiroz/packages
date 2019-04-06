@@ -23,7 +23,7 @@ define Package/python3-click-log
   SUBMENU:=Python
   URL:=http://github.com/mitsuhiko/click
   TITLE:=python3-click-log
-  DEPENDS:=+python3-click
+  DEPENDS:=+PACKAGE_python3-click-log:python3-click
   VARIANT:=python3
 endef
 
