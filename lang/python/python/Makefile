@@ -79,7 +79,7 @@ endef
 define Package/python-light
 $(call Package/python/Default)
   TITLE:=Python $(PYTHON_VERSION) light installation
-  DEPENDS:=+python-base +libffi +libbz2 +PYTHON_BLUETOOTH_SUPPORT:bluez-libs
+  DEPENDS:=+python-base +libffi +libbz2 +(PYTHON_BLUETOOTH_SUPPORT&&USB_SUPPORT):bluez-libs
 endef
 
 define Package/python-light/config
