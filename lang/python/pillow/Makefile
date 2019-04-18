@@ -7,17 +7,17 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=pillow
-PKG_VERSION:=5.3.0
-PKG_RELEASE:=2
+PKG_VERSION:=6.0.0
+PKG_RELEASE:=1
 
 PKG_SOURCE:=Pillow-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/P/Pillow
-PKG_HASH:=5233664eadfa342c639b9b9977190d64ad7aca4edc51a966394d7e08e7f38a9f
-PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
+PKG_HASH:=809c0a2ce9032cbcd7b5313f71af4bdc5c8c771cb86eb7559afd954cab82ebb5
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(BUILD_VARIANT)-Pillow-$(PKG_VERSION)
 
-PKG_LICENSE:=CUSTOM
+PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
+PKG_LICENSE:=HPND
 PKG_LICENSE_FILES:=LICENSE
 
 include $(INCLUDE_DIR)/package.mk
