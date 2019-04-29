@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-qrcode
 PKG_VERSION:=6.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 PKG_LICENSE:=BSD-3-Clause
 
 PKG_SOURCE:=qrcode-$(PKG_VERSION).tar.gz
@@ -28,7 +28,7 @@ define Package/python-qrcode
   MAINTAINER:=Eneas U de Queiroz <cote2004-github@yahoo.com>
   TITLE:=QR Code image generator
   URL:=https://github.com/lincolnloop/python-qrcode
-  DEPENDS:=+python +python-six +python-setuptools +pillow
+  DEPENDS:=+python +python-six +python-setuptools +python-pillow
   VARIANT:=python
 endef
 
