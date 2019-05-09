@@ -11,24 +11,29 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libevhtp
-PKG_VERSION:=1.2.0
-PKG_RELEASE:=2
+PKG_VERSION:=1.2.18
+PKG_RELEASE:=1
 # This package is building a static library, used by seafile-server
 # Every time the built library changes (metadata changes are exempt),
 # seafile-server needs a release bump to ensure the update is used.
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/criticalstack/libevhtp/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=d8d98072693f5f68ccd74d327dedfa2f6add4446ac2799689c2f58dd480aa301
+PKG_HASH:=316ede0d672be3ae6fe489d4ac1c8c53a1db7d4fe05edaff3c7c853933e02795
 
-PKG_MAINTAINER:=
+PKG_MAINTAINER:=Eneas U de Queiroz <cote2004-github@yahoo.com>
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
 
 CMAKE_INSTALL:=1
+CMAKE_OPTIONS += \
+	-DLIB_INSTALL_DIR="$(STAGING_DIR)/usr/lib" \
+	-DINCLUDE_INSTALL_DIR="$(STAGING_DIR)/usr/include"
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
+
+PKG_BUILD_DEPENDS:=oniguruma
 
 define Package/libevhtp
     SECTION:=libs
