@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=django-constance
-PKG_VERSION:=2.3.1
-PKG_RELEASE:=2
+PKG_VERSION:=2.4.0
+PKG_RELEASE:=1
 PKG_LICENSE:=BSD-3-Clause
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/d/django-constance
-PKG_HASH:=a49735063b2c30015d2e52a90609ea9798da722ed070f091de51714758a5d018
+PKG_HASH:=417f9866a4fcd93c198acd16d5bc22b68e491eaabb18efea4c70d183d42daa45
 PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
 
 include $(INCLUDE_DIR)/package.mk
