@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=seafile-seahub
-PKG_VERSION:=6.3.4
-PKG_RELEASE:=3
+PKG_VERSION:=7.0.0
+PKG_RELEASE:=1
 PKG_LICENSE:=Apache-2.0
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/haiwen/seahub/tar.gz/v$(PKG_VERSION)-server?
-PKG_HASH:=53a9efdb6791fd3a2a191e89cb0f133632056046ec08adbb2ad72088e6161430
+PKG_HASH:=7c48d707f7ab3a5aa44715bd89510d1208e652b35d45eae80fa30f3529a1b5be
 PKG_BUILD_DIR:=$(BUILD_DIR)/seahub-$(PKG_VERSION)-server
 
 PKG_BUILD_DEPENDS:=python-pytz/host
@@ -32,7 +32,8 @@ define Package/seafile-seahub
 		+django-picklefield +django-postoffice +django-restframework \
 		+django-simple-captcha +django-statici18n +django-webpack-loader \
 		+flup +gunicorn +openpyxl +python-dateutil +python-mysql \
-		+python-qrcode +python-requests +python-requests-oauthlib +python-pytz
+		+python-qrcode +python-requests +python-requests-oauthlib +python-pytz \
+		+python-futures +python-social-auth-core
 endef
 
 define Build/Configure

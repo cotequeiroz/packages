@@ -9,7 +9,7 @@
  
  # If you set this to False, Django will not format dates, numbers and
  # calendars according to the current locale.
-@@ -339,7 +339,7 @@ SHARE_LINK_EMAIL_LANGUAGE = ''
+@@ -381,7 +381,7 @@ SHARE_LINK_EMAIL_LANGUAGE = ''
  ENABLE_UPLOAD_LINK_VIRUS_CHECK = False
  
  # mininum length for user's password
@@ -18,7 +18,7 @@
  
  # LEVEL based on four types of input:
  # num, upper letter, lower letter, other symbols
-@@ -348,7 +348,7 @@ USER_PASSWORD_STRENGTH_LEVEL = 3
+@@ -390,7 +390,7 @@ USER_PASSWORD_STRENGTH_LEVEL = 3
  
  # default False, only check USER_PASSWORD_MIN_LENGTH
  # when True, check password strength level, STRONG(or above) is allowed
