@@ -23,6 +23,9 @@ PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
 
 CMAKE_INSTALL:=1
+CMAKE_OPTIONS += \
+	-DLIB_INSTALL_DIR="$(STAGING_DIR)/usr/lib" \
+	-DINCLUDE_INSTALL_DIR="$(STAGING_DIR)/usr/include"
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk

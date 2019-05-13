@@ -1,0 +1,57 @@
+From aa0f1fb1246d8e61fee1d7163b92164854fe8905 Mon Sep 17 00:00:00 2001
+From: David Barbion <davidb@230ruedubac.fr>
+Date: Fri, 16 Dec 2016 19:44:57 +0100
+Subject: [PATCH] fix missing declaration of evhtp
+
+---
+ configure.ac       | 5 +++++
+ server/Makefile.am | 3 ++-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+---
+ OpenWRT changes from original commit:
+   - Added -lonig to seaf_server_LDADD
+
+diff --git a/configure.ac b/configure.ac
+index babed08..626d279 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -179,6 +179,7 @@ AC_SUBST(LIB_ICONV)
+ 
+ 
+ LIBEVENT_REQUIRED=2.0
++EVHTP_REQUIRED=1.2.0
+ GLIB_REQUIRED=2.16.0
+ CCNET_REQUIRED=0.9.3
+ SEARPC_REQUIRED=1.0
+@@ -217,6 +218,10 @@ PKG_CHECK_MODULES(LIBEVENT, [libevent >= $LIBEVENT_REQUIRED])
+ AC_SUBST(LIBEVENT_CFLAGS)
+ AC_SUBST(LIBEVENT_LIBS)
+ 
++PKG_CHECK_MODULES(EVHTP, [evhtp >= $EVHTP_REQUIRED])
++AC_SUBST(EVHTP_CFLAGS)
++AC_SUBST(EVHTP_LIBS)
++
+ PKG_CHECK_MODULES(ZLIB, [zlib >= $ZLIB_REQUIRED])
+ AC_SUBST(ZLIB_CFLAGS)
+ AC_SUBST(ZLIB_LIBS)
+diff --git a/server/Makefile.am b/server/Makefile.am
+index 19f5553..c79117b 100644
+--- a/server/Makefile.am
++++ b/server/Makefile.am
+@@ -13,6 +13,7 @@ AM_CFLAGS = -DPKGDATADIR=\"$(pkgdatadir)\" \
+ 	@GLIB2_CFLAGS@ \
+ 	@MSVC_CFLAGS@ \
+ 	@LIBARCHIVE_CFLAGS@ \
++        @EVHTP_CFLAGS@ \
+ 	-Wall
+ 
+ bin_PROGRAMS = seaf-server
+@@ -113,7 +114,7 @@ seaf_server_SOURCES = \
+ 
+ seaf_server_LDADD = @CCNET_LIBS@ \
+ 	$(top_builddir)/lib/libseafile_common.la \
+-	@GLIB2_LIBS@ @GOBJECT_LIBS@ @SSL_LIBS@ @LIB_RT@ @LIB_UUID@ -lsqlite3 @LIBEVENT_LIBS@ -levhtp \
++	-lonig @GLIB2_LIBS@ @GOBJECT_LIBS@ @SSL_LIBS@ @LIB_RT@ @LIB_UUID@ -lsqlite3 @LIBEVENT_LIBS@ @EVHTP_LIBS@ \
+ 	$(top_builddir)/common/cdc/libcdc.la \
+ 	$(top_builddir)/common/db-wrapper/libdbwrapper.la \
+ 	@SEARPC_LIBS@ @JANSSON_LIBS@ ${LIB_WS32} @ZLIB_LIBS@ \

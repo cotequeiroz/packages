@@ -1,0 +1,12 @@
+diff --git a/scripts/sql/sqlite/seafile.sql b/scripts/sql/sqlite/seafile.sql
+index 789829a..a41135f 100644
+--- a/scripts/sql/sqlite/seafile.sql
++++ b/scripts/sql/sqlite/seafile.sql
+@@ -56,6 +56,6 @@ CREATE INDEX RepoIdIndex on SharedRepo (repo_id);
+ CREATE INDEX FromEmailIndex on SharedRepo (from_email);
+ CREATE INDEX ToEmailIndex on SharedRepo (to_email);
+ 
+-CREATE TABLE SystemInfo( info_key VARCHAR(256), info_value VARCHAR(1024));
++CREATE TABLE SystemInfo (info_key VARCHAR(256), info_value VARCHAR(1024));
+ 
+ CREATE TABLE WebUploadTempFiles (repo_id CHAR(40) NOT NULL, file_path TEXT NOT NULL, tmp_file_path TEXT NOT NULL);
