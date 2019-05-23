@@ -19,12 +19,10 @@ PKG_MAINTAINER:=Eneas U de Queiroz <cote2004-github@yahoo.com.br>
 PKG_LICENSE:=BSD-2-Clause
 PKG_LICENSE_FILES:=COPYING
 
-CMAKE_OPTIONS += \
-	-DBUILD_SHARED_LIBS=OFF \
-	-DBUILD_STATIC_LIBS=ON
+PKG_INSTALL:=1
+PKG_FIXUP:=autoreconf
 
 include $(INCLUDE_DIR)/package.mk
-include $(INCLUDE_DIR)/cmake.mk
 
 define Package/oniguruma
     SECTION:=libs
@@ -32,6 +30,7 @@ define Package/oniguruma
     TITLE:=Regular expression library for different character encodings
     URL:=https://github.com/kkos/oniguruma
     DEPENDS:=
+    ABI_VERSION:=5
 endef
 
 define Package/oniguruma/description
@@ -42,10 +41,16 @@ define Package/oniguruma/description
    Character encoding can be specified per regular expression object.
 endef
 
+define Package/oniguruma/install
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/libonig.so.$(ABI_VERSION) $(1)/usr/lib/
+endef
+
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/{include,lib}
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/* $(1)/usr/lib/
+	$(SED) 's,/usr,${STAGING_DIR}/usr,g' $(1)/usr/lib/pkgconfig/oniguruma.pc
 endef
 
 $(eval $(call BuildPackage,oniguruma))

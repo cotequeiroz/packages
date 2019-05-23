@@ -1,21 +1,71 @@
-Author: Alexandre Rossi <alexandre.rossi@gmail.com>
-Description: Take into account libevhtp API changes
-Forwarded: no
-
-Index: seafile-server/server/upload-file.c
-===================================================================
---- seafile-server.orig/server/upload-file.c	2018-02-01 12:25:52.666911934 +0100
-+++ seafile-server/server/upload-file.c	2018-02-01 12:27:37.812323399 +0100
-@@ -2059,7 +2059,7 @@
+diff --git a/configure.ac b/configure.ac
+index f1ece57..5474227 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -189,6 +189,8 @@ ZDB_REQUIRED=2.10
+ CURL_REQUIRED=7.17
+ FUSE_REQUIRED=2.7.3
+ ZLIB_REQUIRED=1.2.0
++LIBEVHTP_REQUIRED=1.2.16
++ONIGURUMA_REQUIRED=5.9.2
+ 
+ PKG_CHECK_MODULES(SSL, [openssl])
+ AC_SUBST(SSL_CFLAGS)
+@@ -222,6 +224,14 @@ PKG_CHECK_MODULES(ZLIB, [zlib >= $ZLIB_REQUIRED])
+ AC_SUBST(ZLIB_CFLAGS)
+ AC_SUBST(ZLIB_LIBS)
+ 
++PKG_CHECK_MODULES(LIBEVHTP, [evhtp >= $LIBEVHTP_REQUIRED])
++AC_SUBST(LIBEVHTP_CFLAGS)
++AC_SUBST(LIBEVHTP_LIBS)
++
++PKG_CHECK_MODULES(ONIGURUMA, [oniguruma >= $ONIGURUMA_REQUIRED])
++AC_SUBST(ONIGURUMA_CFLAGS)
++AC_SUBST(ONIGURUMA_LIBS)
++
+ if test x${compile_python} = xyes; then
+     AM_PATH_PYTHON([2.6])
+     if test "$bwin32" = true; then
+diff --git a/server/Makefile.am b/server/Makefile.am
+index 7af1200..106677e 100644
+--- a/server/Makefile.am
++++ b/server/Makefile.am
+@@ -116,7 +116,7 @@ seaf_server_SOURCES = \
+ 
+ seaf_server_LDADD = @CCNET_LIBS@ \
+ 	$(top_builddir)/lib/libseafile_common.la \
+-	@GLIB2_LIBS@ @GOBJECT_LIBS@ @SSL_LIBS@ @LIB_RT@ @LIB_UUID@ -lsqlite3 @LIBEVENT_LIBS@ -levhtp \
++	@ONIGURUMA_LIBS@ @GLIB2_LIBS@ @GOBJECT_LIBS@ @SSL_LIBS@ @LIB_RT@ @LIB_UUID@ -lsqlite3 @LIBEVENT_LIBS@ @LIBEVHTP_LIBS@ \
+ 	$(top_builddir)/common/cdc/libcdc.la \
+ 	$(top_builddir)/common/db-wrapper/libdbwrapper.la \
+ 	@SEARPC_LIBS@ @JANSSON_LIBS@ ${LIB_WS32} @ZLIB_LIBS@ \
+diff --git a/server/http-server.c b/server/http-server.c
+index e627ee4..9e81f9c 100644
+--- a/server/http-server.c
++++ b/server/http-server.c
+@@ -2200,7 +2200,7 @@ http_server_run (void *arg)
+ 
+     http_request_init (server);
+ 
+-    evhtp_use_threads (priv->evhtp, NULL, server->worker_threads, NULL);
++    evhtp_use_threads_wexit (priv->evhtp, NULL, NULL, server->worker_threads, NULL);
+ 
+     struct timeval tv;
+     tv.tv_sec = CLEANING_INTERVAL_SEC;
+diff --git a/server/upload-file.c b/server/upload-file.c
+index f673777..e4b622a 100644
+--- a/server/upload-file.c
++++ b/server/upload-file.c
+@@ -2143,7 +2143,7 @@ out:
          /* Set keepalive to 0. This will cause evhtp to close the
           * connection after sending the reply.
           */
 -        req->keepalive = 0;
-+        req->flags &= ~EVHTP_REQ_FLAG_KEEPALIVE;
++        evhtp_request_set_keepalive(req, 0);
  
          fsm->state = RECV_ERROR;
      }
-@@ -2260,8 +2260,8 @@
+@@ -2356,8 +2356,8 @@ upload_headers_cb (evhtp_request_t *req, evhtp_headers_t *hdr, void *arg)
      }
  
      /* Set up per-request hooks, so that we can read file data piece by piece. */
@@ -26,16 +76,16 @@ Index: seafile-server/server/upload-file.c
      /* Set arg for upload_cb or update_cb. */
      req->cbarg = fsm;
  
-@@ -2277,7 +2277,7 @@
+@@ -2372,7 +2372,7 @@ err:
      /* Set keepalive to 0. This will cause evhtp to close the
       * connection after sending the reply.
       */
 -    req->keepalive = 0;
-+    req->flags &= ~EVHTP_REQ_FLAG_KEEPALIVE;
++    evhtp_request_set_keepalive(req, 0);
      send_error_reply (req, EVHTP_RES_BADREQ, err_msg);
  
      g_free (repo_id);
-@@ -2346,38 +2346,32 @@
+@@ -2465,38 +2465,38 @@ upload_file_init (evhtp_t *htp, const char *http_temp_dir)
  
      cb = evhtp_set_regex_cb (htp, "^/upload/.*", upload_cb, NULL);
      /* upload_headers_cb() will be called after evhtp parsed all http headers. */
@@ -53,10 +103,11 @@ Index: seafile-server/server/upload-file.c
  
      cb = evhtp_set_regex_cb (htp, "^/upload-blks-api/.*", upload_blks_api_cb, NULL);
 -    evhtp_set_hook(&cb->hooks, evhtp_hook_on_headers, upload_headers_cb, NULL);
--
--    /* cb = evhtp_set_regex_cb (htp, "^/upload-blks-aj/.*", upload_blks_ajax_cb, NULL); */
--    /* evhtp_set_hook(&cb->hooks, evhtp_hook_on_headers, upload_headers_cb, NULL); */
 +    evhtp_callback_set_hook(cb, evhtp_hook_on_headers, upload_headers_cb, NULL);
+ 
+     /* cb = evhtp_set_regex_cb (htp, "^/upload-blks-aj/.*", upload_blks_ajax_cb, NULL); */
+-    /* evhtp_set_hook(&cb->hooks, evhtp_hook_on_headers, upload_headers_cb, NULL); */
++    /* evhtp_callback_set_hook(cb, evhtp_hook_on_headers, upload_headers_cb, NULL); */
  
      cb = evhtp_set_regex_cb (htp, "^/upload-aj/.*", upload_ajax_cb, NULL);
 -    evhtp_set_hook(&cb->hooks, evhtp_hook_on_headers, upload_headers_cb, NULL);
@@ -72,10 +123,11 @@ Index: seafile-server/server/upload-file.c
  
      cb = evhtp_set_regex_cb (htp, "^/update-blks-api/.*", update_blks_api_cb, NULL);
 -    evhtp_set_hook(&cb->hooks, evhtp_hook_on_headers, upload_headers_cb, NULL);
--
--    /* cb = evhtp_set_regex_cb (htp, "^/update-blks-aj/.*", update_blks_ajax_cb, NULL); */
--    /* evhtp_set_hook(&cb->hooks, evhtp_hook_on_headers, upload_headers_cb, NULL); */
 +    evhtp_callback_set_hook(cb, evhtp_hook_on_headers, upload_headers_cb, NULL);
+ 
+     /* cb = evhtp_set_regex_cb (htp, "^/update-blks-aj/.*", update_blks_ajax_cb, NULL); */
+-    /* evhtp_set_hook(&cb->hooks, evhtp_hook_on_headers, upload_headers_cb, NULL); */
++    /* evhtp_callback_set_hook(cb, evhtp_hook_on_headers, upload_headers_cb, NULL); */
  
      cb = evhtp_set_regex_cb (htp, "^/update-aj/.*", update_ajax_cb, NULL);
 -    evhtp_set_hook(&cb->hooks, evhtp_hook_on_headers, upload_headers_cb, NULL);

@@ -33,14 +33,12 @@ CMAKE_OPTIONS += \
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
-PKG_BUILD_DEPENDS:=oniguruma
-
 define Package/libevhtp
     SECTION:=libs
     CATEGORY:=Libraries
     TITLE:=A more flexible replacement for libevent's httpd API
     URL:=https://github.com/criticalstack/libevhtp
-    DEPENDS:=+libevent2 +libevent2-openssl +libevent2-pthreads
+    DEPENDS:=+libevent2 +libevent2-openssl +libevent2-pthreads +oniguruma
 endef
 
 define Package/libevhtp/description
