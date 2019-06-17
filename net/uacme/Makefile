@@ -16,7 +16,7 @@ PKG_SOURCE_URL:=https://codeload.github.com/ndilieto/uacme/tar.gz/upstream/$(PKG
 PKG_HASH:=b22e001928dd80249d7245b0cb61281ed487f8f1bd337b1264a754acf347561d
 
 PKG_MAINTAINER:=Lucian Cristian <lucian.cristian@gmail.com>
-PKG_LICENSE:=GPL-3.0
+PKG_LICENSE:=GPL-3.0-or-later
 PKG_LICENSE_FILES:=COPYING
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-upstream-$(PKG_VERSION)
@@ -48,6 +48,16 @@ define Package/uacme/Default/description
   certificate management functions, such as certificate revocation.
 endef
 
+define Package/uacme/config
+if PACKAGE_uacme && LIBCURL_WOLFSSL
+  comment "libcurl uses WolfSSL; uacme will install mbedtls"
+  comment "Choose another SSL lib in libcurl to avoid this"
+endif
+if PACKAGE_uacme && LIBCURL_NOSSL
+  comment "libcurl is built without ssl; uacme needs ssl support"
+  comment "Choose another SSL lib in libcurl to avoid this"
+endif
+endef
 TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
 
 CONFIGURE_ARGS+= \
@@ -58,13 +68,25 @@ CONFIGURE_ARGS+= \
 	$(if $(CONFIG_LIBCURL_OPENSSL),--without-gnutls --without-mbedtls --with-openssl,) \
 	$(if $(CONFIG_LIBCURL_WOLFSSL),--without-gnutls --with-mbedtls --without-openssl,)
 
+define Package/acme/conffiles
+/etc/config/acme
+/etc/acme
+endef
+
 define Package/uacme/install
 	$(INSTALL_DIR) \
 	 $(1)/usr/bin \
+	 $(1)/etc/acme \
+	 $(1)/etc/config \
+	 $(1)/etc/init.d \
 	 $(1)/usr/share/uacme
 
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/uacme $(1)/usr/bin/uacme
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/share/uacme/uacme.sh $(1)/usr/share/uacme/
+	$(SED) 's,/var,,g' $(1)/usr/share/uacme/uacme.sh
+	$(INSTALL_CONF) ./files/acme.config $(1)/etc/config/acme
+	$(INSTALL_BIN) ./files/run.sh $(1)/usr/share/uacme/run-uacme
+	$(INSTALL_BIN) ./files/acme.init $(1)/etc/init.d/acme
 endef
 
 $(eval $(call BuildPackage,uacme))
