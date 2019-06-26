@@ -1,0 +1,18 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -402,8 +402,13 @@ AS_IF([test x"$with_cyassl" != xno],
+                AC_DEFINE([HAVE_CYASSL], [1],
+                          [Define if you have cyassl])
+               ],
+-              [AC_MSG_FAILURE(
+-                 [--with-cyassl was given, but test for cyassl failed])],
++	      [AC_CHECK_LIB([wolfssl], [wolfSSL_Init],
++	                  [AC_SUBST([LIBSSL], ["-lwolfssl"])
++                           AC_DEFINE([HAVE_CYASSL], [1])
++	                  ],
++                          [AC_MSG_FAILURE(
++                            [--with-cyassl was given, but test for cyassl failed])],
++			  [-lwolfssl])],
+               [-lcyassl])])
+ 
+ AS_IF([test x"$with_cyassl" != xno],
