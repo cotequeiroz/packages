@@ -1,0 +1,67 @@
+--- a/src/md5.h
++++ b/src/md5.h
+@@ -35,7 +35,6 @@
+ #define MD5Update MD5_Update
+ #define MD5Final MD5_Final
+ 
+-typedef struct CYASSL_MD5_CTX MD5_CTX;
+ #else
+ 
+ struct MD5Context {
+--- a/src/ippool.c
++++ b/src/ippool.c
+@@ -35,7 +35,7 @@ int ippool_print(int fd, struct ippool_t
+   char * sep = "-- %-15s ------------------------------------------------------------\n";
+ 
+ #define ERR 0
+-#define USED 1
++#define COOVA_USED 1
+ #define FREE 2
+ #define LIST 3
+   int dyn[4] = { 0, 0, 0, 0};
+@@ -63,7 +63,7 @@ int ippool_print(int fd, struct ippool_t
+ 
+     if (this->member[n].in_use) {
+       if (this->member[n].next == 0 && this->member[n].prev == 0) {
+-	st[USED]++;
++	st[COOVA_USED]++;
+       } else {
+ 	st[ERR]++;
+       }
+@@ -126,13 +126,13 @@ int ippool_print(int fd, struct ippool_t
+ 
+   snprintf(line, sizeof(line),
+ 		"Dynamic address: free %d, avail %d, used %d, err %d, sum %d/%d%s\n",
+-		dyn[FREE], dyn[LIST], dyn[USED], dyn[ERR], dyn[0]+dyn[1]+dyn[2], this->dynsize,
++		dyn[FREE], dyn[LIST], dyn[COOVA_USED], dyn[ERR], dyn[0]+dyn[1]+dyn[2], this->dynsize,
+ 		dyn[FREE] != dyn[LIST] ? " - Problem!" : "");
+   safe_write(fd, line, strlen(line));
+ 
+   snprintf(line, sizeof(line),
+ 		"Static address: free %d, avail %d, used %d, err %d, sum %d/%d%s\n",
+-		stat[FREE], stat[LIST], stat[USED], stat[ERR], stat[0]+stat[1]+stat[2], this->statsize,
++		stat[FREE], stat[LIST], stat[COOVA_USED], stat[ERR], stat[0]+stat[1]+stat[2], this->statsize,
+ 		stat[FREE] != stat[LIST] ? " - Problem!" : "");
+   safe_write(fd, line, strlen(line));
+ 
+--- a/src/ssl.h
++++ b/src/ssl.h
+@@ -47,6 +47,7 @@ typedef struct {
+ #include <time.h>
+ #include <string.h>
+ 
++#include <cyassl/options.h>
+ #include <cyassl/ssl.h>
+ #include <cyassl/openssl/bio.h>
+ #include <cyassl/openssl/crypto.h>
+--- a/src/ssl.c
++++ b/src/ssl.c
+@@ -127,7 +127,7 @@ _openssl_env_init(openssl_env *env, char
+    */
+   const long options = SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_COMPRESSION;
+   env->meth = SSLv23_method();
+-  env->ctx = SSL_CTX_new(env->meth);
++  env->ctx = SSL_CTX_new((void *)env->meth);
+   SSL_CTX_set_options(env->ctx, options);
+   if (_options.sslciphers) {
+     SSL_CTX_set_cipher_list(env->ctx, _options.sslciphers);

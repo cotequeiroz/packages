@@ -10,9 +10,9 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=coova-chilli
 PKG_VERSION:=1.4
 PKG_MAINTAINER:=Jaehoon You <teslamint@gmail.com>
-PKG_LICENSE:=GPL-2.0+
+PKG_LICENSE:=GPL-2.0-or-later
 PKG_LICENSE_FILES:=COPYING
-PKG_RELEASE:=9
+PKG_RELEASE:=10
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/coova/coova-chilli/tar.gz/$(PKG_VERSION)?
@@ -79,7 +79,8 @@ TARGET_CFLAGS += $(FPIC)
 
 CONFIGURE_VARS += \
        ARCH="$(LINUX_KARCH)" \
-       KERNEL_DIR="$(LINUX_DIR)"
+       KERNEL_DIR="$(LINUX_DIR)" \
+       ac_cv_lib_cyassl_CyaSSL_Init=yes
 
 MAKE_FLAGS += \
        ARCH="$(LINUX_KARCH)" \
