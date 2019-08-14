@@ -23,6 +23,7 @@ PKG_MAINTAINER:=Xiongfei Guo <xfguo@credosemi.com>
 PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=LICENSE
 
+PKG_BUILD_DEPENDS:=python/host
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/scons.mk
@@ -48,7 +49,7 @@ define Build/Configure
 	(cd $(PKG_BUILD_DIR); \
 		$(SCONS_VARS) \
 		CFLAGS="$(TARGET_CFLAGS) $(TARGET_CPPFLAGS)" \
-		scons \
+		python2.7 $(STAGING_DIR_HOST)/bin/scons.py \
 			prefix=/usr \
 			$(SCONS_OPTIONS) \
 	)
