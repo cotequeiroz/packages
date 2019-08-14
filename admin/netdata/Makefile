@@ -8,6 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=netdata
+# there is a pending hack here
 PKG_VERSION:=1.16.1
 PKG_RELEASE:=1
 
@@ -45,6 +46,13 @@ endef
 TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS))
 TARGET_CFLAGS += -ffunction-sections -fdata-sections -O3
 TARGET_LDFLAGS += -Wl,--gc-sections
+
+# Despite disabling https & dbengine, it will still pick up these libraries if found
+# Upstream should have this fixed
+CONFIGURE_VARS += \
+	ac_cv_lib_crypto_SHA256_Init=no \
+	ac_cv_lib_lz4_LZ4_decompress_safe=no \
+	ac_cv_lib_uv_uv_fs_scandir_next=no
 
 CONFIGURE_ARGS += \
 	--with-zlib \
