@@ -18,6 +18,7 @@ PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>
 PKG_LICENSE:=LGPL-3.0+
 
 PKG_BUILD_PARALLEL:=0
+PKG_BUILD_DEPENDS:=python/host
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/kernel.mk
