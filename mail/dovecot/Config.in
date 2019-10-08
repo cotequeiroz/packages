@@ -32,7 +32,9 @@ config DOVECOT_SQLITE
 		Implements SQLite DB support in dovecot.
 
 config DOVECOT_ICU
-bool "Enable i18n features"
+	bool "Enable i18n features"
+	depends on !USE_UCLIBC
+	select PACKAGE_icu
 	default n
 	help
 		Enable ICU (International Components for Unicode) support.

@@ -24,6 +24,7 @@ PKG_CPE_ID:=cpe:/a:znc:znc
 PKG_USE_MIPS16:=0
 PKG_BUILD_PARALLEL:=1
 
+PKG_BUILD_DEPDNDS:= ZNC_ICU:icu
 PKG_CONFIG_DEPENDS:= CONFIG_ZNC_ICU
 
 define Package/znc/default
@@ -37,7 +38,8 @@ endef
 
 define Package/znc
   $(Package/znc/default)
-  DEPENDS:=+libopenssl +libstdcpp +ZNC_ICU:icu +zlib
+  DEPENDS:=+libopenssl +libstdcpp +zlib
+  EXTRA_DEPENDS:=$(if $(CONFIG_ZNC_ICU),icu)
   MENU:=1
 endef
 

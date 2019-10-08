@@ -11,7 +11,7 @@ PKG_NAME:=icu4c
 MAJOR_VERSION:=65
 MINOR_VERSION:=1
 PKG_VERSION:=$(MAJOR_VERSION).$(MINOR_VERSION)
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(MAJOR_VERSION)_$(MINOR_VERSION)-src.tgz
 PKG_SOURCE_URL:=https://github.com/unicode-org/icu/releases/download/release-$(MAJOR_VERSION)-$(MINOR_VERSION)
@@ -40,8 +40,11 @@ define Package/icu
   CATEGORY:=Libraries
   TITLE:=International Components for Unicode
   URL:=http://icu-project.org
-  DEPENDS:=+libstdcpp +libpthread
+  DEPENDS:=+libstdcpp +libpthread @!USE_UCLIBC
 endef
+# If the restriction on use of uClibc is ever lifted, please look for
+# a commit titled "icu: Deactivate uClibc avoiding circular depends"
+# and undo the hacks performed by that commit in dependent packages.
 
 define Package/icu/description
   ICU is a mature, widely used set of C/C++ and Java libraries providing Unicode and Globalization support for software applications. ICU is widely portable and gives applications the same results on all platforms and between C/C++ and Java software.
@@ -53,7 +56,7 @@ define Package/icu-full-data
   CATEGORY:=Libraries
   TITLE:=Full ICU Data
   URL:=http://icu-project.org
-  DEPENDS:=+icu
+  DEPENDS:=icu
 endef
 
 define Package/icu-full-data/description
@@ -67,7 +70,7 @@ define Package/icu-data-tools
   CATEGORY:=Libraries
   TITLE:=ICU Data manipulation tools
   URL:=http://icu-project.org
-  DEPENDS:=+icu
+  DEPENDS:=icu
 endef
 
 define Package/icu-data-tools/description

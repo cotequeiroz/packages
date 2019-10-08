@@ -15,7 +15,7 @@ PKG_SOURCE_URL:=https://nodejs.org/dist/${PKG_VERSION}
 PKG_HASH:=d8c190acdf2d967faf49c22df883d31a8d4e249d67852dae3c2d8a0f756b0512
 
 HOST_BUILD_DEPENDS:=python/host
-PKG_BUILD_DEPENDS:=python/host
+PKG_BUILD_DEPENDS:=python/host NODEJS_ICU:icu
 
 PKG_INSTALL:=1
 PKG_USE_MIPS16:=0
@@ -38,8 +38,8 @@ define Package/node
   TITLE:=Node.js is a platform built on Chrome's JavaScript runtime
   URL:=https://nodejs.org/
   DEPENDS:=@(HAS_FPU||KERNEL_MIPS_FPU_EMULATOR) @!arc @!armeb \
-	   +libstdcpp +libopenssl +zlib +libnghttp2 +libuv +libhttp-parser \
-	   +NODEJS_ICU:icu
+	   +libstdcpp +libopenssl +zlib +libnghttp2 +libuv +libhttp-parser
+  EXTRA_DEPENDS:=$(if $(CONFIG_NODEJS_ICU),icu)
 endef
 
 define Package/node/description
@@ -66,6 +66,8 @@ define Package/node/config
 
 	config NODEJS_ICU
 		bool "enable i18n features"
+		depends on !USE_UCLIBC
+		select PACKAGE_icu
 		default n
 
 	endif

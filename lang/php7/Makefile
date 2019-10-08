@@ -42,6 +42,7 @@ PHP7_MODULES = \
 	tokenizer \
 	xml xmlreader xmlwriter zip \
 
+PKG_BUILD_DEPENDS:=PACKAGE_php7-mod-intl:icu
 PKG_CONFIG_DEPENDS:= \
 	$(patsubst %,CONFIG_PACKAGE_php7-mod-%,$(PHP7_MODULES)) \
 	CONFIG_PHP7_FILTER CONFIG_PHP7_LIBXML CONFIG_PHP7_SYSTEMTZDATA CONFIG_PHP7_LIBFREETYPE
@@ -152,6 +153,7 @@ define Package/php7-mod-gd/config
 endef
 
 define Package/php7-mod-intl/config
+  select PACKAGE_icu
   config PHP7_FULLICUDATA
 	bool "Add dependency to full ICU Data"
 	depends on PACKAGE_php7-mod-intl
@@ -630,7 +632,10 @@ $(eval $(call BuildModule,gmp,GMP,+PACKAGE_php7-mod-gmp:libgmp))
 $(eval $(call BuildModule,hash,Hash))
 $(eval $(call BuildModule,iconv,iConv,$(ICONV_DEPENDS)))
 $(eval $(call BuildModule,imap,IMAP,+PACKAGE_php7-mod-imap:libopenssl +PACKAGE_libpam:libpam +PACKAGE_php7-mod-imap:uw-imap))
-$(eval $(call BuildModule,intl,Internationalization Functions,+PACKAGE_php7-mod-intl:icu +PHP7_FULLICUDATA:icu-full-data))
+$(eval $(call BuildModule,intl,Internationalization Functions,@!USE_UCLIBC))
+define Package/php7-mod-intl +=
+  EXTRA_DEPENDS:=icu $(if $(CONFIG_PHP7_FULLICUDATA),icu-full-data)
+endef
 $(eval $(call BuildModule,json,JSON))
 $(eval $(call BuildModule,ldap,LDAP,+PACKAGE_php7-mod-ldap:libopenldap +PACKAGE_php7-mod-ldap:libsasl2))
 $(eval $(call BuildModule,mbstring,MBString))

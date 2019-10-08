@@ -21,7 +21,7 @@ PKG_LICENSE:=IPL-1.0
 PKG_LICENSE_FILES:=LICENSE
 PKG_CPE_ID:=cpe:/a:postfix:postfix
 
-PKG_BUILD_DEPENDS:=POSTFIX_CDB:tinycdb
+PKG_BUILD_DEPENDS:=POSTFIX_CDB:tinycdb POSTFIX_EAI:icu
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_POSTFIX_TLS \
 	CONFIG_POSTFIX_SASL \
@@ -44,7 +44,8 @@ define Package/postfix
   	postfix=25:postfix=25 \
   	postdrop=26:postdrop=26
   URL:=http://www.postfix.org/
-  DEPENDS:=+POSTFIX_TLS:libopenssl +POSTFIX_SASL:libsasl2 +POSTFIX_LDAP:libopenldap +POSTFIX_DB:libdb47 +POSTFIX_SQLITE:libsqlite3 +POSTFIX_MYSQL:libmysqlclient +POSTFIX_PGSQL:libpq +POSTFIX_EAI:icu +POSTFIX_PCRE:libpcre
+  DEPENDS:=+POSTFIX_TLS:libopenssl +POSTFIX_SASL:libsasl2 +POSTFIX_LDAP:libopenldap +POSTFIX_DB:libdb47 +POSTFIX_SQLITE:libsqlite3 +POSTFIX_MYSQL:libmysqlclient +POSTFIX_PGSQL:libpq +POSTFIX_PCRE:libpcre
+  EXTRA_DEPENDS:=$(if $(CONFIG_POSTFIX_EAI),icu)
 endef
 
 define Package/postfix/description
@@ -100,6 +101,8 @@ define Package/postfix/config
 			  Implement support for Perl Compatible Regular Expressions
 		config POSTFIX_EAI
 			bool "SMTPUTF8 support"
+			depends on !USE_UCLIBC
+			select PACKAGE_icu
 			default n
 			help
 			  Enable Postfix support for Email Address Internationalization

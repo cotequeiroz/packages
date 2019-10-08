@@ -20,7 +20,7 @@ PKG_LICENSE:=LGPL-2.1-only MIT BSD-3-Clause
 PKG_LICENSE_FILES:=COPYING COPYING.LGPL COPYING.MIT
 PKG_CPE_ID:=cpe:/a:dovecot:dovecot
 
-PKG_BUILD_DEPENDS:=libiconv
+PKG_BUILD_DEPENDS:=libiconv DOVECOT_ICU:icu
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_DOVECOT_GSSAPI \
 	CONFIG_DOVECOT_LDAP \
@@ -43,7 +43,8 @@ define Package/dovecot
   CATEGORY:=Mail
   TITLE:=An IMAP and POP3 daemon
   URL:=https://www.dovecot.org/
-  DEPENDS:=+DOVECOT_GSSAPI:krb5-libs +DOVECOT_LDAP:libopenldap +DOVECOT_MYSQL:libmysqlclient +DOVECOT_PGSQL:libpq +DOVECOT_SQLITE:libsqlite3 +libopenssl +librt +zlib +libbz2 +libcap +DOVECOT_ICU:icu $(ICONV_DEPENDS)
+  DEPENDS:=+DOVECOT_GSSAPI:krb5-libs +DOVECOT_LDAP:libopenldap +DOVECOT_MYSQL:libmysqlclient +DOVECOT_PGSQL:libpq +DOVECOT_SQLITE:libsqlite3 +libopenssl +librt +zlib +libbz2 +libcap $(ICONV_DEPENDS)
+  EXTRA_DEPENDS:=$(if $(CONFIG_DOVECOT_ICU),icu)
   USERID:=dovecot=59:dovecot=59 dovenull=60:dovenull=60
   ABI_VERSION:=$(PKG_VERSION)
 endef

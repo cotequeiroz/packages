@@ -23,6 +23,7 @@ PKG_CPE_ID:=cpe:/a:openldap:openldap
 
 PKG_FIXUP:=autoreconf
 
+PKG_BUILD_DEPENDS := OPENLDAP_ICU:icu
 PKG_CONFIG_DEPENDS := \
         CONFIG_OPENLDAP_DEBUG \
         CONFIG_OPENLDAP_CRYPT \
@@ -44,7 +45,8 @@ endef
 define Package/libopenldap
   $(call Package/libopenldap/Default)
   MENU:=1
-  DEPENDS:=+libopenssl +libsasl2 +libpthread +OPENLDAP_DB47:libdb47 +OPENLDAP_ICU:icu
+  DEPENDS:=+libopenssl +libsasl2 +libpthread +OPENLDAP_DB47:libdb47
+  EXTRA_DEPENDS:=$(if $(CONFIG_OPENLDAP_ICU),icu)
   TITLE+= (libraries)
 endef
 
@@ -88,6 +90,8 @@ define Package/libopenldap/config
 		Enable Berkeley DB support (BDB).
   config OPENLDAP_ICU
 	bool "ICU support"
+	depends on !USE_UCLIBC
+	select PACKAGE_icu
 	default n
 	help
 		Enable ICU (International Components for Unicode) support.

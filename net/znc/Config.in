@@ -11,6 +11,8 @@ menu "Configuration"
 config ZNC_ICU
   bool
   prompt "Enable ICU character encoding support."
+  depends on !USE_UCLIBC
+  select PACKAGE_icu
   help
     Allows configuration of the charset used between clients and ZNC, and
     between ZNC and the IRC server".
