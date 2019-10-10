@@ -42,7 +42,6 @@ PHP7_MODULES = \
 	tokenizer \
 	xml xmlreader xmlwriter zip \
 
-PKG_BUILD_DEPENDS:=PACKAGE_php7-mod-intl:icu
 PKG_CONFIG_DEPENDS:= \
 	$(patsubst %,CONFIG_PACKAGE_php7-mod-%,$(PHP7_MODULES)) \
 	CONFIG_PHP7_FILTER CONFIG_PHP7_LIBXML CONFIG_PHP7_SYSTEMTZDATA CONFIG_PHP7_LIBFREETYPE
@@ -632,9 +631,9 @@ $(eval $(call BuildModule,gmp,GMP,+PACKAGE_php7-mod-gmp:libgmp))
 $(eval $(call BuildModule,hash,Hash))
 $(eval $(call BuildModule,iconv,iConv,$(ICONV_DEPENDS)))
 $(eval $(call BuildModule,imap,IMAP,+PACKAGE_php7-mod-imap:libopenssl +PACKAGE_libpam:libpam +PACKAGE_php7-mod-imap:uw-imap))
-$(eval $(call BuildModule,intl,Internationalization Functions,@!USE_UCLIBC))
+$(eval $(call BuildModule,intl,Internationalization Functions,@!USE_UCLIBC +PACKAGE_icu:icu))
 define Package/php7-mod-intl +=
-  EXTRA_DEPENDS:=icu $(if $(CONFIG_PHP7_FULLICUDATA),icu-full-data)
+  EXTRA_DEPENDS:=$(if $(CONFIG_PHP7_FULLICUDATA),icu-full-data)
 endef
 $(eval $(call BuildModule,json,JSON))
 $(eval $(call BuildModule,ldap,LDAP,+PACKAGE_php7-mod-ldap:libopenldap +PACKAGE_php7-mod-ldap:libsasl2))
