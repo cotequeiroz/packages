@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=jamvm
 PKG_VERSION:=2.0.0
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@SF/$(PKG_NAME)
@@ -24,7 +24,6 @@ PKG_INSTALL:=1
 PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
-include $(INCLUDE_DIR)/host-build.mk
 
 define Package/jamvm
   SUBMENU:=Java
@@ -32,7 +31,8 @@ define Package/jamvm
   CATEGORY:=Languages
   TITLE:=A compact Java Virtual Machine
   URL:=http://jamvm.sourceforge.net/
-  DEPENDS:=+zlib +libpthread +librt +CONFIG_powerpc64:libffi @!arc @!aarch64
+  DEPENDS:=+zlib +libpthread +librt +classpath +CONFIG_powerpc64:libffi \
+	   @!arc @!aarch64
 endef
 
 define Package/jamvm/description
@@ -67,4 +67,3 @@ define Build/InstallDev
 endef
 
 $(eval $(call BuildPackage,jamvm))
-$(eval $(call HostBuild))
