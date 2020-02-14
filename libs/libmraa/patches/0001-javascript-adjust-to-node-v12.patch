@@ -1,0 +1,54 @@
+From 0172badde1d7f67bdf892127c417093a9aecaa93 Mon Sep 17 00:00:00 2001
+From: Eneas U de Queiroz <cotequeiroz@gmail.com>
+Date: Fri, 14 Feb 2020 10:57:35 -0300
+Subject: [PATCH] javascript: adjust to node v12
+
+Signed-off-by: Eneas U de Queiroz <cotequeiroz@gmail.com>
+
+diff --git a/api/mraa/gpio.hpp b/api/mraa/gpio.hpp
+index 07ca03e..d658d34 100644
+--- a/api/mraa/gpio.hpp
++++ b/api/mraa/gpio.hpp
+@@ -175,7 +175,11 @@ class Gpio
+         v8::Local<v8::Value> argv[] = { SWIGV8_INTEGER_NEW(-1) };
+ #if NODE_MODULE_VERSION >= 0x000D
+         v8::Local<v8::Function> f = v8::Local<v8::Function>::New(v8::Isolate::GetCurrent(), This->m_v8isr);
++# if NODE_MODULE_VERSION >= 57 /* Node.js v8.x */
++        f->Call(SWIGV8_CURRENT_CONTEXT(), SWIGV8_CURRENT_CONTEXT()->Global(), argc, argv);
++# else
+         f->Call(SWIGV8_CURRENT_CONTEXT()->Global(), argc, argv);
++# endif
+ #else
+         This->m_v8isr->Call(SWIGV8_CURRENT_CONTEXT()->Global(), argc, argv);
+ #endif
+diff --git a/src/javascript/mraajs.i b/src/javascript/mraajs.i
+index 321cc22..bcd33f9 100644
+--- a/src/javascript/mraajs.i
++++ b/src/javascript/mraajs.i
+@@ -42,7 +42,7 @@ namespace mraa {
+ class Spi;
+ %typemap(out) uint8_t*
+ {
+-%#if SWIG_V8_VERSION > 0x040000
++%#if (V8_MAJOR_VERSION-0) > 3 || SWIG_V8_VERSION > 0x040000
+    v8::MaybeLocal<v8::Object> objret = node::Buffer::Copy(v8::Isolate::GetCurrent(), (char*) result, arg3);
+    free(result);
+    if(!objret.ToLocal(&$result)){
+@@ -81,7 +81,7 @@ class Spi;
+        free($1);
+        SWIG_exception_fail(SWIG_ERROR, "Uart write failed");
+    }
+-%#if SWIG_V8_VERSION > 0x040000
++%#if (V8_MAJOR_VERSION-0) > 4 || SWIG_V8_VERSION > 0x040000
+    v8::MaybeLocal<v8::Object> objret = node::Buffer::Copy(v8::Isolate::GetCurrent(), (char*) $1, result);
+    free($1);
+    if(!objret.ToLocal(&$result)) {
+@@ -116,7 +116,7 @@ class Spi;
+        free($1);
+        SWIG_exception_fail(SWIG_ERROR, "I2c write failed");
+    }
+-%#if SWIG_V8_VERSION > 0x040000
++%#if (V8_MAJOR_VERSION-0) > 4 || SWIG_V8_VERSION > 0x040000
+    v8::MaybeLocal<v8::Object> objret = node::Buffer::Copy(v8::Isolate::GetCurrent(), (char*) $1, result);
+    free($1);
+    if(!objret.ToLocal(&$result)) {
