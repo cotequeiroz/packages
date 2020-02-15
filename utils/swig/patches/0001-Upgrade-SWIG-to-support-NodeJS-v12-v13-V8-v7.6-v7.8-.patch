@@ -1576,7 +1576,7 @@ index c78e04efb..773014f2a 100644
  
 +#if defined(V8_MAJOR_VERSION) && defined(V8_MINOR_VERSION)
 +#undef SWIG_V8_VERSION
-+#define SWIG_V8_VERSION (V8_MAJOR_VERSION * 256 + V8_MINOR_VERSION)
++#define SWIG_V8_VERSION (V8_MAJOR_VERSION * 0x10000 + V8_MINOR_VERSION * 0x100)
 +#endif
 +
  #include <errno.h>
