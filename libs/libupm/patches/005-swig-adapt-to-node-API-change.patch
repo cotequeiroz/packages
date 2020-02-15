@@ -1,0 +1,20 @@
+From 18fa74348e0e90202413d559ac9ffd64469627c4 Mon Sep 17 00:00:00 2001
+From: Eneas U de Queiroz <cotequeiroz@gmail.com>
+Date: Sat, 15 Feb 2020 17:37:06 -0300
+Subject: [PATCH] swig: adapt to node API change
+
+Signed-off-by: Eneas U de Queiroz <cotequeiroz@gmail.com>
+
+diff --git a/src/carrays_uint32_t.i b/src/carrays_uint32_t.i
+index c458f490..e4da53bf 100644
+--- a/src/carrays_uint32_t.i
++++ b/src/carrays_uint32_t.i
+@@ -24,7 +24,7 @@
+ %typemap(in) uint32_t {
+   int ecode2 = 0 ;
+   if (($input)->IsInt32())
+-    $1 = ($input)->Uint32Value();
++    $1 = ($input)->Uint32Value(SWIGV8_CURRENT_CONTEXT()).FromJust();
+   else
+     SWIG_exception_fail(SWIG_ArgError(ecode2), "failed to convert uint32");
+ }
