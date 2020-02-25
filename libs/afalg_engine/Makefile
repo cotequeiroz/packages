@@ -8,7 +8,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=afalg_engine
 PKG_VERSION:=1.2.0-beta.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/cotequeiroz/afalg_engine/archive/v$(PKG_VERSION)
@@ -19,8 +19,8 @@ PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_AFALG_DIGESTS \
-	CONFIG_AFALG_FALLBACK \
-	CONFIG_AFALG_UPDATE_CTR_IV \
+	CONFIG_AFALG_NO_FALLBACK \
+	CONFIG_AFALG_NO_UPDATE_CTR_IV \
 	CONFIG_AFALG_ZERO_COPY
 
 include $(INCLUDE_DIR)/package.mk
@@ -28,7 +28,7 @@ include $(INCLUDE_DIR)/cmake.mk
 
 ENGINES_DIR:=engines-1.1
 
-define Package/libopenssl-afalg_sync
+define Package/libopenssl-afalg-alt
     SECTION:=libs
     CATEGORY:=Libraries
     SUBMENU:=SSL
@@ -37,11 +37,11 @@ define Package/libopenssl-afalg_sync
     URL:=https://github.com/cotequeiroz/afalg_engine
     DEPENDS:=libopenssl @OPENSSL_ENGINE @!OPENSSL_ENGINE_BUILTIN_AFALG \
 	     +libopenssl-conf +kmod-crypto-user
-    CONFLICTS:=libopenssl-afalg $(if $(CONFIG_AFALG_FALLBACK),libopenssl-devcrypto)
+    CONFLICTS:=libopenssl-afalg
     MENU:=1
 endef
 
-define Package/libopenssl-afalg_sync/description
+define Package/libopenssl-afalg-alt/description
     This is an alternate AF_ALG engine for openssl, based on the devcrypto
     engine, but using the AF_ALG interface instead of /dev/crypto
 
@@ -51,21 +51,21 @@ define Package/libopenssl-afalg_sync/description
      - it suports more algorithms
 endef
 
-define Package/libopenssl-afalg_sync/config
+define Package/libopenssl-afalg-alt/config
     source "$(SOURCE)/Config.in"
 endef
 
 CMAKE_OPTIONS += \
 	-DOPENSSL_ENGINES_DIR=/usr/lib/$(ENGINES_DIR) \
 	-DDIGESTS=$(if $(CONFIG_AFALG_DIGESTS),ON,OFF) \
-	-DFALLBACK=$(if $(CONFIG_AFALG_FALLBACK),ON,OFF) \
-	-DUPDATE_CTR_IV=$(if $(CONFIG_AFALG_UPDATE_CTR_IV),ON,OFF) \
+	-DFALLBACK=$(if $(CONFIG_AFALG_NO_FALLBACK),OFF,ON) \
+	-DUPDATE_CTR_IV=$(if $(CONFIG_AFALG_NO_UPDATE_CTR_IV),OFF,ON) \
 	-DUSE_ZERO_COPY=$(if $(CONFIG_AFALG_ZERO_COPY),ON,OFF)
 
-define Package/libopenssl-afalg_sync/install
+define Package/libopenssl-afalg-alt/install
 	$(INSTALL_DIR) $(1)/usr/lib/$(ENGINES_DIR)
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/$(ENGINES_DIR)/afalg.so \
 			$(1)/usr/lib/$(ENGINES_DIR)/
 endef
 
-$(eval $(call BuildPackage,libopenssl-afalg_sync))
+$(eval $(call BuildPackage,libopenssl-afalg-alt))
