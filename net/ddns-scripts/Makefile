@@ -36,21 +36,16 @@ define Package/ddns-scripts
 endef
 # shown in LuCI package description
 define Package/ddns-scripts/description
-    Dynamic DNS Client scripts (with IPv6 support) - Info: https://openwrt.org/docs/guide-user/services/ddns/client
-endef
-# shown in menuconfig <Help>
-define Package/ddns-scripts/config
-	help
-		A highly configurable set of scripts for doing dynamic dns updates.
-		  - IPv6 support
-		  - DNS server support
-		  - Glue Record support (require BIND host or KNOT host)
-		  - DNS requests via TCP
-		  - Proxy server support
-		  - log file support
-		  - support to run once
-		Version: $(PKG_VERSION)-$(PKG_RELEASE)
-		Info   : https://openwrt.org/docs/guide-user/services/ddns/client
+	A highly configurable set of scripts for doing dynamic dns updates.
+	  - IPv6 support
+	  - DNS server support
+	  - Glue Record support (require BIND host or KNOT host)
+	  - DNS requests via TCP
+	  - Proxy server support
+	  - log file support
+	  - support to run once
+	Version: $(PKG_VERSION)-$(PKG_RELEASE)
+	Info   : https://openwrt.org/docs/guide-user/services/ddns/client
 endef
 
 ###### *************************************************************************
@@ -100,16 +95,12 @@ define Package/ddns-scripts_nsupdate
     DEPENDS:=ddns-scripts +bind-client
 endef
 define Package/ddns-scripts_nsupdate/description
-    Dynamic DNS Client scripts extension for direct updates using Bind nsupdate
-endef
-define Package/ddns-scripts_nsupdate/config
-    help
+	Dynamic DNS Client scripts extension for direct updates using Bind nsupdate
 	The script directly updates a PowerDNS (or maybe bind server) via nsupdate
 	from bind-client package. It requires
 	"option dns_server" to be set to the server to be used by nsupdate.
 	"option username" should be set to the key name and
 	"option password" to the base64 encoded shared secret.
-
 endef
 
 ###### *************************************************************************
