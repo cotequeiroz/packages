@@ -61,24 +61,18 @@ define Package/privoxy
   DEPENDS:=+!PRIVOXY_no_pcre:libpcre +!PRIVOXY_no_pthread:libpthread +!PRIVOXY_no_zlib:zlib
 endef
 
-# shown in LuCI package description
 define Package/privoxy/description
-$(TITLE) - Homepage: www.privoxy.org
+  Privoxy is a web proxy with advanced filtering capabilities for protecting
+  privacy, modifying web page content, managing cookies, controlling access,
+  and removing ads, banners, pop-ups and other obnoxious Internet junk.
+  Privoxy has a very flexible configuration and can be customized to suit
+  individual needs and tastes.
+  Privoxy has application for both stand-alone systems and multi-user networks.
+  Run as : $(USERID)
+  Version: $(PKG_VERSION)-$(PKG_RELEASE)
 endef
 
-# shown in make menuconfig <Help>
 define Package/privoxy/config
-	help
-		Privoxy is a web proxy with advanced filtering capabilities for protecting
-		privacy, modifying web page content, managing cookies, controlling access,
-		and removing ads, banners, pop-ups and other obnoxious Internet junk. 
-		Privoxy has a very flexible configuration and can be customized to suit
-		individual needs and tastes. 
-		Privoxy has application for both stand-alone systems and multi-user networks.
-		Run as : $(USERID)
-		Version: $(PKG_VERSION)-$(PKG_RELEASE)
-		Home   : $(URL)
-
 	source "$(SOURCE)/Config.in"
 endef
 
