@@ -1,0 +1,70 @@
+--- a/decoder_plugins/ffmpeg/ffmpeg.c
++++ b/decoder_plugins/ffmpeg/ffmpeg.c
+@@ -979,12 +979,12 @@ static void *ffmpeg_open (const char *fi
+ 	debug ("FFmpeg thinks '%s' is format(codec) '%s(%s)'",
+ 	        fn, data->ic->iformat->name, data->codec->name);
+ 
+-#if HAVE_DECL_CODEC_CAP_EXPERIMENTAL
++#if HAVE_DECL_AV_CODEC_CAP_EXPERIMENTAL
+ 	/* This may or may not work depending on the particular version of
+ 	 * FFmpeg/LibAV in use.  For some versions this will be caught in
+ 	 * *_find_stream_info() above and misreported as an unfound codec
+ 	 * parameters error. */
+-	if (data->codec->capabilities & CODEC_CAP_EXPERIMENTAL) {
++	if (data->codec->capabilities & AV_CODEC_CAP_EXPERIMENTAL) {
+ 		decoder_error (&data->error, ERROR_FATAL, 0,
+ 				"The codec is experimental and may damage MOC: %s",
+ 				data->codec->name);
+@@ -993,8 +993,8 @@ static void *ffmpeg_open (const char *fi
+ #endif
+ 
+ 	set_downmixing (data);
+-	if (data->codec->capabilities & CODEC_CAP_TRUNCATED)
+-		data->enc->flags |= CODEC_FLAG_TRUNCATED;
++	if (data->codec->capabilities & AV_CODEC_CAP_TRUNCATED)
++		data->enc->flags |= AV_CODEC_FLAG_TRUNCATED;
+ 
+ #ifdef HAVE_AVCODEC_OPEN2
+ 	if (avcodec_open2 (data->enc, data->codec, NULL) < 0)
+@@ -1025,7 +1025,7 @@ static void *ffmpeg_open (const char *fi
+ 
+ 	data->sample_width = sfmt_Bps (data->fmt);
+ 
+-	if (data->codec->capabilities & CODEC_CAP_DELAY)
++	if (data->codec->capabilities & AV_CODEC_CAP_DELAY)
+ 		data->delay = true;
+ 	data->seek_broken = is_seek_broken (data);
+ 	data->timing_broken = is_timing_broken (data->ic);
+--- a/decoder_plugins/ffmpeg/ffmpeg.m4
++++ b/decoder_plugins/ffmpeg/ffmpeg.m4
+@@ -195,7 +195,7 @@ then
+ 		                 [#include <libavcodec/avcodec.h>])
+ 		AC_CHECK_DECLS([AV_SAMPLE_FMT_FLTP], , ,
+ 		                 [#include <libavcodec/avcodec.h>])
+-		AC_CHECK_DECLS([CODEC_CAP_EXPERIMENTAL], , ,
++		AC_CHECK_DECLS([AV_CODEC_CAP_EXPERIMENTAL], , ,
+ 		                 [#include <libavcodec/avcodec.h>])
+ 		AC_SEARCH_LIBS(av_get_sample_fmt_name, avutil,
+ 			[AC_DEFINE([HAVE_AV_GET_SAMPLE_FMT_NAME], 1,
+--- a/configure
++++ b/configure
+@@ -28358,16 +28358,16 @@ cat >>confdefs.h <<_ACEOF
+ #define HAVE_DECL_AV_SAMPLE_FMT_FLTP $ac_have_decl
+ _ACEOF
+ 
+-		ac_fn_c_check_decl "$LINENO" "CODEC_CAP_EXPERIMENTAL" "ac_cv_have_decl_CODEC_CAP_EXPERIMENTAL" "#include <libavcodec/avcodec.h>
++		ac_fn_c_check_decl "$LINENO" "AV_CODEC_CAP_EXPERIMENTAL" "ac_cv_have_decl_AV_CODEC_CAP_EXPERIMENTAL" "#include <libavcodec/avcodec.h>
+ "
+-if test "x$ac_cv_have_decl_CODEC_CAP_EXPERIMENTAL" = x""yes; then :
++if test "x$ac_cv_have_decl_AV_CODEC_CAP_EXPERIMENTAL" = x""yes; then :
+   ac_have_decl=1
+ else
+   ac_have_decl=0
+ fi
+ 
+ cat >>confdefs.h <<_ACEOF
+-#define HAVE_DECL_CODEC_CAP_EXPERIMENTAL $ac_have_decl
++#define HAVE_DECL_AV_CODEC_CAP_EXPERIMENTAL $ac_have_decl
+ _ACEOF
+ 
+ 		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing av_get_sample_fmt_name" >&5
