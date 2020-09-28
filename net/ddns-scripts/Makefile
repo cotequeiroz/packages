@@ -94,15 +94,15 @@ define Package/ddns-scripts-noip/description
 endef
 
 ###### *************************************************************************
-define Package/ddns-scripts_nsupdate
+define Package/ddns-scripts-nsupdate
     $(call Package/ddns-scripts/Default)
     TITLE:=DDNS extension using Bind nsupdate
     DEPENDS:=ddns-scripts +bind-client
 endef
-define Package/ddns-scripts_nsupdate/description
+define Package/ddns-scripts-nsupdate/description
     Dynamic DNS Client scripts extension for direct updates using Bind nsupdate
 endef
-define Package/ddns-scripts_nsupdate/config
+define Package/ddns-scripts-nsupdate/config
     help
 	The script directly updates a PowerDNS (or maybe bind server) via nsupdate
 	from bind-client package. It requires
@@ -370,21 +370,21 @@ exit 0	# suppress errors
 endef
 
 ###### *************************************************************************
-define Package/ddns-scripts_nsupdate/preinst
+define Package/ddns-scripts-nsupdate/preinst
 #!/bin/sh
 # if NOT run buildroot then stop service
 [ -z "$${IPKG_INSTROOT}" ] && /etc/init.d/ddns stop >/dev/null 2>&1
 exit 0	# suppress errors
 endef
 
-define Package/ddns-scripts_nsupdate/install
+define Package/ddns-scripts-nsupdate/install
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/files/ddns.defaults $(1)/etc/uci-defaults/ddns_nsupdate
 	$(INSTALL_DIR) $(1)/usr/lib/ddns
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/files/update_nsupdate.sh $(1)/usr/lib/ddns
 endef
 
-define Package/ddns-scripts_nsupdate/postinst
+define Package/ddns-scripts-nsupdate/postinst
 #!/bin/sh
 # remove old services file entries
 /bin/sed -i '/bind-nsupdate/d' $${IPKG_INSTROOT}/etc/ddns/services	>/dev/null 2>&1
@@ -403,7 +403,7 @@ printf "%s\\t%s\\n" '"bind-nsupdate"' '"update_nsupdate.sh"' >> $${IPKG_INSTROOT
 exit 0	# suppress errors
 endef
 
-define Package/ddns-scripts_nsupdate/prerm
+define Package/ddns-scripts-nsupdate/prerm
 #!/bin/sh
 # if NOT run buildroot then stop service
 [ -z "$${IPKG_INSTROOT}" ] && /etc/init.d/ddns stop			>/dev/null 2>&1
@@ -463,5 +463,5 @@ $(eval $(call BuildPackage,ddns-scripts-cloudflare))
 $(eval $(call BuildPackage,ddns-scripts-freedns))
 $(eval $(call BuildPackage,ddns-scripts-godaddy))
 $(eval $(call BuildPackage,ddns-scripts-noip))
-$(eval $(call BuildPackage,ddns-scripts_nsupdate))
+$(eval $(call BuildPackage,ddns-scripts-nsupdate))
 $(eval $(call BuildPackage,ddns-scripts_route53-v1))
