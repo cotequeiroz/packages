@@ -74,12 +74,12 @@ define Package/ddns-scripts-freedns/description
 endef
 
 ###### *************************************************************************
-define Package/ddns-scripts_godaddy.com-v1
+define Package/ddns-scripts-godaddy
     $(call Package/ddns-scripts/Default)
     TITLE:=GoDaddy.com (require cURL)
     DEPENDS:=ddns-scripts +curl
 endef
-define Package/ddns-scripts_godaddy.com-v1/description
+define Package/ddns-scripts-godaddy/description
     Dynamic DNS Client scripts extension for GoDaddy.com (require/install cURL)
 endef
 
@@ -285,21 +285,21 @@ exit 0	# suppress errors
 endef
 
 ###### *************************************************************************
-define Package/ddns-scripts_godaddy.com-v1/preinst
+define Package/ddns-scripts-godaddy/preinst
 #!/bin/sh
 # if NOT run buildroot then stop service
 [ -z "$${IPKG_INSTROOT}" ] && /etc/init.d/ddns stop >/dev/null 2>&1
 exit 0	# suppress errors
 endef
 
-define Package/ddns-scripts_godaddy.com-v1/install
+define Package/ddns-scripts-godaddy/install
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/files/ddns.defaults $(1)/etc/uci-defaults/ddns_godaddy.com-v1
 	$(INSTALL_DIR) $(1)/usr/lib/ddns
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/files/update_godaddy_com_v1.sh $(1)/usr/lib/ddns
 endef
 
-define Package/ddns-scripts_godaddy.com-v1/postinst
+define Package/ddns-scripts-godaddy/postinst
 #!/bin/sh
 # remove old services file entries
 /bin/sed -i '/godaddy\.com-v1/d' $${IPKG_INSTROOT}/etc/ddns/services		>/dev/null 2>&1
@@ -318,7 +318,7 @@ printf "%s\\t%s\\n" '"godaddy.com-v1"' '"update_godaddy_com_v1.sh"' >> $${IPKG_I
 exit 0	# suppress errors
 endef
 
-define Package/ddns-scripts_godaddy.com-v1/prerm
+define Package/ddns-scripts-godaddy/prerm
 #!/bin/sh
 # if NOT run buildroot then stop service
 [ -z "$${IPKG_INSTROOT}" ] && /etc/init.d/ddns stop				>/dev/null 2>&1
@@ -461,7 +461,7 @@ endef
 $(eval $(call BuildPackage,ddns-scripts))
 $(eval $(call BuildPackage,ddns-scripts-cloudflare))
 $(eval $(call BuildPackage,ddns-scripts-freedns))
-$(eval $(call BuildPackage,ddns-scripts_godaddy.com-v1))
+$(eval $(call BuildPackage,ddns-scripts-godaddy))
 $(eval $(call BuildPackage,ddns-scripts_no-ip_com))
 $(eval $(call BuildPackage,ddns-scripts_nsupdate))
 $(eval $(call BuildPackage,ddns-scripts_route53-v1))
