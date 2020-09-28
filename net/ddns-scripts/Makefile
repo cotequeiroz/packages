@@ -113,12 +113,12 @@ define Package/ddns-scripts-nsupdate/config
 endef
 
 ###### *************************************************************************
-define Package/ddns-scripts_route53-v1
+define Package/ddns-scripts-route53
     $(call Package/ddns-scripts/Default)
     TITLE:=Amazon AWS Route 53 API v1
     DEPENDS:=ddns-scripts +curl +openssl-util
 endef
-define Package/ddns-scripts_route53-v1/description
+define Package/ddns-scripts-route53/description
 	Dynamic DNS Client scripts extension for Amazon AWS Route53. Note: You
 	must also install ca-certificate or ca-bundle.
 	It requires:
@@ -414,21 +414,21 @@ exit 0	# suppress errors
 endef
 
 ###### *************************************************************************
-define Package/ddns-scripts_route53-v1/preinst
+define Package/ddns-scripts-route53/preinst
 #!/bin/sh
 # if NOT run buildroot then stop service
 [ -z "$${IPKG_INSTROOT}" ] && /etc/init.d/ddns stop >/dev/null 2>&1
 exit 0	# suppress errors
 endef
 
-define Package/ddns-scripts_route53-v1/install
+define Package/ddns-scripts-route53/install
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/files/ddns.defaults $(1)/etc/uci-defaults/ddns_route53-v1
 	$(INSTALL_DIR) $(1)/usr/lib/ddns
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/files/update_route53_v1.sh $(1)/usr/lib/ddns
 endef
 
-define Package/ddns-scripts_route53-v1/postinst
+define Package/ddns-scripts-route53/postinst
 #!/bin/sh
 # remove old services file entries
 /bin/sed -i '/route53-v1/d' $${IPKG_INSTROOT}/etc/ddns/services		>/dev/null 2>&1
@@ -447,7 +447,7 @@ printf "%s\\t%s\\n" '"route53-v1"' '"update_route53_v1.sh"' >> $${IPKG_INSTROOT}
 exit 0	# suppress errors
 endef
 
-define Package/ddns-scripts_route53-v1/prerm
+define Package/ddns-scripts-route53/prerm
 #!/bin/sh
 # if NOT run buildroot then stop service
 [ -z "$${IPKG_INSTROOT}" ] && /etc/init.d/ddns stop				>/dev/null 2>&1
@@ -464,4 +464,4 @@ $(eval $(call BuildPackage,ddns-scripts-freedns))
 $(eval $(call BuildPackage,ddns-scripts-godaddy))
 $(eval $(call BuildPackage,ddns-scripts-noip))
 $(eval $(call BuildPackage,ddns-scripts-nsupdate))
-$(eval $(call BuildPackage,ddns-scripts_route53-v1))
+$(eval $(call BuildPackage,ddns-scripts-route53))
