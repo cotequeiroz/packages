@@ -64,12 +64,12 @@ define Package/ddns-scripts-cloudflare/description
 endef
 
 ###### *************************************************************************
-define Package/ddns-scripts_freedns_42_pl
+define Package/ddns-scripts-freedns
     $(call Package/ddns-scripts/Default)
     TITLE:=DDNS extension for FreeDNS.42.pl (requires cURL)
     DEPENDS:=ddns-scripts +curl
 endef
-define Package/ddns-scripts_freedns_42_pl/description
+define Package/ddns-scripts-freedns/description
     Dynamic DNS Client scripts extension for freedns.42.pl
 endef
 
@@ -244,21 +244,21 @@ exit 0	# suppress errors
 endef
 
 ###### *************************************************************************
-define Package/ddns-scripts_freedns_42_pl/preinst
+define Package/ddns-scripts-freedns/preinst
 #!/bin/sh
 # if NOT run buildroot then stop service
 [ -z "$${IPKG_INSTROOT}" ] && /etc/init.d/ddns stop >/dev/null 2>&1
 exit 0	# suppress errors
 endef
 
-define Package/ddns-scripts_freedns_42_pl/install
+define Package/ddns-scripts-freedns/install
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/files/ddns.defaults $(1)/etc/uci-defaults/ddns_freedns_42_pl
 	$(INSTALL_DIR) $(1)/usr/lib/ddns
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/files/update_freedns_42_pl.sh $(1)/usr/lib/ddns
 endef
 
-define Package/ddns-scripts_freedns_42_pl/postinst
+define Package/ddns-scripts-freedns/postinst
 #!/bin/sh
 # remove old services file entries
 /bin/sed -i '/freedns\.42\.pl/d' $${IPKG_INSTROOT}/etc/ddns/services	>/dev/null 2>&1
@@ -275,7 +275,7 @@ printf "%s\\t%s\\n" '"freedns.42.pl"' '"update_freedns_42_pl.sh"' >> $${IPKG_INS
 exit 0	# suppress errors
 endef
 
-define Package/ddns-scripts_freedns_42_pl/prerm
+define Package/ddns-scripts-freedns/prerm
 #!/bin/sh
 # if NOT run buildroot then stop service
 [ -z "$${IPKG_INSTROOT}" ] && /etc/init.d/ddns stop		>/dev/null 2>&1
@@ -460,7 +460,7 @@ endef
 ###### *************************************************************************
 $(eval $(call BuildPackage,ddns-scripts))
 $(eval $(call BuildPackage,ddns-scripts-cloudflare))
-$(eval $(call BuildPackage,ddns-scripts_freedns_42_pl))
+$(eval $(call BuildPackage,ddns-scripts-freedns))
 $(eval $(call BuildPackage,ddns-scripts_godaddy.com-v1))
 $(eval $(call BuildPackage,ddns-scripts_no-ip_com))
 $(eval $(call BuildPackage,ddns-scripts_nsupdate))
