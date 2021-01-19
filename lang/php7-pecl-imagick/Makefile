@@ -9,7 +9,7 @@ PECL_NAME:=imagick
 PECL_LONGNAME:=Image Processing (ImageMagick binding)
 
 PKG_VERSION:=3.4.4
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 PKG_HASH:=8dd5aa16465c218651fc8993e1faecd982e6a597870fd4b937e9ece02d567077
 
 PKG_NAME:=php7-pecl-imagick
