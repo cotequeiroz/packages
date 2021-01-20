@@ -10,13 +10,12 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=vpnc
 PKG_REV:=550
 PKG_VERSION:=0.5.3.r$(PKG_REV)
-PKG_RELEASE:=9
+PKG_RELEASE:=10
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://svn.unix-ag.uni-kl.de/vpnc/trunk/
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=$(PKG_REV)
-PKG_SOURCE_PROTO:=svn
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/streambinder/vpnc
+PKG_SOURCE_VERSION:=024aa17a0a86716cac0db185b44bf07ba4f8c135
+PKG_MIRROR_HASH:=c514aae6278d786ec105ef6b9289f620383d1201b6cd776b2c18c31b23cc709d
 
 PKG_MAINTAINER:=Daniel Gimpelevich <daniel@gimpelevich.san-francisco.ca.us>
 PKG_LICENSE:=VARIOUS
