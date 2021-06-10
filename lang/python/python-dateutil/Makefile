@@ -25,6 +25,8 @@ include ../python3-package.mk
 
 PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
+HOST_PYTHON_PACKAGE_BUILD_DEPENDS:="setuptools_scm==5.0.2"
+
 define Package/python-dateutil/Default
   SUBMENU:=Python
   SECTION:=lang
