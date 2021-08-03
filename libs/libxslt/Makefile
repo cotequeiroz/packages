@@ -25,6 +25,7 @@ PKG_CPE_ID:=cpe:/a:xmlsoft:libxslt
 PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
 HOST_BUILD_DEPENDS:=libxml2/host
+PKG_FIXUP:=autoreconf
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/host-build.mk
