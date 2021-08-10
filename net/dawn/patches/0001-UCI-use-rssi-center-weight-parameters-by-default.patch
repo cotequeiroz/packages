@@ -1,0 +1,47 @@
+From 81f788d7d6b15c8a618896d78a3b172694cd18f0 Mon Sep 17 00:00:00 2001
+From: Eneas U de Queiroz <cotequeiroz@gmail.com>
+Date: Fri, 6 Aug 2021 09:29:59 -0300
+Subject: [PATCH 1/6] UCI: use rssi center,weight parameters by default
+
+This changes the default RSSI metrics asessment from bonus/penalty
+(rssi*, rssi_low*) to the RSSI formula using rssi_center, rssi_weight
+and kick_threshold.
+
+Signed-off-by: Eneas U de Queiroz <cotequeiroz@gmail.com>
+---
+ src/utils/dawn_uci.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/src/utils/dawn_uci.c b/src/utils/dawn_uci.c
+index d887215..375e085 100644
+--- a/src/utils/dawn_uci.c
++++ b/src/utils/dawn_uci.c
+@@ -217,6 +217,7 @@ static struct uci_section *uci_find_metric_section(const char *name) {
+ struct probe_metric_s uci_get_dawn_metric() {
+     struct probe_metric_s ret = {
+         .kicking = 0,
++        .kicking_threshold = 25,
+         .min_probe_count = 0,
+         .use_station_count = 1,
+         .eval_auth_req = 0,
+@@ -244,13 +245,15 @@ struct probe_metric_s uci_get_dawn_metric() {
+         .no_vht_support = { 0, 0 },
+         .rssi = { 10, 10 },
+         .rssi_val = { -60, -60 },
+-        .initial_score = { 0, 100 },
++        .initial_score = { 100, 125 },
+         .chan_util = { 0, 0 },
+         .max_chan_util = { -500, -500 },
+         .chan_util_val = { 140, 140 },
+         .max_chan_util_val = { 170, 170 },
+-        .low_rssi = { -500, -500 },
++        .low_rssi = { 0, 0 },
+         .low_rssi_val = { -80, -80 },
++        .rssi_center = { -70, -70 },
++        .rssi_weight = { 2, 2 }
+     };
+     struct uci_section *global_s, *band_s[__DAWN_BAND_MAX];
+     struct uci_option *global_neighbors = NULL, *neighbors;
+-- 
+2.31.1
+

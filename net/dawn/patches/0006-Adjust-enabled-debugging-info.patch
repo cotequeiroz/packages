@@ -1,0 +1,94 @@
+From 19cc6c695bab5b6140f446717f3c749251acc37b Mon Sep 17 00:00:00 2001
+From: Eneas U de Queiroz <cotequeiroz@gmail.com>
+Date: Mon, 26 Jul 2021 11:45:54 -0300
+Subject: [PATCH 6/6] Adjust enabled debugging info
+
+---
+ src/storage/datastorage.c | 12 ++++++------
+ src/utils/ubus.c          | 13 +++++++++----
+ 2 files changed, 15 insertions(+), 10 deletions(-)
+
+diff --git a/src/storage/datastorage.c b/src/storage/datastorage.c
+index 0cf96dd..5ff6ae6 100644
+--- a/src/storage/datastorage.c
++++ b/src/storage/datastorage.c
+@@ -739,9 +739,9 @@ int kick_clients(ap* kicking_ap, uint32_t id) {
+                 float rx_rate, tx_rate;
+                 bool have_bandwidth_iwinfo = !(get_bandwidth_iwinfo(j->client_addr, &rx_rate, &tx_rate));
+                 if (!have_bandwidth_iwinfo && dawn_metric.bandwidth_threshold > 0) {
+-#ifndef DAWN_NO_OUTPUT
++//#ifndef DAWN_NO_OUTPUT
+                     printf("No active transmission data for client. Don't kick!\n");
+-#endif
++//#endif
+                 }
+                 else
+                 {
+@@ -749,19 +749,19 @@ int kick_clients(ap* kicking_ap, uint32_t id) {
+                     // <= 6MBits <- probably no transmission
+                     // tx_rate has always some weird value so don't use ist
+                     if (have_bandwidth_iwinfo && rx_rate > dawn_metric.bandwidth_threshold) {
+-#ifndef DAWN_NO_OUTPUT
++//#ifndef DAWN_NO_OUTPUT
+                         printf("Client is probably in active transmisison. Don't kick! RxRate is: %f\n", rx_rate);
+-#endif
++//#endif
+                     }
+                     else
+                     {
+-#ifndef DAWN_NO_OUTPUT
++//#ifndef DAWN_NO_OUTPUT
+                         if (have_bandwidth_iwinfo)
+                             printf("Client is probably NOT in active transmisison. KICK! RxRate is: %f\n", rx_rate);
+                         else
+                             printf("No active tranmission data for client, but bandwidth_threshold=%d means we don't care. KICK!\n",
+                                    dawn_metric.bandwidth_threshold);
+-#endif
++//#endif
+ 
+                         // here we should send a messsage to set the probe.count for all aps to the min that there is no delay between switching
+                         // the hearing map is full...
+diff --git a/src/utils/ubus.c b/src/utils/ubus.c
+index 7647d67..4b12972 100644
+--- a/src/utils/ubus.c
++++ b/src/utils/ubus.c
+@@ -825,10 +825,10 @@ void ubus_send_beacon_report(client *c, ap *a, int id)
+     blobmsg_add_u32(&b_beacon, "mode", mode);
+     blobmsg_add_string(&b_beacon, "ssid", (char*)a->ssid);
+ 
+-#ifndef DAWN_NO_OUTPUT
++//#ifndef DAWN_NO_OUTPUT
+     printf("Invoking beacon report (addr=" MACSTR ", op_class=%d, channel=%d, duration=%d, mode=%d, ssid=%s)\n",
+             MAC2STR(c->client_addr.u8), a->op_class, a->channel, dawn_metric.duration, mode, a->ssid);
+-#endif
++//#endif
+     ubus_invoke(ctx, id, "rrm_beacon_req", b_beacon.head, NULL, NULL, timeout * 1000);
+ }
+ 
+@@ -935,9 +935,9 @@ int wnm_disassoc_imminent(uint32_t id, const struct dawn_mac client_addr, struct
+ 
+     void* nbs = blobmsg_open_array(&b, "neighbors");
+     while(neighbor_list != NULL) {
+-#ifndef DAWN_NO_OUTPUT
++//#ifndef DAWN_NO_OUTPUT
+         printf("BSS TRANSITION NEIGHBOR " NR_MACSTR ", Score=%d\n", NR_MAC2STR(neighbor_list->nr), neighbor_list->score);
+-#endif
++//#endif
+         blobmsg_add_string(&b, NULL, neighbor_list->nr);
+         neighbor_list = neighbor_list->next;
+     }
+@@ -1514,6 +1514,11 @@ int build_network_overview(struct blob_buf *b) {
+     char client_mac_buf[20];
+     struct hostapd_sock_entry *sub;
+ 
++#ifndef DAWN_NO_OUTPUT
++    printf("Building network overview\n");
++    print_probe_array();
++#endif
++
+     blob_buf_init(b, 0);
+ 
+     bool add_ssid = true;
+-- 
+2.31.1
+

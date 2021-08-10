@@ -1,0 +1,28 @@
+From 936b0977cdf34f6d38dbbba0f2da1bdfc78ee01d Mon Sep 17 00:00:00 2001
+From: Eneas U de Queiroz <cotequeiroz@gmail.com>
+Date: Tue, 27 Jul 2021 10:08:49 -0300
+Subject: [PATCH 4/6] Disable debugging output
+
+This sets DAWN_NO_OUTPUT in include/datastorage.h
+
+Signed-off-by: Eneas U de Queiroz <cotequeiroz@gmail.com>
+---
+ src/include/datastorage.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/include/datastorage.h b/src/include/datastorage.h
+index 5e10491..80d6c21 100644
+--- a/src/include/datastorage.h
++++ b/src/include/datastorage.h
+@@ -150,7 +150,7 @@ extern struct probe_metric_s dawn_metric;
+ /*** Core DAWN data structures for tracking network devices and status ***/
+ // Define this to remove printing / reporing of fields, and hence observe
+ // which fields are evaluated in use at compile time.
+-// #define DAWN_NO_OUTPUT
++#define DAWN_NO_OUTPUT
+ 
+ // TODO notes:
+ //    Never used? = No code reference
+-- 
+2.31.1
+
