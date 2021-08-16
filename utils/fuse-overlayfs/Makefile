@@ -31,6 +31,15 @@ define Package/fuse-overlayfs/description
   FUSE overlay+shiftfs implementation for rootless containers
 endef
 
+WINT_T_M4:=$(STAGING_DIR)/usr/share/aclocal/wint_t.m4
+
+define Build/Prepare
+	$(call Build/Prepare/Default)
+	[ -e "$(WINT_T_M4)" ] || exit 0; \
+	grep -q GNULIB_OVERRIDES_WINT_T "$(WINT_T_M4)" || \
+	    $(CP) $(PKG_BUILD_DIR)/m4/wint_t.m4 "$(WINT_T_M4)"
+endef
+
 define Package/fuse-overlayfs/install
 	$(INSTALL_DIR) $(1)/usr/bin/
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/fuse-overlayfs $(1)/usr/bin/
