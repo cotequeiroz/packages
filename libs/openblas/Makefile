@@ -56,6 +56,7 @@ else ifeq ($(ARCH),arm)
 else ifeq ($(ARCH),mips)
   OPENBLAS_TARGET:=MIPS24K
 else ifeq ($(ARCH),mipsel)
+  MAKE_FLAGS += ARCH=mips
   OPENBLAS_TARGET:=MIPS24K
 else ifeq ($(ARCH),powerpc)
   OPENBLAS_TARGET:=PPC440
