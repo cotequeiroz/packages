@@ -8,7 +8,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rtklib
 PKG_VERSION:=2.4.3.34
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/tomojitakasu/RTKLIB
@@ -18,6 +18,7 @@ PKG_MIRROR_HASH:=54f0d9a50f2b8b9caf9e3d391f1ad211ca8fcb54743bd8f43fc7301396143a1
 PKG_MAINTAINER:=Nuno Goncalves <nunojpg@gmail.com>
 PKG_LICENSE:=BSD-2-Clause
 
+PKG_BUILD_FLAGS:=no-mips16
 PKG_BUILD_PARALLEL:=0
 
 include $(INCLUDE_DIR)/package.mk
