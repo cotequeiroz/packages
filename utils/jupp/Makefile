@@ -13,6 +13,7 @@ PKG_LICENSE_FILES:=COPYING
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 PKG_BUILD_PARALLEL:=1
 PKG_CONFIG_DEPENDS:=CONFIG_PACKAGE_libncurses
+PKG_USE_MIPS16:=0
 
 PKG_SOURCE:=joe-$(basename ${PKG_VERSION})jupp$(subst .,,$(suffix ${PKG_VERSION})).tgz
 PKG_SOURCE_URL:=http://www.mirbsd.org/MirOS/dist/jupp/ \
