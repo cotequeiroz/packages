@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=espeak
 PKG_VERSION:=1.48.04
-PKG_RELEASE:=3
+PKG_RELEASE:=3#cotequeiroz
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-source.zip
 PKG_SOURCE_URL:=@SF/espeak
@@ -20,7 +20,7 @@ PKG_LICENSE_FILES:=License.txt
 
 PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
-PKG_BUILD_FLAGS:=gc-sections lto
+PKG_BUILD_FLAGS:=gc-sections lto no-mips16
 
 include $(INCLUDE_DIR)/package.mk
 
