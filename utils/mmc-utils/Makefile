@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mmc-utils
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://git.kernel.org/pub/scm/utils/mmc/mmc-utils.git
@@ -37,6 +37,8 @@ endef
 
 define Build/Configure
 endef
+
+TARGET_CFLAGS += -Wno-error=stringop-truncation
 
 define Build/Compile
 	$(MAKE) -C $(PKG_BUILD_DIR) \
