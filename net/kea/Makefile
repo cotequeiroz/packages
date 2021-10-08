@@ -216,6 +216,7 @@ CONFIGURE_VARS += \
 
 TARGET_CXXFLAGS += \
 	$(FPIC) \
+	-Wno-error=stringop-overread \
 	-fdata-sections \
 	-ffunction-sections \
 	-std=c++17
