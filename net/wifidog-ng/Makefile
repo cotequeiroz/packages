@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=wifidog-ng
 PKG_VERSION:=2.0.0
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_LICENSE:=LGPL-2.1
 PKG_LICENSE_FILES:=LICENSE
@@ -59,7 +59,26 @@ define Package/wifidog-ng-mbedtls
   VARIANT:=mbedtls
 endef
 
-define Package/wifidog-ng/default/install
+define KernelPackage/wifidog-ng
+  SUBMENU:=Other modules
+  TITLE:=Kernel module for wifidog-ng
+  DEPENDS:=+kmod-nf-nat +kmod-ipt-ipset
+  FILES:=$(PKG_BUILD_DIR)/wifidog-ng.ko
+  VARIANT:=module
+endef
+
+include $(INCLUDE_DIR)/kernel-defaults.mk
+
+ifeq ($(BUILD_VARIANT),module)
+  define Build/Compile
+	$(MAKE) $(KERNEL_MAKEOPTS) SUBDIRS="$(PKG_BUILD_DIR)" modules
+  endef
+else
+  Build/Prepare=
+  Build/Configure=
+  Build/Compile=
+
+  define Package/wifidog-ng/default/install
 	$(INSTALL_DIR) $(1)/usr/bin $(1)/etc/init.d $(1)/etc/config \
 		$(1)/etc/wifidog-ng $(1)//etc/hotplug.d/dhcp $(1)/usr/lib/lua
 	$(INSTALL_BIN) ./files//wifidog-ng.lua $(1)/usr/bin/wifidog-ng
@@ -69,29 +88,18 @@ define Package/wifidog-ng/default/install
 	$(INSTALL_CONF) ./files/ssl.crt $(1)/etc/wifidog-ng
 	$(INSTALL_DATA) ./files/wifidog-ng.hotplug $(1)/etc/hotplug.d/dhcp/00-wifidog-ng
 	$(CP) ./files/wifidog-ng $(1)/usr/lib/lua
-endef
+  endef
 
-Package/wifidog-ng-nossl/install = $(Package/wifidog-ng/default/install)
-Package/wifidog-ng-openssl/install = $(Package/wifidog-ng/default/install)
-Package/wifidog-ng-wolfssl/install = $(Package/wifidog-ng/default/install)
-Package/wifidog-ng-mbedtls/install = $(Package/wifidog-ng/default/install)
+  Package/wifidog-ng-nossl/install = $(Package/wifidog-ng/default/install)
+  Package/wifidog-ng-openssl/install = $(Package/wifidog-ng/default/install)
+  Package/wifidog-ng-wolfssl/install = $(Package/wifidog-ng/default/install)
+  Package/wifidog-ng-mbedtls/install = $(Package/wifidog-ng/default/install)
+endif
 
-define KernelPackage/wifidog-ng
-  SUBMENU:=Other modules
-  TITLE:=Kernel module for wifidog-ng
-  DEPENDS:=+kmod-nf-nat +kmod-ipt-ipset
-  FILES:=$(PKG_BUILD_DIR)/wifidog-ng.ko
-endef
-
-include $(INCLUDE_DIR)/kernel-defaults.mk
-
-define Build/Compile
-	$(MAKE) $(KERNEL_MAKEOPTS) SUBDIRS="$(PKG_BUILD_DIR)" modules
-endef
+$(eval $(call KernelPackage,wifidog-ng))
 
 $(eval $(call BuildPackage,wifidog-ng-nossl))
 $(eval $(call BuildPackage,wifidog-ng-mbedtls))
 $(eval $(call BuildPackage,wifidog-ng-wolfssl))
 $(eval $(call BuildPackage,wifidog-ng-openssl))
 
-$(eval $(call KernelPackage,wifidog-ng))
