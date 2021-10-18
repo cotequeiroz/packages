@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=tvheadend
 PKG_VERSION:=4.0.10
-PKG_RELEASE:=6
+PKG_RELEASE:=7
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/tvheadend/tvheadend/tar.gz/v$(PKG_VERSION)?
@@ -65,6 +65,9 @@ ifeq ($(CONFIG_TVHEADEND_AVAHI_SUPPORT),)
 else
   CONFIGURE_ARGS += --enable-avahi
 endif
+
+MAKE_FLAGS += \
+	LIBHDHR_URL='http://sources.openelec.tv/mirror/libhdhomerun/libhdhomerun_20150826.tgz'
 
 CONFIGURE_ARGS += \
 	--arch=$(ARCH) \
