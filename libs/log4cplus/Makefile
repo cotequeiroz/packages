@@ -9,17 +9,19 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=log4cplus
-PKG_VERSION:=2.0.4
+PKG_VERSION:=2.0.7
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@SF/$(PKG_NAME)
-PKG_HASH:=faf15f3651e2d0f9f9cf2c1bfcb38ec4962f22f4a671410453a27c0976da5e36
+PKG_HASH:=8f74a0a5920ba044b24e2ebeb0f1e5e36d85d5c23ed48d9fe328882b16130db8
 
 PKG_MAINTAINER:=BangLang Huang <banglang.huang@foxmail.com>, Rosy Song <rosysong@rosinson.com>
 PKG_LICENSE:=BSD-2-Clause Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 
+HOST_BUILD_PARALLEL:=1
+PKG_BUILD_PARALLEL:=1
 CMAKE_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
@@ -40,14 +42,18 @@ define Package/log4cplus/description
   configuration. It is modeled after the Java log4j API.
 endef
 
-TARGET_CFLAGS += -flto
-TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
-
-CMAKE_OPTIONS += \
+OPTIONS:= \
 	-DLOG4CPLUS_BUILD_LOGGINGSERVER:BOOL=OFF \
 	-DLOG4CPLUS_BUILD_TESTING:BOOL=OFF \
+	-DLOG4CPLUS_ENABLE_DECORATED_LIBRARY_NAME:BOOL=OFF \
 	-DUNICODE:BOOL=OFF \
 	-DWITH_ICONV:BOOL=OFF
+
+CMAKE_HOST_OPTIONS += $(OPTIONS) -DBUILD_SHARED_LIBS=OFF
+CMAKE_OPTIONS += $(OPTIONS) -DBUILD_SHARED_LIBS=ON
+
+TARGET_CFLAGS += -flto
+TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
 
 define Package/log4cplus/install
 	$(INSTALL_DIR) $(1)/usr/lib
