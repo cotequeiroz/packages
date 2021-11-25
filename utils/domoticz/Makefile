@@ -24,6 +24,7 @@ PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
+include ../../lang/python/python3-version.mk
 
 define Package/domoticz
   SECTION:=utils
@@ -75,7 +76,7 @@ CMAKE_OPTIONS += \
 
 TARGET_CFLAGS += -flto
 TARGET_CXXFLAGS += -DWITH_GPIO -flto
-TARGET_LDFLAGS += -lpython3.9
+TARGET_LDFLAGS += -lpython$(PYTHON3_VERSION)
 
 define Build/Prepare
 	$(call Build/Prepare/Default)
