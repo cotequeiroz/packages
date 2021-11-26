@@ -79,7 +79,7 @@ endef
 
 define Package/frr
   $(call Package/frr/Default)
-  DEPENDS:=+librt
+  DEPENDS:=+librt @!(mips||arc)
   TITLE:=The FRRouting (FRR) Software Routing Suite
   MENU:=1
 endef
