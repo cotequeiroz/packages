@@ -21,6 +21,7 @@ PKG_LICENSE_FILES:=LICENSE.md
 
 PKG_BUILD_DEPENDS:=libmatroska pugixml spdlog
 PKG_CONFIG_DEPENDS:=CONFIG_BUILD_PATENTED
+PKG_FORTIFY_SOURCE:=0
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
@@ -66,6 +67,7 @@ TARGET_CFLAGS += \
 	-ffunction-sections \
 	-fdata-sections
 
+TARGET_CXXFLAGS += -fpermissive
 TARGET_LDFLAGS += -Wl,--gc-sections
 
 define Package/gerbera/install
