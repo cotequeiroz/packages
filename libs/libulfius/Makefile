@@ -48,6 +48,8 @@ define Package/libulfius-$(BUILD_VARIANT)/install
 		$(1)/usr/lib/
 endef
 
+TARGET_CFLAGS += -Wno-error=discarded-qualifiers
+
 CMAKE_OPTIONS += \
 	-DDOWNLOAD_DEPENDENCIES=OFF \
 	-DBUILD_WEBSOCKET=OFF \
