@@ -51,6 +51,7 @@ CONFIGURE_ARGS += \
 	--disable-sasl
 
 CONFIGURE_VARS += ac_cv_c_endian=$(if $(CONFIG_BIG_ENDIAN),big,little)
+TARGET_CFLAGS += -Wno-error=maybe-uninitialized
 
 define Package/memcached/install
 	$(INSTALL_DIR) $(1)/usr/bin
