@@ -1,0 +1,12 @@
+--- a/src/simple_http.c
++++ b/src/simple_http.c
+@@ -37,7 +37,9 @@
+ #include "pstring.h"
+ 
+ #ifdef USE_CYASSL
++#include <cyassl/options.h>
+ #include <cyassl/ssl.h>
++#include <pthread.h>
+ #include "conf.h"
+ /* For CYASSL_MAX_ERROR_SZ */
+ #include <cyassl/ctaocrypt/types.h>
