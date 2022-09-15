@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=glib2
 PKG_VERSION:=2.74.7
-PKG_RELEASE:=3
+PKG_RELEASE:=3# cotequeiroz
 
 PKG_SOURCE:=glib-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNOME/glib/$(basename $(PKG_VERSION))
@@ -110,6 +110,11 @@ define Build/InstallDev
 	$(CP) \
 		$(PKG_INSTALL_DIR)/usr/share/glib-2.0/codegen \
 		$(1)/usr/share/glib-2.0/
+endef
+
+define Host/Install +=
+
+	$(SED) '/^Libs:/s/$$$$/ -lpcre2-8/' $(STAGING_DIR_HOSTPKG)/lib/pkgconfig/glib-2.0.pc
 endef
 
 define Package/glib2/install
