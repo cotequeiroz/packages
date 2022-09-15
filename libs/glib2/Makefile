@@ -108,6 +108,11 @@ define Build/InstallDev
 		$(1)/usr/share/glib-2.0/
 endef
 
+define Host/Install +=
+
+	$(SED) '/^Libs:/s/$$$$/ -lpcre/' $(STAGING_DIR_HOSTPKG)/lib/pkgconfig/glib-2.0.pc
+endef
+
 define Package/glib2/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) \
