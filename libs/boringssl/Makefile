@@ -38,6 +38,7 @@ define Package/boringssl/description
 endef
 
 CMAKE_OPTIONS+=-DBUILD_SHARED_LIBS=ON
+TARGET_CFLAGS+=-Wno-error=stringop-overflow
 
 define Package/boringssl/install
 	$(INSTALL_DIR) $(1)/usr/lib/boringssl
