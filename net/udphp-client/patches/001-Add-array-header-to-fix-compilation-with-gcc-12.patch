@@ -1,0 +1,33 @@
+From 60144b10ff79cefa75ac1eaa27902fd3f7a76172 Mon Sep 17 00:00:00 2001
+From: Eneas U de Queiroz <cotequeiroz@gmail.com>
+Date: Fri, 13 Jan 2023 09:25:07 -0300
+Subject: [PATCH] Add <array> header to fix compilation with gcc 12
+
+Users of std::array should include it.
+
+Signed-off-by: Eneas U de Queiroz <cotequeiroz@gmail.com>
+
+diff --git a/client/src/main.cpp b/client/src/main.cpp
+index 0987c43..910d530 100644
+--- a/client/src/main.cpp
++++ b/client/src/main.cpp
+@@ -8,6 +8,7 @@
+ #include <unistd.h>
+ #include <uuid/uuid.h>
+ 
++#include <array>
+ #include <chrono>
+ #include <cstring>
+ #include <ctime>
+diff --git a/server/src/main.cpp b/server/src/main.cpp
+index 4868307..53f4319 100644
+--- a/server/src/main.cpp
++++ b/server/src/main.cpp
+@@ -8,6 +8,7 @@
+ #include <unistd.h>
+ #include <uuid/uuid.h>
+ 
++#include <array>
+ #include <chrono>
+ #include <cstring>
+ #include <iostream>

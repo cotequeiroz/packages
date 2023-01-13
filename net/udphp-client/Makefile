@@ -6,7 +6,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=udphp-client
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_MAINTAINER:=Almaz Gaifullin <gargargar@yandex.com>
 PKG_LICENSE:=MIT
