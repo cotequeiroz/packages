@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=linuxptp
 PKG_VERSION:=4.4
-PKG_RELEASE:=2
+PKG_RELEASE:=2# cotequeiroz
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=https://downloads.nwtime.org/linuxptp/
@@ -46,8 +46,10 @@ EXTRA_CFLAGS += -DHAVE_CLOCK_ADJTIME -DHAVE_POSIX_SPAWN -DHAVE_ONESTEP_SYNC
 
 MAKE_VARS += \
 	EXTRA_CFLAGS="$(TARGET_CFLAGS) $(TARGET_CPPFLAGS) $(EXTRA_CFLAGS)" \
-	KBUILD_OUTPUT="$(LINUX_DIR)" \
 	NO_AUTODETECT_SAD_MAC_LIB="y"
+
+MAKE_FLAGS += \
+	KBUILD_OUTPUT="$(LINUX_DIR)"
 
 define Build/Compile/sysclock-discipline-check
 	$(TARGET_CC) $(TARGET_CFLAGS) -o $(PKG_BUILD_DIR)/sysclock-discipline-check $(CURDIR)/files/sysclock-discipline-check.c $(TARGET_LDFLAGS)
