@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ooniprobe
 PKG_VERSION:=3.16.5
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PKG_SOURCE:=probe-cli-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/ooni/probe-cli/tar.gz/v$(PKG_VERSION)?
@@ -34,7 +34,7 @@ define Package/ooniprobe
   CATEGORY:=Network
   TITLE:=OONI probe-cli
   URL:=https://ooni.org
-  DEPENDS:=$(GO_ARCH_DEPENDS)
+  DEPENDS:=$(GO_ARCH_DEPENDS) @BROKEN
 endef
 
 define Package/ooniprobe/description
