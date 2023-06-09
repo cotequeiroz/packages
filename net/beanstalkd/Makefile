@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=beanstalkd
 PKG_VERSION:=1.13
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PKG_SOURCE_URL:=https://github.com/beanstalkd/$(PKG_NAME)/archive/refs/tags
 PKG_SOURCE_VERSION:=1.13
@@ -19,6 +19,8 @@ PKG_LICENSE_FILES:=LICENSE
 PKG_CPE_ID:=cpe:/a:wildbit:beanstalkd
 
 include $(INCLUDE_DIR)/package.mk
+
+TARGET_CFLAGS += -Wno-error=stringop-truncation
 
 define Package/beanstalkd
   SECTION:=net
