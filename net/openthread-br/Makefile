@@ -67,11 +67,12 @@ CMAKE_OPTIONS += \
 	-DOTBR_VENDOR_NAME=OpenThread \
 	-DOTBR_VERSION=$(PKG_VERSION)
 
-TARGET_CFLAGS += -DOPENTHREAD_POSIX_CONFIG_DAEMON_SOCKET_BASENAME=\\\"/var/run/openthread-%s\\\"
+TARGET_CFLAGS += -DOPENTHREAD_POSIX_CONFIG_DAEMON_SOCKET_BASENAME=\\\"/var/run/openthread-%s\\\" \
+		 -I$(STAGING_DIR)/usr/include/mdns \
+		 -L$(STAGING_DIR)/usr/lib/mdns
 
 define Package/openthread-br/install
 	$(INSTALL_DIR) \
-		$(1)/etc/init.d \
 		$(1)/lib/netifd/proto \
 		$(1)/usr/sbin \
 		$(1)/usr/share/otbr
