@@ -1,0 +1,48 @@
+From 4ec2d52d5ce192bb140dd38add766ce6f1b9dafe Mon Sep 17 00:00:00 2001
+From: Eli Schwartz <eschwartz93@gmail.com>
+Date: Mon, 8 May 2023 02:56:52 -0400
+Subject: [PATCH] meson: add option to disable building manpages (#118)
+
+Instead of always building man pages if asciidoc is installed, use a
+feature option to allow making its absence an error, or to avoid
+building it even if installed.
+
+Co-authored-by: Sergio Arroutbi <sarroutb@redhat.com>
+
+Index: jose-11/meson.build
+===================================================================
+--- jose-11.orig/meson.build
++++ jose-11/meson.build
+@@ -5,7 +5,8 @@ project('jose', 'c', license: 'APL2',
+     'prefix=/usr',
+     'warning_level=2',
+     'werror=true'
+-  ]
++  ],
++  meson_version: '>=0.47.0',
+ )
+ 
+ licensedir = join_paths(get_option('prefix'), 'share', 'licenses', meson.project_name())
+@@ -39,7 +40,7 @@ zlib = dependency('zlib')
+ threads = dependency('threads')
+ jansson = dependency('jansson', version: '>=2.10')
+ libcrypto = dependency('libcrypto', version: '>=1.0.2')
+-a2x = find_program('a2x', required: false)
++a2x = find_program('a2x', required: get_option('docs'))
+ 
+ mans = []
+ 
+@@ -73,6 +74,6 @@ if a2x.found()
+       install: true
+     )
+   endforeach
+-else
++elif get_option('docs').auto()
+   warning('Will not build man pages due to missing dependencies!')
+ endif
+Index: jose-11/meson_options.txt
+===================================================================
+--- /dev/null
++++ jose-11/meson_options.txt
+@@ -0,0 +1 @@
++option('docs', type: 'feature', description: 'Whether to build asciidoc manpages')
