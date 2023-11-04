@@ -74,7 +74,8 @@ CMAKE_OPTIONS += \
 
 TARGET_CFLAGS += -DOPENTHREAD_POSIX_CONFIG_DAEMON_SOCKET_BASENAME=\\\"/var/run/openthread-%s\\\" \
 		 -I$(STAGING_DIR)/usr/include/mdns \
-		 -L$(STAGING_DIR)/usr/lib/mdns
+		 -L$(STAGING_DIR)/usr/lib/mdns \
+		 -Wno-error=maybe-uninitialized
 
 define Package/luci-app-openthread/install
 	$(INSTALL_DIR) \
