@@ -11,7 +11,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libdmapsharing
 PKG_VERSION:=3.9.12
-PKG_RELEASE:=1
+PKG_RELEASE:=2# cotequeiroz
 
 PKG_SOURCE:=libdmapsharing-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://www.flyn.org/projects/libdmapsharing/
@@ -45,6 +45,9 @@ CONFIGURE_ARGS += \
 	--disable-tests \
 	--disable-gtk-doc \
 	--disable-introspection
+
+TARGET_CFLAGS += -I$(STAGING_DIR)/usr/include/mdns
+TARGET_LDFLAGS += -L$(STAGING_DIR)/usr/include/mdns
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include/
