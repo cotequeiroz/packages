@@ -11,7 +11,7 @@ PKG_NAME:=libcurl-gnutls
 
 PKG_SOURCE_NAME:=curl
 PKG_VERSION:=8.6.0
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 PKG_SOURCE:=$(PKG_SOURCE_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=https://github.com/curl/curl/releases/download/curl-$(subst .,_,$(PKG_VERSION))/ \
 	https://dl.uxnr.de/mirror/curl/ \
@@ -62,6 +62,7 @@ CONFIGURE_ARGS += \
 	--without-winidn \
 	--without-librtmp \
 	--without-nghttp2 \
+	--without-nghttp3 \
 	--without-nss \
 	--without-cyassl \
 	--without-libpsl \
