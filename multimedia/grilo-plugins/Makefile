@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=grilo-plugins
 PKG_VERSION:=0.3.16
-PKG_RELEASE:=2
+PKG_RELEASE:=2# cotequeiroz
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNOME/grilo-plugins/$(basename $(PKG_VERSION))
@@ -20,6 +20,8 @@ PKG_LICENSE_FILES:=COPYING
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
 include $(INCLUDE_DIR)/meson.mk
+
+PKG_BUILD_DEPENDS:=glib2/host
 
 define Package/grilo-plugins/Default
   SECTION:=multimedia
@@ -65,6 +67,12 @@ MESON_ARGS += \
 	-Denable-tracker3=no \
 	-Denable-youtube=no \
 	--wrap-mode=nodownload
+
+define Meson/CreateCrossFile +=
+
+	$(info $(SED) "/^\[binaries]/a glib-compile-resources='$(STAGING_DIR_HOSTPKG)/bin/glib-compile-resources'" $(1))
+	$(SED) "/^\[binaries]/a glib-compile-resources='$(STAGING_DIR_HOSTPKG)/bin/glib-compile-resources'" $(1)
+endef
 
 define Package/grilo-plugins/install
 	$(INSTALL_DIR) $(1)/usr/lib/grilo-0.3
