@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=micropython
-PKG_VERSION:=1.21.0
-PKG_RELEASE:=2
+PKG_VERSION:=1.23.0
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://github.com/micropython/micropython/releases/download/v$(PKG_VERSION)
-PKG_HASH:=abd2152613559d3f44728668346e78be9d93458133a03b700baf222c322fd4d5
+PKG_HASH:=0ab283c2fc98d466c1ff26692bee46abaeeab55d488a36fc3cb6372cb8fb390d
 
 PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
 PKG_LICENSE:=MIT
@@ -72,6 +72,7 @@ This version is built without TLS and mip.
 endef
 
 MAKE_FLAGS += BUILD_VERBOSE=1 STRIP=
+TARGET_CFLAGS += -Wno-error=maybe-uninitialized
 
 ifneq ($(CONFIG_DEBUG),)
   MAKE_FLAGS += DEBUG=1
