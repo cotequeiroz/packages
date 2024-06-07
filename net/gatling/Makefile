@@ -36,6 +36,9 @@ define Package/gatling/conffiles
 /etc/config/gatling
 endef
 
+MAKE_FLAGS+=TARGETS=gatling
+
+
 define Package/gatling/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/gatling $(1)/usr/bin/
