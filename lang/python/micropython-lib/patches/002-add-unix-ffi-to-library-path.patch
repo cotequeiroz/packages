@@ -1,0 +1,347 @@
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/glob/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/glob/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/glob/manifest.py
+@@ -1,5 +1,6 @@
+ metadata(version="0.5.2")
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("os")
+ require("os-path")
+ require("re")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/email.message/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/email.message/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/email.message/manifest.py
+@@ -1,5 +1,6 @@
+ metadata(version="0.5.3")
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("re")
+ require("uu")
+ require("base64")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/os-path/manifest.py
+===================================================================
+--- /dev/null
++++ micropython-lib-20240527~50ed36fb/unix-ffi/os-path/manifest.py
+@@ -0,0 +1,7 @@
++metadata(version="0.1.4")
++
++# Originally written by Paul Sokolovsky.
++
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
++require("os")
++package("os", base_path="../../python-stdlib/os-path")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/os/os/__init__.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/os/os/__init__.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/os/os/__init__.py
+@@ -5,6 +5,12 @@ import stat as stat_
+ import ffilib
+ import uos
+ 
++# Provide optional dependencies (which may be installed separately).
++try:
++    from . import path
++except ImportError:
++    pass
++
+ R_OK = const(4)
+ W_OK = const(2)
+ X_OK = const(1)
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/email.encoders/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/email.encoders/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/email.encoders/manifest.py
+@@ -1,5 +1,6 @@
+ metadata(version="0.5.1")
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("base64")
+ require("binascii")
+ require("quopri")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/email.charset/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/email.charset/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/email.charset/manifest.py
+@@ -1,5 +1,6 @@
+ metadata(version="0.5.1")
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("functools")
+ require("email.encoders")
+ require("email.errors")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/time/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/time/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/time/manifest.py
+@@ -1,5 +1,6 @@
+ metadata(version="0.5.0")
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("ffilib")
+ 
+ module("time.py")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/signal/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/signal/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/signal/manifest.py
+@@ -2,6 +2,7 @@ metadata(version="0.3.2")
+ 
+ # Originally written by Paul Sokolovsky.
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("ffilib")
+ 
+ module("signal.py")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/html.parser/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/html.parser/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/html.parser/manifest.py
+@@ -1,5 +1,6 @@
+ metadata(version="3.3.4")
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("_markupbase")
+ require("warnings")
+ require("html.entities")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/urllib.parse/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/urllib.parse/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/urllib.parse/manifest.py
+@@ -1,5 +1,6 @@
+ metadata(version="0.5.2")
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("re")
+ require("collections")
+ require("collections-defaultdict")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/gettext/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/gettext/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/gettext/manifest.py
+@@ -2,6 +2,7 @@ metadata(version="0.1.0")
+ 
+ # Originally written by Riccardo Magliocchetti.
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("ffilib")
+ 
+ module("gettext.py")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/pwd/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/pwd/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/pwd/manifest.py
+@@ -2,6 +2,7 @@ metadata(version="0.1.0")
+ 
+ # Originally written by Riccardo Magliocchetti.
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("ffilib")
+ 
+ module("pwd.py")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/email.header/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/email.header/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/email.header/manifest.py
+@@ -1,5 +1,6 @@
+ metadata(version="0.5.2")
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("re")
+ require("binascii")
+ require("email.encoders")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/_markupbase/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/_markupbase/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/_markupbase/manifest.py
+@@ -1,5 +1,6 @@
+ metadata(version="3.3.4")
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("re")
+ 
+ module("_markupbase.py")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/email.utils/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/email.utils/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/email.utils/manifest.py
+@@ -1,5 +1,6 @@
+ metadata(version="3.3.4")
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("os")
+ require("re")
+ require("base64")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/multiprocessing/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/multiprocessing/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/multiprocessing/manifest.py
+@@ -2,6 +2,7 @@ metadata(version="0.1.2")
+ 
+ # Originally written by Paul Sokolovsky.
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("os")
+ require("select")
+ require("pickle")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/re/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/re/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/re/manifest.py
+@@ -2,6 +2,7 @@ metadata(version="0.2.5")
+ 
+ # Originally written by Paul Sokolovsky.
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("ffilib")
+ 
+ module("re.py")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/json/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/json/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/json/manifest.py
+@@ -1,4 +1,5 @@
+ metadata(version="0.2.0")
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("re")
+ package("json")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/ucurses/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/ucurses/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/ucurses/manifest.py
+@@ -2,6 +2,7 @@ metadata(version="0.1.2")
+ 
+ # Originally written by Paul Sokolovsky.
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("os")
+ require("tty")
+ require("select")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/http.client/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/http.client/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/http.client/manifest.py
+@@ -1,5 +1,6 @@
+ metadata(version="0.5.1")
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("email.parser")
+ require("email.message")
+ require("socket")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/fcntl/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/fcntl/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/fcntl/manifest.py
+@@ -2,6 +2,7 @@ metadata(version="0.0.4")
+ 
+ # Originally written by Paul Sokolovsky.
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("ffilib")
+ 
+ module("fcntl.py")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/timeit/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/timeit/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/timeit/manifest.py
+@@ -1,5 +1,6 @@
+ metadata(version="3.3.4")
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("getopt")
+ require("itertools")
+ # require("linecache") TODO
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/email.feedparser/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/email.feedparser/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/email.feedparser/manifest.py
+@@ -1,5 +1,6 @@
+ metadata(version="0.5.1")
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("re")
+ require("email.errors")
+ require("email.message")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/email.internal/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/email.internal/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/email.internal/manifest.py
+@@ -1,5 +1,6 @@
+ metadata(version="0.5.1")
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("re")
+ require("base64")
+ require("binascii")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/getopt/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/getopt/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/getopt/manifest.py
+@@ -1,5 +1,6 @@
+ metadata(version="3.3.4")
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("os")
+ 
+ module("getopt.py")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/machine/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/machine/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/machine/manifest.py
+@@ -2,6 +2,7 @@ metadata(version="0.2.1")
+ 
+ # Originally written by Paul Sokolovsky.
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("ffilib")
+ require("os")
+ require("signal")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/os/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/os/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/os/manifest.py
+@@ -2,6 +2,7 @@ metadata(version="0.6.0")
+ 
+ # Originally written by Paul Sokolovsky.
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("ffilib")
+ require("errno")
+ require("stat")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/select/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/select/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/select/manifest.py
+@@ -2,6 +2,7 @@ metadata(version="0.3.0")
+ 
+ # Originally written by Paul Sokolovsky.
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("os")
+ require("ffilib")
+ 
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/sqlite3/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/sqlite3/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/sqlite3/manifest.py
+@@ -2,6 +2,7 @@ metadata(version="0.2.4")
+ 
+ # Originally written by Paul Sokolovsky.
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("ffilib")
+ 
+ module("sqlite3.py")
+Index: micropython-lib-20240527~50ed36fb/unix-ffi/email.parser/manifest.py
+===================================================================
+--- micropython-lib-20240527~50ed36fb.orig/unix-ffi/email.parser/manifest.py
++++ micropython-lib-20240527~50ed36fb/unix-ffi/email.parser/manifest.py
+@@ -1,5 +1,6 @@
+ metadata(version="0.5.1")
+ 
++add_library("unix-ffi", "../../unix-ffi", prepend=True)
+ require("warnings")
+ require("email.feedparser")
+ require("email.message")
