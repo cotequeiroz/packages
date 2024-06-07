@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=umurmur
 PKG_VERSION:=0.2.20
-PKG_RELEASE:=2
+PKG_RELEASE:=2# cotequeiroz
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/umurmur/umurmur/tar.gz/$(PKG_VERSION)?
@@ -49,7 +49,7 @@ endef
 define Package/umurmur-mbedtls
   $(call Package/umurmur/Default)
   TITLE+= (with mbed TLS support)
-  DEPENDS+= +libmbedtls
+  DEPENDS+= +libmbedtls @BROKEN
   VARIANT:=mbedtls
 endef
 
