@@ -10,7 +10,7 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=libpfring
 PKG_VERSION:=8.6.1
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(PKG_VERSION)
@@ -60,6 +60,10 @@ endef
 CONFIGURE_VARS += \
 	MACHINE="$(ARCH)" \
 	ac_cv_lib_nl_3_nl_socket_alloc=no
+
+EXTRA_CFLAGS += \
+	-Wno-error=old-style-declaration \
+	-Wno-error=missing-prototypes
 
 define Build/Compile
 	$(MAKE) -C "$(LINUX_DIR)" \
