@@ -1,5 +1,7 @@
---- a/unixos.c
-+++ b/unixos.c
+Index: mpack-1.6/unixos.c
+===================================================================
+--- mpack-1.6.orig/unixos.c
++++ mpack-1.6/unixos.c
 @@ -25,6 +25,7 @@
  #include <stdio.h>
  #include <ctype.h>
@@ -17,8 +19,10 @@
  
  int overwrite_files = 0;
  int didchat;
---- a/xmalloc.c
-+++ b/xmalloc.c
+Index: mpack-1.6/xmalloc.c
+===================================================================
+--- mpack-1.6.orig/xmalloc.c
++++ mpack-1.6/xmalloc.c
 @@ -24,7 +24,7 @@
   */
  #include <stdio.h>
@@ -28,3 +32,31 @@
  
  char *xmalloc (int size)
  {
+Index: mpack-1.6/unixpk.c
+===================================================================
+--- mpack-1.6.orig/unixpk.c
++++ mpack-1.6/unixpk.c
+@@ -23,7 +23,10 @@
+  * SOFTWARE.
+  */
+ #include <stdio.h>
++#include <stdlib.h>
+ #include <string.h>
++#include <sys/wait.h>
++#include <unistd.h>
+ #include <errno.h>
+ #include "common.h"
+ #include "version.h"
+@@ -31,12 +34,6 @@
+ 
+ #define MAXADDRESS 100
+ 
+-extern char *getenv();
+-
+-extern int errno;
+-extern int optind;
+-extern char *optarg;
+-
+ void usage(void);
+ void sendmail(FILE *infile, char **addr, int start);
+ void inews(FILE *infile);

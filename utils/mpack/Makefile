@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mpack
 PKG_VERSION:=1.6
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 PKG_LICENSE:=NLPL
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -19,6 +19,11 @@ PKG_HASH:=274108bb3a39982a4efc14fb3a65298e66c8e71367c3dabf49338162d207a94c
 PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
+
+TARGET_CFLAGS += \
+	-Wno-error=implicit-int \
+	-Wno-error=implicit-function-declaration \
+	-Wno-error=return-mismatch
 
 define Package/mpack
   SECTION:=utils
