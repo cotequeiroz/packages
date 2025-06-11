@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-gevent
 PKG_VERSION:=23.9.1
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PYPI_NAME:=gevent
 PKG_HASH:=72c002235390d46f94938a96920d8856d4ffd9ddf62a303a0d7c118894097e34
@@ -22,6 +22,8 @@ PYTHON3_PKG_SETUP_VARS:= \
 	GEVENTSETUP_EMBED=0 \
 	GEVENTSETUP_EMBED_LIBEV=0 \
 	GEVENTSETUP_EMBED_CARES=0
+
+TARGET_CFLAGS += -Wno-error=incompatible-pointer-types
 
 define Package/python3-gevent
   SUBMENU:=Python
