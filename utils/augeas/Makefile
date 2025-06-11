@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=augeas
 PKG_VERSION:=1.14.1
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/hercules-team/augeas/releases/download/release-$(PKG_VERSION)
@@ -56,6 +56,10 @@ endef
 
 CONFIGURE_ARGS+= \
         --without-selinux
+
+TARGET_CFLAGS+= \
+	-Wno-error=implicit-function-declaration \
+	-Wno-error=int-conversion
 
 define Package/augeas-lenses-tests
   SECTION:=utils
