@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=domoticz
 PKG_VERSION:=2023.2
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/domoticz/domoticz/tar.gz/$(PKG_VERSION)?
@@ -33,6 +33,7 @@ define Package/domoticz
   URL:=http://domoticz.com/
   USERID:=domoticz=6144:domoticz=6144
   DEPENDS:= \
+  	@BROKEN \
 	+boost \
 	+boost-date_time \
 	+boost-system \
