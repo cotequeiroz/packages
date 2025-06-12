@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=lcdgrilo
 PKG_VERSION:=0.0.13
-PKG_RELEASE:=4
+PKG_RELEASE:=4# cotequeiroz
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://www.flyn.org/projects/lcdgrilo
@@ -30,7 +30,7 @@ include $(INCLUDE_DIR)/nls.mk
 define Package/lcdgrilo
   SECTION:=multimedia
   CATEGORY:=Multimedia
-  DEPENDS:=+grilo +grilo-plugins +gstreamer1-libs +libgee +libgstreamer1
+  DEPENDS:=+grilo +grilo-plugins +gstreamer1-libs +libgee +libgstreamer1 @BROKEN
   TITLE:=lcdgrilo
   URL:=https://www.flyn.org/projects/lcdgrilo/
 endef
