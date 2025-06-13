@@ -4,7 +4,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=apparmor
 PKG_VERSION:=3.0.13
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
@@ -90,6 +90,8 @@ CONFIGURE_ARGS += \
 		--without-perl \
 		--without-ruby \
 		--disable-man-pages
+
+MAKE_VARS += $(PYTHON3_VARS)
 
 ifeq ($(CONFIG_BUILD_NLS),y)
 	MAKE_VARS += WITH_LIBINTL=1
