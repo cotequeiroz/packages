@@ -11,7 +11,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=knot-resolver
 PKG_VERSION:=5.7.4
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://secure.nic.cz/files/knot-resolver
@@ -64,6 +64,7 @@ MESON_ARGS+= \
 	-Dinstall_kresd_conf=disabled \
 	-Dinstall_root_keys=disabled \
 	-Dkeyfile_default=/etc/knot-resolver/root.keys \
+	-Dmalloc=disabled \
 	-Dprefix=/usr \
 	-Dunit_tests=disabled \
 	-Dutils=disabled
