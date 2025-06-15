@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libtheora
 PKG_VERSION:=1.2.0
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=http://downloads.xiph.org/releases/theora/
 PKG_HASH:=ebdf77a8f5c0a8f7a9e42323844fa09502b34eb1d1fece7b5f54da41fe2122ec
@@ -23,6 +23,8 @@ PKG_BUILD_DEPENDS:=libvorbis
 include $(INCLUDE_DIR)/package.mk
 
 PKG_INSTALL=1
+
+TARGET_CFLAGS += -Wno-error=maybe-uninitialized
 
 define Package/libtheora
   SECTION:=libs
