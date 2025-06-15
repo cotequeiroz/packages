@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dump1090
 PKG_VERSION:=9.0
-PKG_RELEASE:=3
+PKG_RELEASE:=3# cotequeiroz
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
@@ -56,7 +56,7 @@ endef
 MAKE_FLAGS += \
 	DUMP1090_VERSION=$(PKG_VERSION) \
 	BLADERF=no \
-	CFLAGS="$(TARGET_CFLAGS)" \
+	CFLAGS="$(filter-out -march=% -mcpu=% -mfpu=%,$(TARGET_CFLAGS))" \
 	UNAME="Linux"
 
 ifeq ($(CONFIG_SOFT_FLOAT),y)
