@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dockerd
 PKG_VERSION:=27.3.1
-PKG_RELEASE:=3
+PKG_RELEASE:=3# cotequeiroz
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 
@@ -126,7 +126,8 @@ ifeq ($(CONFIG_SELINUX),y)
 BUILDTAGS += selinux
 endif
 
-define Build/Compile
+ifeq ($(CONFIG_mips)$(CONFIG_mips64)$(CONFIG_mipsel),)
+  define Build/Compile
 	( \
 		cd $(PKG_BUILD_DIR); \
 		$(GO_PKG_VARS) \
@@ -135,7 +136,10 @@ define Build/Compile
 		VERSION=$(PKG_VERSION) \
 		./hack/make.sh binary; \
 	)
-endef
+  endef
+else
+  Build/Compile=
+endif
 
 define Package/dockerd/install
 	$(INSTALL_DIR) $(1)/usr/bin/
