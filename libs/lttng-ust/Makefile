@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=lttng-ust
 PKG_VERSION:=2.13.5
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=https://lttng.org/files/$(PKG_NAME)/
@@ -32,7 +32,7 @@ define Package/lttng-ust
   CATEGORY:=Libraries
   TITLE:=Linux Trace Toolkit: next generation (library)
   URL:=https://lttng.org/
-  DEPENDS:= +liburcu +libuuid +librt
+  DEPENDS:= +liburcu +libuuid +librt @!arm @!mips @!mipsel
 endef
 
 CONFIGURE_ARGS += \
