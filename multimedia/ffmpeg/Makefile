@@ -22,6 +22,7 @@ PKG_LICENSE:=LGPL-2.1-or-later GPL-2.0-or-later LGPL-3.0-or-later
 PKG_LICENSE_FILES:=COPYING.GPLv2 COPYING.GPLv3 COPYING.LGPLv2.1 COPYING.LGPLv3
 PKG_CPE_ID:=cpe:/a:ffmpeg:ffmpeg
 
+PKG_BUILD_FLAGS:=no-mips16
 PKG_BUILD_PARALLEL:=1
 
 FFMPEG_CUSTOM_ENCODERS:= \
@@ -383,6 +384,7 @@ endef
 REAL_CPU_TYPE:=$(call qstrip,$(firstword $(subst +, ,$(CONFIG_CPU_TYPE))))
 # Fixup cpu types recogized by ffmpeg configure
 REAL_CPU_TYPE:=$(subst octeonplus,octeon+,$(REAL_CPU_TYPE))
+REAL_CPU_TYPE:=$(subst 74kc,74Kc,$(REAL_CPU_TYPE))
 
 FFMPEG_CONFIGURE:= \
 	CFLAGS="$(TARGET_CFLAGS) $(TARGET_CPPFLAGS) $(FPIC) -Wno-error=incompatible-pointer-types" \
@@ -401,7 +403,7 @@ FFMPEG_CONFIGURE:= \
 	--enable-zlib \
 	--disable-doc \
 	--disable-debug \
-	\
+	--logfile=config.log \
 	--disable-lzma \
 	--disable-vaapi \
 	--disable-vdpau \
@@ -454,6 +456,12 @@ endif
 
 ifeq ($(ARCH),x86_64)
 	FFMPEG_CONFIGURE+= --enable-lto
+endif
+
+ifneq ($(findstring 74kc,$(CONFIG_CPU_TYPE)),)
+  FFMPEG_CONFIGURE+= \
+		--enable-mipsdsp \
+		--enable-mipsdspr2
 endif
 
 ifeq ($(CONFIG_FFMPEG_X86ASM),y)
