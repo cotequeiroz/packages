@@ -8,7 +8,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=clixon
 PKG_VERSION:=7.4.0
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/clicon/$(PKG_NAME)/tar.gz/$(PKG_VERSION)?
@@ -56,6 +56,9 @@ INSTALLFLAGS:=-s --strip-program=$(TARGET_CROSS)strip
 CONFIGURE_VARS+= \
 	INSTALLFLAGS="$(INSTALLFLAGS)" \
 	SSH_BIN=/usr/bin/ssh
+
+TARGET_CFLAGS+= \
+	-Wno-error=incompatible-pointer-types
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
