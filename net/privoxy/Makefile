@@ -59,7 +59,7 @@ define Package/privoxy
   URL:=http://www.privoxy.org/
   USERID:=privoxy=8118:privoxy=8118
   MENU:=1
-  DEPENDS:=+!PRIVOXY_no_pcre:libpcre2 +!PRIVOXY_no_pthread:libpthread +!PRIVOXY_no_zlib:zlib
+  DEPENDS:=+!PRIVOXY_no_pcre:libpcre2 +!PRIVOXY_no_pthread:libpthread +!PRIVOXY_no_zlib:zlib @BROKEN
 endef
 
 # shown in LuCI package description
