@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=powertop
 PKG_VERSION:=2.15
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
@@ -31,7 +31,7 @@ include $(INCLUDE_DIR)/nls.mk
 define Package/powertop
   SECTION:=utils
   CATEGORY:=Utilities
-  DEPENDS:=$(INTL_DEPENDS) +libstdcpp +libpci +libncursesw +libnl-genl
+  DEPENDS:=$(INTL_DEPENDS) +libstdcpp +libpci +libncursesw +libnl-genl @BROKEN
   TITLE:=Power consumption monitor
   URL:=https://01.org/powertop
 endef
