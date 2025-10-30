@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=pdns-recursor
 PKG_VERSION:=5.2.5
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=https://downloads.powerdns.com/releases/
@@ -46,6 +46,7 @@ DISABLE_NLS:=
 
 CONFIGURE_ARGS += \
 	--sysconfdir=/etc/powerdns \
+	--with-boost="$(STAGING_DIR)/usr" \
 	--with-lua=lua \
 	--without-libcap \
 	--without-libsodium \
