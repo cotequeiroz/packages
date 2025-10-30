@@ -178,8 +178,8 @@ TARGET_CXX+=-std=c++17
 CONFIGURE_ARGS+= \
 	--sysconfdir=/etc/powerdns \
 	--libdir=/usr/lib/powerdns  \
-	--with-boost=$(STAGING_DIR)/usr/include \
 	--with-dynmodules="$(foreach backend,$(PDNS_BACKENDS),$(if $(CONFIG_PACKAGE_pdns-backend-$(backend)),$(PDNS_BACKEND_$(backend)_LIB),))" \
+	--with-boost="$(STAGING_DIR)/usr" \
 	--with-lua="lua" \
 	--with-modules="bind" \
 	--with-mysql-lib=$(STAGING_DIR)/usr \
