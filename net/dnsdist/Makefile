@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dnsdist
 PKG_VERSION:=2.0.6
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://downloads.powerdns.com/releases/
@@ -15,6 +15,7 @@ PKG_CPE_ID:=cpe:/a:powerdns:dnsdist
 
 PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
+PKG_FIXUP:=autoreconf
 
 PKG_BUILD_DEPENDS:=boost python-yaml/host
 
@@ -150,6 +151,7 @@ CONFIGURE_ARGS+= \
 	--with-lua=luajit \
 	--with-libcap \
 	--without-xsk \
+	--with-boost="$(STAGING_DIR)/usr" \
 	$(if $(call IsEnabled,DNSDIST_PIE),,--disable-hardening) \
 	$(if $(call IsEnabled,DNSDIST_SODIUM),--enable-dnscrypt --with-libsodium,--disable-dnscrypt --without-libsodium) \
 	$(if $(call IsEnabled,DNSDIST_DNSTAP),--enable-dnstap=yes,--enable-dnstap=no) \
