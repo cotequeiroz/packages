@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dcwapd
 PKG_VERSION:=1.1.0
-PKG_RELEASE:=6
+PKG_RELEASE:=6# cotequeiroz
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/ewsi/$(PKG_NAME)/tar.gz/v$(PKG_VERSION)?
@@ -32,7 +32,7 @@ define Package/dcwapd
   SUBMENU:=Routing and Redirection
   TITLE:=Dual-Channel WiFi AP daemon
   URL:=https://www.edgewaterwireless.com
-  DEPENDS:=+libstdcpp +kmod-macremapper +libdcwsocket +libdcwproto +mrmctl +libuci
+  DEPENDS:=+libstdcpp +kmod-macremapper +libdcwsocket +libdcwproto +mrmctl +libuci @BROKEN
 endef
 
 define Package/dcwapd/description
