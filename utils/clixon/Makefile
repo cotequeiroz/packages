@@ -30,7 +30,8 @@ define Package/clixon
   URL:=https://www.clicon.org
   TITLE:=YANG-based toolchain
   DEPENDS:=+cligen +libopenssl +libnghttp2 +libcurl \
-	 @(PACKAGE_openssh-server||PACKAGE_openssh-server-pam)
+	 @(PACKAGE_openssh-server||PACKAGE_openssh-server-pam) \
+	 @ARCH_64BIT
   USERID:=clicon=61:clicon=61
 endef
 
