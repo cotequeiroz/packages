@@ -1,0 +1,29 @@
+From 59e262f1134fef8d53d15ae963885a08c9ea8315 Mon Sep 17 00:00:00 2001
+From: "Alan T. DeKok" <aland@freeradius.org>
+Date: Mon, 11 Aug 2025 10:47:34 -0400
+Subject: [PATCH] change "fips=no" to "-fips"
+
+based on discussions with the OpenSSL developers in
+
+https://github.com/FreeRADIUS/freeradius-server/issues/5631
+
+and
+
+https://docs.openssl.org/3.5/man7/property/#global-and-local
+---
+ src/main/tls.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main/tls.c b/src/main/tls.c
+index c921ca75077ed..ba267983b1487 100644
+--- a/src/main/tls.c
++++ b/src/main/tls.c
+@@ -3661,7 +3661,7 @@ int tls_global_init(TLS_UNUSED bool spawn_flag, TLS_UNUSED bool check)
+ 	CONF_modules_load_file(NULL, NULL, 0);
+ 
+ #if OPENSSL_VERSION_NUMBER >= 0x30000000L
+-	EVP_set_default_properties(NULL, "fips=no");
++	EVP_set_default_properties(NULL, "-fips");
+ #endif
+ 
+ 	/*
