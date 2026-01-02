@@ -44,7 +44,7 @@ HOST_MAKE_FLAGS += \
 define Host/Configure
 endef
 
-HOST_CFLAGS += $(if $(CONFIG_HOST_OS_MACOS),-Wno-implicit-function-declaration,)
+HOST_CFLAGS += -std=gnu18 $(if $(CONFIG_HOST_OS_MACOS),-Wno-implicit-function-declaration,)
 
 define Host/Compile
 	# Build hamcorebuilder using host compiler and let it generate
@@ -62,6 +62,7 @@ endef
 
 # Tune CFLAGS for target
 TARGET_CFLAGS += \
+	-std=gnu18 \
 	$(if $(CONFIG_OPENSSL_WITH_SSL3),,-DSSL_OP_NO_SSLv3) \
 	$(if $(filter mips mipsel,$(ARCH)),-minterlink-mips16)
 
