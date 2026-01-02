@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=micropython
 PKG_VERSION:=1.23.0
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://github.com/micropython/micropython/releases/download/v$(PKG_VERSION)
@@ -81,12 +81,15 @@ ifeq ($(BUILD_VARIANT),nossl)
   MAKE_FLAGS += MICROPY_PY_SSL=0 FROZEN_MANIFEST=variants/standard/manifest-nossl.py
 endif
 
+ADDITIONAL_CFLAGS = -Wno-unterminated-string-initialization
 # Work around "variable might be clobbered" warning leading to build error
 # https://github.com/micropython/micropython/issues/12838
 ifeq ($(ARCH),riscv64)
-  MAKE_FLAGS += CFLAGS_EXTRA=-Wno-error=clobbered
+  ADDITIONAL_CFLAGS += -Wno-error=clobbered
 endif
 
+MAKE_FLAGS += CFLAGS_EXTRA=$(ADDITIONAL_CFLAGS)
+HOST_MAKE_FLAGS += CFLAGS_EXTRA=$(ADDITIONAL_CFLAGS)
 MAKE_PATH = ports/unix
 
 define Build/Configure
