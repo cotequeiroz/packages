@@ -5,7 +5,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=radicale2
 PKG_VERSION:=2.1.12
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PKG_LICENSE:=GPL-3.0-or-later
 PKG_LICENSE_FILES:=COPYING
@@ -29,12 +29,13 @@ endef
 define Package/radicale2
 $(call Package/radicale2/Default)
   USERID:=radicale2=225:radicale2=225
-  DEPENDS:=+python3 +python3-dateutil +python3-vobject +python3-setuptools
+  DEPENDS:=+python3 +python3-dateutil +python3-vobject +python3-setuptools @BROKEN
   CONFLICTS:=radicale
 endef
 
 define Package/radicale2-examples
 $(call Package/radicale2/Default)
+  DEPENDS:=@BROKEN
   TITLE:=Radicale v2 example configs
 endef
 
