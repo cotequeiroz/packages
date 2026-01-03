@@ -8,7 +8,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=pillow
 PKG_VERSION:=10.1.0
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PYPI_NAME:=Pillow
 PKG_HASH:=e6bf8de6c36ed96c86ea3b6e1d5273c53f46ef518a062464cd7ef5dd2cf92e38
@@ -31,7 +31,7 @@ define Package/python3-pillow
   TITLE:=The friendly PIL fork
   URL:=https://python-pillow.org/
   DEPENDS:=+libfreetype +libjpeg +libtiff +zlib \
-	   +libwebp +python3
+	   +libwebp +python3 @BROKEN
 endef
 
 define Package/python3-pillow/description
