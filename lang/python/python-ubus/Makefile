@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-ubus
 PKG_VERSION:=0.1.2
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PYPI_NAME:=ubus
 PKG_HASH:=4dc4ef0fbcc8abb7a2354691475a58ff3eb015f1bab3150750729f7f657dd440
@@ -30,7 +30,7 @@ define Package/python3-ubus
   CATEGORY:=Languages
   TITLE:=libubus bindings
   URL:=https://gitlab.nic.cz/turris/python-ubus/
-  DEPENDS:=+libubus +libblobmsg-json +python3-light
+  DEPENDS:=+libubus +libblobmsg-json +python3-light @BROKEN
 endef
 
 define Package/python3-ubus/description
