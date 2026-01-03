@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-flask-httpauth
 PKG_VERSION:=4.8.0
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PYPI_NAME:=Flask-HTTPAuth
 PKG_HASH:=66568a05bc73942c65f1e2201ae746295816dc009edd84b482c44c758d75097a
@@ -29,6 +29,7 @@ define Package/python3-flask-httpauth
   TITLE:=HTTP authentication for Flask routes
   URL:=https://github.com/miguelgrinberg/flask-httpauth
   DEPENDS:= \
+  	@BROKEN \
 	+python3-light \
 	+python3-flask
 endef
