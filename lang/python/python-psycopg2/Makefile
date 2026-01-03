@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-psycopg2
 PKG_VERSION:=2.9.7
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PYPI_NAME:=psycopg2
 PKG_HASH:=f00cc35bd7119f1fed17b85bd1007855194dde2cbd8de01ab8ebb17487440ad8
@@ -29,6 +29,7 @@ define Package/python3-psycopg2
   TITLE:=PostgreSQL database adapter
   URL:=https://www.psycopg.org/
   DEPENDS:= \
+    @BROKEN \
     +python3-light \
     +python3-decimal \
     +python3-logging \
