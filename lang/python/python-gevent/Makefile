@@ -32,6 +32,7 @@ define Package/python3-gevent
   TITLE:=Coroutine-based network library
   URL:=https://github.com/gevent/gevent
   DEPENDS:= \
+  	@BROKEN \
 	+python3-light \
 	+python3-cffi \
 	+python3-greenlet \
