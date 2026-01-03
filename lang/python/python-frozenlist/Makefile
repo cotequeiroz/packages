@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-frozenlist
 PKG_VERSION:=1.4.0
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PYPI_NAME:=frozenlist
 PKG_HASH:=09163bdf0b2907454042edb19f887c6d33806adc71fbd54afc14908bfdc22251
@@ -28,7 +28,7 @@ define Package/python3-frozenlist
   SUBMENU:=Python
   TITLE:=List-like structure
   URL:=https://github.com/aio-libs/frozenlist
-  DEPENDS:=+python3-light
+  DEPENDS:=+python3-light @BROKEN
 endef
 
 define Package/python3-frozenlist/description
