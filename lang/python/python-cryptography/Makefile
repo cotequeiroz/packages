@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-cryptography
 PKG_VERSION:=41.0.7
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PYPI_NAME:=cryptography
 PKG_HASH:=13f93ce9bea8016c253b34afc6bd6a75993e5c40672ed5405a9c832f0d4a00bc
@@ -38,7 +38,8 @@ define Package/python3-cryptography
       +python3-email \
       +python3-urllib \
       +python3-cffi \
-      $(RUST_ARCH_DEPENDS)
+      $(RUST_ARCH_DEPENDS) \
+      @ARCH_64BIT
 endef
 
 define Package/python3-cryptography/description
