@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-greenlet
 PKG_VERSION:=3.2.4
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PYPI_NAME:=greenlet
 PKG_HASH:=0dca0d95ff849f9a364385f36ab49f50065d76964944638be9691e1832e9f86d
@@ -42,7 +42,7 @@ define Package/python3-greenlet
   DEPENDS:= \
 	+python3-light \
 	+libstdcpp \
-	@!arc
+	@!(arc||mips)
 endef
 
 define Package/python3-greenlet/description
