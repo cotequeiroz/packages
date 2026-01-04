@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rtpmidid
 PKG_VERSION:=24.12
-PKG_RELEASE:=1
+PKG_RELEASE:=2# cotequei8roz
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/davidmoreno/rtpmidid
@@ -12,6 +12,7 @@ PKG_MIRROR_HASH:=f302061c147833d6c5fe06aa0f8220185e6a29e4840355f26be231c618bc333
 PKG_MAINTAINER:=Daniel Golle <daniel@makrotopia.org>
 PKG_LICENSE:=GPL-3.0-or-later LGPL-2.1-or-later
 PKG_LICENSE_FILES:=LICENSE.md LICENSE-lib.txt LICENSE-daemon.txt
+#PKG_BUILD_FLAGS:=no-mips16
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
@@ -20,7 +21,8 @@ include $(INCLUDE_DIR)/cmake.mk
 # Force c++17 and libfmt and re-evaluate at the next release.
 CMAKE_OPTIONS += \
 	-DCPP_VERSION=17 \
-	-DUSE_FMT=ON
+	-DUSE_FMT=ON \
+	$(if $(CONFIG_mips),-DLDD=ld)
 
 define Package/rtpmidid
   SECTION:=sound
