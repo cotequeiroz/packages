@@ -1,0 +1,21 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -300,6 +300,9 @@ set (czmq_headers
+     include/zmonitor.h
+     include/zproxy.h
+     include/zrex.h
++)
++
++set (extra_headers
+     src/zgossip_msg.h
+     src/zsock_option.inc
+     src/zgossip_engine.inc
+@@ -326,7 +329,7 @@ IF (ENABLE_DRAFTS)
+     )
+ ENDIF (ENABLE_DRAFTS)
+ 
+-source_group ("Header Files" FILES ${czmq_headers})
++source_group ("Header Files" FILES ${czmq_headers} ${extra_headers})
+ install(FILES ${czmq_headers} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+ 
+ ########################################################################
