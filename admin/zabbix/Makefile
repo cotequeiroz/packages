@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=zabbix
 PKG_VERSION:=7.0.29
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://cdn.zabbix.com/zabbix/sources/stable/$(basename $(PKG_VERSION))/ \
@@ -387,7 +387,7 @@ endif
 ifeq ($(BUILD_VARIANT),basic)
 CONFIGURE_ARGS+= \
   $(if $(CONFIG_PACKAGE_zabbix-agentd-basic),--enable-agent,--disable-agent) \
-  $(if $(CONFIG_PACKAGE_zabbix-proxy-basic-sqlite),--enable-proxy --with-sqlite3,--disable-proxy) \
+  $(if $(CONFIG_PACKAGE_zabbix-proxy-basic-sqlite),--enable-proxy --with-sqlite3="$(STAGING_DIR)/usr",--disable-proxy) \
   --with-openssl="$(STAGING_DIR)/usr" \
   --disable-server
 endif
@@ -404,7 +404,7 @@ CONFIGURE_ARGS+= \
   $(if $(CONFIG_ZABBIX_NETSNMP),--with-net-snmp="$(STAGING_DIR)/usr",--with-net-snmp="no") \
   $(if $(CONFIG_ZABBIX_OPENSSL),--with-openssl="$(STAGING_DIR)/usr",--with-openssl="no") \
   $(if $(CONFIG_ZABBIX_POSTGRESQL),--with-postgresql,--with-postgresql="no") \
-  $(if $(CONFIG_ZABBIX_SQLITE),--with-sqlite3,--with-sqlite3="no") \
+  $(if $(CONFIG_ZABBIX_SQLITE),--with-sqlite3="$(STAGING_DIR)/usr",--with-sqlite3="no") \
   --enable-year2038
 
 ifeq ($(CONFIG_ZABBIX_CURL),y)
