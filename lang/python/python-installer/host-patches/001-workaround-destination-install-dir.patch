@@ -1,0 +1,17 @@
+--- a/src/installer/destinations.py
++++ b/src/installer/destinations.py
+@@ -139,10 +139,10 @@ class SchemeDictionaryDestination(WheelD
+         target_dir = Path(self.scheme_dict[scheme]).resolve()
+         file = (target_dir / path).resolve()
+ 
+-        if not file.is_relative_to(target_dir):
+-            raise ValueError(
+-                f"Attempting to write {path} outside of the target directory"
+-            )
++#        if not file.is_relative_to(target_dir):
++#            raise ValueError(
++#                f"Attempting to write {path} outside of the target directory"
++#            )
+ 
+         if self.destdir is not None:
+             rel_path = file.relative_to(file.anchor)

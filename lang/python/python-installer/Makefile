@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-installer
 PKG_VERSION:=1.0.0
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PYPI_NAME:=installer
 PKG_HASH:=c6d691331621cf3fec4822f5c6f83cab3705f79b316225dc454127411677c71f
@@ -20,6 +20,7 @@ PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
 
 PKG_HOST_ONLY:=1
 HOST_BUILD_DEPENDS:=python3/host python-flit-core/host
+HOST_PATCH_DIR:=./host-patches
 
 PYTHON3_HOST_INSTALL_VARS:=PYTHONPATH=src
 
