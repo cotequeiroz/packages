@@ -1,0 +1,30 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -51,12 +51,21 @@ elif test "$enable_altivec" = "yes" ; th
+ elif test "$enable_neon" = "yes" ; then
+      transpose_128=yes
+      AC_DEFINE(DVBCSA_USE_NEON, 1, Using NEON 128 bits ops bitslice.)
+-     CFLAGS_save="$CFLAGS"
+-     CFLAGS="$CFLAGS -mfpu=neon -mfloat-abi=softfp"
+-     AC_COMPILE_IFELSE([AC_LANG_PROGRAM(, return 0;)], [
+-         GCC_CFLAGS="$GCC_CFLAGS -mfpu=neon -mfloat-abi=softfp"
+-     ])
+-     CFLAGS="$CFLAGS_save"
++     CFLAGS_neon=""
++     if test -n "${CFLAGS//*-mfpu=neon*}"; then
++          CFLAGS_neon="$CFLAGS_neon -mfpu=neon"
++     fi
++     if test -n "${CFLAGS//*-mfloat-abi*}"; then
++          CFLAGS_neon="$CFLAGS_neon -mfloat-abi=softfp"
++     fi
++     if test -n "${CFLAGS_neon}"; then
++          CFLAGS_save="$CFLAGS"
++	  CFLAGS="$CFLAGS $CFLAGS_neon"
++          AC_COMPILE_IFELSE([AC_LANG_PROGRAM(, return 0;)], [
++              GCC_CFLAGS="$GCC_CFLAGS $CFLAGS_neon"
++          ])
++          CFLAGS="$CFLAGS_save"
++     fi
+ 
+ elif test "$enable_uint32" = "yes" ; then
+      transpose_32=yes
