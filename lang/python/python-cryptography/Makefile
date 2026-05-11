@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-cryptography
 PKG_VERSION:=46.0.7
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PYPI_NAME:=cryptography
 PKG_HASH:=e4cfd68c5f3e0bfdad0d38e023239b96a2fe84146481852dffbcca442c245aa5
@@ -23,7 +23,10 @@ PKG_BUILD_DEPENDS:=libffi/host python-cffi/host python-maturin/host python-setup
 
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
+#TARGET_CFLAGS += -I$(PYTHON3_INC_DIR)
 include ../python3-package.mk
+
+#PYTHON3_VARS += OPENSSL_DIR="$(STAGING_DIR)/usr"
 
 define Package/python3-cryptography
   SECTION:=lang
@@ -37,7 +40,8 @@ define Package/python3-cryptography
       +python3-light \
       +python3-urllib \
       +python3-cffi \
-      $(RUST_ARCH_DEPENDS)
+      $(RUST_ARCH_DEPENDS) \
+      @ARCH_64BIT
 endef
 
 define Package/python3-cryptography/description
