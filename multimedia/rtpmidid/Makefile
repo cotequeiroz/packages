@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rtpmidid
 PKG_VERSION:=26.01
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/davidmoreno/rtpmidid
@@ -27,7 +27,7 @@ define Package/rtpmidid
   CATEGORY:=Sound
   TITLE:=RTP MIDI User Space Driver Daemon for Linux
   URL:=https://github.com/davidmoreno/rtpmidid/
-  DEPENDS:=+alsa-lib +libavahi-client +libfmt
+  DEPENDS:=+alsa-lib +libavahi-client +libfmt @!(mips||mipsel)
 endef
 
 define Package/rtpmidid/description
