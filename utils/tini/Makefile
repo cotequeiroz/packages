@@ -19,12 +19,16 @@ PKG_BUILD_DEPENDS:=dockerd
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
+EMPTY:=
+SPACE:= $(EMPTY) $(EMPTY)
+ARCH_DEPENDS:=@($(subst $(SPACE),||,$(strip $(filter-out mips mips64 mipsel mips64el,$(subst ||,$(SPACE),$(patsubst @(%),%,$(GO_ARCH_DEPENDS)))))))
+
 define Package/tini
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=simplest init utility
   URL:=https://github.com/krallin/tini
-  DEPENDS:=
+  DEPENDS:=@ARCH_DEPENDS
 endef
 
 define Package/tini/description
