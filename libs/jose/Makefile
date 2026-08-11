@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=jose
 PKG_VERSION:=11
-PKG_RELEASE:=7
+PKG_RELEASE:=6
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://github.com/latchset/$(PKG_NAME)/releases/download/v$(PKG_VERSION)/
@@ -22,8 +22,6 @@ PKG_CPE_ID:=cpe:/a:latchset:jose
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/meson.mk
-
-MESON_ARGS+=-Ddocs=disabled
 
 define Package/libjose
   SECTION:=libs
