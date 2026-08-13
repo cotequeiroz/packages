@@ -1,0 +1,9 @@
+--- a/pyproject.toml	2026-07-07 10:07:24.000000000 -0300
++++ b/pyproject.toml	2026-08-12 14:08:46.759206268 -0300
+@@ -1,5 +1,5 @@
+ [build-system]
+-requires = ["setuptools>=68,<83.1"]
++requires = ["setuptools>=68"]
+ build-backend = "backend"
+ backend-path = ["_mypyc_hook"]
+ 

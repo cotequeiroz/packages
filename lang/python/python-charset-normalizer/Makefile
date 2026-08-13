@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-charset-normalizer
 PKG_VERSION:=3.4.9
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PYPI_NAME:=charset-normalizer
 PYPI_SOURCE_NAME:=charset_normalizer
