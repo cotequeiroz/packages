@@ -1,0 +1,14 @@
+--- a/src/graphics/Panel_sdl.hpp	2025-11-18 11:25:17.000000000 -0300
++++ b/src/graphics/Panel_sdl.hpp	2026-08-13 18:07:21.643716673 -0300
+@@ -1,3 +1,4 @@
++#if 0
+ /*----------------------------------------------------------------------------/
+   Lovyan GFX - Graphics library for embedded devices.
+ 
+@@ -163,4 +164,5 @@
+ //----------------------------------------------------------------------------
+ } // namespace v1
+ } // namespace lgfx
++#endif
+ #endif
+\ No newline at end of file
