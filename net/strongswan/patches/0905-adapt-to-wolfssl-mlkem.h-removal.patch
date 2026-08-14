@@ -1,0 +1,17 @@
+--- a/src/libstrongswan/plugins/wolfssl/wolfssl_kem.c	2025-11-07 16:05:36.000000000 -0300
++++ b/src/libstrongswan/plugins/wolfssl/wolfssl_kem.c	2026-08-14 18:02:14.928134487 -0300
+@@ -25,10 +25,14 @@
+ 
+ #ifdef WOLFSSL_HAVE_MLKEM
+ 
++#if __has_include(<wolfssl/wolfcrypt/mlkem.h>)
+ #include <wolfssl/wolfcrypt/mlkem.h>
+ #ifdef WOLFSSL_WC_MLKEM
+ #include <wolfssl/wolfcrypt/wc_mlkem.h>
+ #endif
++#else
++#include <wolfssl/wolfcrypt/wc_mlkem.h>
++#endif
+ 
+ typedef struct private_key_exchange_t private_key_exchange_t;
+ 
