@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dovecot
 PKG_VERSION:=2.3.21
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://dovecot.org/releases/2.3
@@ -78,6 +78,7 @@ CONFIGURE_ARGS += \
 	--without-lz4 \
 	--without-sodium \
 	--without-zstd \
+	--without-apparmor \
 	$(if $(CONFIG_DOVECOT_GSSAPI),--with-gssapi=yes,--with-gssapi=no) \
 	$(if $(CONFIG_DOVECOT_LDAP),--with-ldap=yes,--with-ldap=no) \
 	$(if $(CONFIG_DOVECOT_MYSQL),--with-mysql=yes,--with-mysql=no) \
