@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python-vcs-versioning
 PKG_VERSION:=2.2.4
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PYPI_NAME:=vcs-versioning
 PYPI_SOURCE_NAME:=vcs_versioning
@@ -20,6 +20,7 @@ PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
 
 PKG_HOST_ONLY:=1
+HOST_PATCH_DIR := $(CURDIR)/patches-host
 HOST_BUILD_DEPENDS:= \
 	python3/host \
 	python-build/host \
