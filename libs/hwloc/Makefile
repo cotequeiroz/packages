@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=hwloc
 PKG_VERSION:=2.13.0
-PKG_RELEASE:=1
+PKG_RELEASE:=1# cotequeiroz
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=https://download.open-mpi.org/release/$(PKG_NAME)/v2.13
@@ -68,7 +68,8 @@ endef
 CONFIGURE_ARGS += \
 	--disable-libxml2 \
 	--disable-opencl \
-	--disable-libudev
+	--disable-libudev \
+	--disable-cairo
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(STAGING_DIR)/usr/include
