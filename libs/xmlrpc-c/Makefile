@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=xmlrpc-c
 PKG_VERSION:=1.60.05
-PKG_RELEASE:=2
+PKG_RELEASE:=2# cotequeiroz
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=@SF/xmlrpc-c/Xmlrpc-c%20Super%20Stable/$(PKG_VERSION)
@@ -19,7 +19,6 @@ PKG_LICENSE:=VARIOUS
 PKG_LICENSE_FILES:=doc/COPYING
 
 PKG_INSTALL:=1
-PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
@@ -43,7 +42,6 @@ define Package/xmlrpc-c-libxml2
   TITLE+= (uses libxml2)
   DEPENDS:=+xmlrpc-c-common +libxml2
   PROVIDES:=xmlrpc-c
-  VARIANT:=libxml2
 endef
 
 define Package/xmlrpc-c-client
@@ -86,21 +84,15 @@ CONFIGURE_ARGS+= \
 	--disable-cgi-server \
 	--disable-cplusplus \
 	--without-libwww-ssl \
-	--disable-abyss-openssl
-
-ifeq ($(BUILD_VARIANT),libxml2)
-	CONFIGURE_ARGS += \
-		--enable-libxml2-backend
-endif
+	--disable-abyss-openssl \
+	--enable-libxml2-backend
 
 define Build/Compile
 	( cd $(PKG_BUILD_DIR)/lib/expat/gennmtab && cc -I$(PKG_BUILD_DIR) -c gennmtab.c -o gennmtab.o && cc -o gennmtab gennmtab.o )
 	$(call Build/Compile/Default)
 endef
 
-TARGET_VARIANT=$(if $(ALL_VARIANTS),$(if $(VARIANT),$(VARIANT),$(firstword $(ALL_VARIANTS))))
-ifeq ($(if $(TARGET_VARIANT),$(BUILD_VARIANT)),$(TARGET_VARIANT))
-  define Build/InstallDev
+define Build/InstallDev
 	$(INSTALL_DIR) \
 		$(1)/usr/include \
 		$(1)/usr/lib \
@@ -126,8 +118,7 @@ ifeq ($(if $(TARGET_VARIANT),$(BUILD_VARIANT)),$(TARGET_VARIANT))
 	$(INSTALL_DATA) \
 		$(PKG_INSTALL_DIR)/usr/lib/pkgconfig/*.pc \
 		$(1)/usr/lib/pkgconfig/
-  endef
-endif
+endef
 
 define Package/xmlrpc-c-libxml2/install
 	$(INSTALL_DIR) \
